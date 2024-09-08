@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações do Perfil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        textarea, input[type="password"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Configurações do Perfil</h1>
+
+    <form method="POST" action="{{ url_for('profile_settings') }}" enctype="multipart/form-data">
+        <h2>Atualizar Bio</h2>
+        <textarea name="bio" placeholder="Digite sua nova bio">{{ user.bio }}</textarea>
+        <button type="submit">Atualizar Bio</button>
+    </form>
+
+    <form method="POST" action="{{ url_for('profile_settings') }}">
+        <h2>Alterar Senha</h2>
+        <label for="old_password">Senha Antiga:</label>
+        <input type="password" id="old_password" name="old_password" required>
+        <label for="new_password">Nova Senha:</label>
+        <input type="password" id="new_password" name="new_password" required>
+        <button type="submit">Alterar Senha</button>
+    </form>
+
+    <form method="POST" action="{{ url_for('profile_settings') }}" enctype="multipart/form-data">
+        <h2>Atualizar Foto de Perfil</h2>
+        <input type="file" name="profile_picture">
+        <button type="submit">Atualizar Foto</button>
+    </form>
+</body>
+</html>

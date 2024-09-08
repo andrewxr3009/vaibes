@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaibes - Home</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #bfbfbf; /* Fundo neutro */
+        }
+
+        .action-icon {
+            width: 24px; /* Ajuste o tamanho conforme necessário */
+            height: 24px; /* Ajuste o tamanho conforme necessário */
+            cursor: pointer;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .posts-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column-reverse; /* Ordem reversa dos posts */
+        }
+
+        .post {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            padding: 10px;
+            position: relative;
+            cursor: pointer; /* Adicionado cursor de ponteiro */
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-pic {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .post-info {
+            flex: 1;
+        }
+
+        .wavy-line {
+            height: 2px;
+            background: url('{{ url_for('static', filename='wavy-line.svg') }}') repeat-x;
+            margin: 10px 0;
+            background-size: contain;
+        }
+
+        .post-body {
+            margin: 10px 0;
+        }
+
+        .post-content {
+            margin-bottom: 10px;
+        }
+
+        .post-gif {
+            text-align: center;
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .like-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .like-icon {
+            width: 24px; /* Tamanho adequado */
+            height: 24px; /* Tamanho adequado */
+            cursor: pointer;
+        }
+
+        .like-count {
+            margin-left: 5px;
+            font-size: 16px;
+        }
+
+        .comments-container {
+            padding: 10px 0;
+            border-top: 1px solid #ddd;
+        }
+
+        .comment {
+            background: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            padding: 5px 10px;
+            margin-bottom: 5px;
+        }
+
+        .bottom-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #fff;
+            padding: 10px;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .bottom-bar.hidden {
+            transform: translateY(100%);
+        }
+
+        .bottom-bar-modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 70%;
+            background-color: rgba(0,0,0,0.4);
+            transition: transform 0.3s ease;
+            transform: translateY(100%);
+        }
+
+        .bottom-bar-modal.active {
+            display: block;
+            transform: translateY(0);
+        }
+
+        .bottom-bar-modal-content {
+            background-color: #fefefe;
+            height: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bottom-bar-modal-content textarea {
+            width: 100%;
+            height: 80px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .bottom-bar-modal-content button {
+            background-color: #022247; /* Azul escuro */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .bottom-bar-modal-content button:hover {
+            background-color: #0056b3;
+        }
+
+        .bottom-bar-icon img {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Estilos para a área de seleção de GIFs */
+        .gif-container {
+            margin-top: 15px;
+        }
+
+        .gif-results {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .gif-results img {
+            width: 100px;
+            height: 100px;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="posts-container">
+            {% for post in posts %}
+            <div class="post" id="post-{{ post.id }}" onclick="openPostDetail({{ post.id }})">
+                <div class="post-header">
+                    {% if post.author.profile_picture %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ (post.author.profile_picture if post.author.profile_picture else 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-pic">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                    {% endif %}
+                    <div class="post-info">
+                        <strong>{{ post.author.username }}</strong>
+                        <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
+                    </div>
+                    <div class="wavy-line"></div>
+                </div>
+                <div class="post-body">
+                    <div class="post-content">{{ post.content|safe }}</div>
+                    {% if post.gif_url %}
+                    <div class="post-gif">
+                        <img src="{{ post.gif_url }}" alt="GIF">
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="post-actions">
+                    <div class="like-container">
+                        <img id="heart-icon-{{ post.id }}" src="{{ url_for('static', filename='hearth-off-icon.png') }}" alt="Curtir" class="like-icon" onclick="toggleLike({{ post.id }})">
+                        <span id="like-count-{{ post.id }}" class="like-count">{{ post.like_count }}</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='send-icon.png') }}" alt="Compartilhar" class="action-icon" onclick="sharePost({{ post.id }})">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="bottom-bar" class="bottom-bar">
+        <a href="{{ url_for('home') }}" class="bottom-bar-icon">
+            <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+        </a>
+        <a href="#" class="bottom-bar-icon" onclick="openModal()">
+            <img src="{{ url_for('static', filename='vibe-icon.png') }}" alt="Criar Post">
+        </a>
+        <a href="{{ url_for('profile', username=session['username']) }}" class="bottom-bar-icon">
+            {% if user.profile_picture %}
+                <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil">
+            {% else %}
+                <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
+            {% endif %}
+        </a>
+        <a href="{{ url_for('search') }}" class="bottom-bar-icon">
+            <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
+        </a>
+    </div>
+
+    <div id="bottom-bar-modal" class="bottom-bar-modal">
+        <div class="bottom-bar-modal-content">
+            <button type="button" onclick="closeModal()">Fechar</button>
+            <form action="{{ url_for('post') }}" method="POST">
+                <textarea name="content" placeholder="O que você está pensando?"></textarea>
+                <input type="hidden" name="gif_url" id="selected-gif-url" value="">
+                <div class="gif-container">
+                    <input type="text" id="gif-search" placeholder="Buscar GIFs">
+                    <button type="button" onclick="searchGif()">Buscar GIF</button>
+                    <div id="gif-results" class="gif-results"></div>
+                </div>
+                <button type="submit">Postar</button>
+            </form>            
+        </div>
+    </div>
+
+    <script>
+        function openPostDetail(postId) {
+            window.location.href = `/post/${postId}`;
+        }
+
+        function openModal() {
+            document.getElementById('bottom-bar').classList.add('hidden');
+            document.getElementById('bottom-bar-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('bottom-bar').classList.remove('hidden');
+            document.getElementById('bottom-bar-modal').classList.remove('active');
+        }
+
+        function searchGif() {
+            const query = document.getElementById('gif-search').value;
+            const resultsContainer = document.getElementById('gif-results');
+            resultsContainer.innerHTML = '';
+            fetch(`https://api.giphy.com/v1/gifs/search?api_key=URqPC2QH6fsA2xCx7ySJTbholry57xjy&q=${query}&limit=10`)
+                .then(response => response.json())
+                .then(data => {
+                    data.data.forEach(gif => {
+                        const img = document.createElement('img');
+                        img.src = gif.images.fixed_height.url;
+                        img.onclick = () => selectGif(gif.images.fixed_height.url);
+                        resultsContainer.appendChild(img);
+                    });
+                });
+        }
+
+        function selectGif(url) {
+            document.getElementById('selected-gif-url').value = url;
+            closeModal();
+        }
+
+        function toggleLike(postId) {
+            const likeIcon = document.getElementById(`heart-icon-${postId}`);
+            const likeCount = document.getElementById(`like-count-${postId}`);
+            fetch(`/like/${postId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.liked) {
+                        likeIcon.src = "{{ url_for('static', filename='heart-icon.png') }}";
+                    } else {
+                        likeIcon.src = "{{ url_for('static', filename='heart-off-icon.png') }}";
+                    }
+                    likeCount.textContent = data.like_count;
+                });
+        }
+
+        function sharePost(postId) {
+            // Lógica para compartilhar o post
+            alert('Compartilhar post ' + postId);
+        }
+    </script>
+</body>
+</html>

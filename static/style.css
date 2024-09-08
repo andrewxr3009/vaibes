@@ -1,0 +1,212 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #E5E6E8; /* Fundo da página */
+    height: 100vh; /* Tela inteira */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 400px;
+    height: 100vh; /* Ocupa toda a tela */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #fff;
+}
+
+.top-bar, .bottom-bar {
+    background-color: #022247; /* Azul escuro */
+    height: 50px; /* Barras superior e inferior */
+}
+
+.posts-container {
+    display: flex;
+    flex-direction: row; /* Exibir posts lado a lado */
+    overflow-x: auto; /* Scroll horizontal */
+    scroll-snap-type: x mandatory; /* Travar o scroll no post */
+}
+
+.post {
+    width: 100%;
+    max-width: 400px;
+    min-width: 400px; /* Post ocupa toda a largura do container */
+    background-color: #E5E6E8; /* Cor de fundo do post */
+    border-radius: 16px; /* Bordas arredondadas */
+    padding: 20px;
+    margin: 20px;
+    position: relative;
+    scroll-snap-align: start; /* Alinhar o post na rolagem */
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.post-info {
+    margin-left: 10px;
+}
+
+.post-info strong {
+    display: block;
+    font-size: 16px;
+    color: #000;
+}
+
+.post-info span {
+    font-size: 12px;
+    color: #888;
+}
+
+.post-body p {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #000;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+.action-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* Linha ondulada que segue a Vaibe */
+.wavy-line {
+    position: absolute;
+    top: 30px;
+    left: 50px;
+    width: 200px;
+    height: 60px;
+    background: url('wavy-line.png') no-repeat; /* Imagem da linha ondulada */
+    background-size: contain;
+    transform: rotate(20deg); /* Girar ligeiramente */
+}
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #E5E6E8; /* Fundo da página */
+    height: 100vh; /* Tela inteira */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 400px;
+    height: 100vh; /* Ocupa toda a tela */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #fff;
+}
+
+.top-bar, .bottom-bar {
+    background-color: #022247; /* Azul escuro */
+    height: 50px; /* Barras superior e inferior */
+}
+
+.posts-container {
+    display: flex;
+    flex-direction: row; /* Exibir posts lado a lado */
+    overflow-x: auto; /* Scroll horizontal */
+    scroll-snap-type: x mandatory; /* Travar o scroll no post */
+}
+
+.post {
+    width: 100%;
+    max-width: 400px;
+    min-width: 400px; /* Post ocupa toda a largura do container */
+    background-color: #E5E6E8; /* Cor de fundo do post */
+    border-radius: 16px; /* Bordas arredondadas */
+    padding: 20px;
+    margin: 20px;
+    position: relative;
+    scroll-snap-align: start; /* Alinhar o post na rolagem */
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.post-info {
+    margin-left: 10px;
+}
+
+.post-info strong {
+    display: block;
+    font-size: 16px;
+    color: #000;
+}
+
+.post-info span {
+    font-size: 12px;
+    color: #888;
+}
+
+.post-body p {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #000;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+.action-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* Linha ondulada que segue a Vaibe */
+.wavy-line {
+    position: absolute;
+    top: 30px;
+    left: 50px;
+    width: 200px;
+    height: 60px;
+    background: url('wavy-line.png') no-repeat; /* Imagem da linha ondulada */
+    background-size: contain;
+    transform: rotate(20deg); /* Girar ligeiramente */
+}

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Post</title>
+    <style>
+        /* Estilos CSS diretamente no HTML */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .post {
+            margin-bottom: 20px;
+        }
+        .post-content {
+            padding: 10px;
+            background-color: #fafafa;
+            border-radius: 4px;
+            position: relative;
+        }
+        .post-content img {
+            max-width: 100%;
+            border-radius: 4px;
+        }
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+        .profile-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .profile-info h2 {
+            margin: 0;
+        }
+        .comments {
+            margin-top: 20px;
+        }
+        .comment {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .comment-author {
+            font-weight: bold;
+        }
+        .like-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #007bff;
+        }
+        .like-button.liked {
+            color: #ff5c5c;
+        }
+        .comment-form {
+            display: flex;
+            margin-top: 20px;
+        }
+        .comment-form textarea {
+            width: calc(100% - 100px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .comment-form button {
+            width: 100px;
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="post">
+            <div class="profile-info">
+                <iimg src="{{ url_for('static', filename='uploads/' ~ (post.author.profile_picture if post.author.profile_picture else 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-pic">
+                <h2>{{ post.author.username }}</h2>
+            </div>
+            <div class="post-content">
+                <p>{{ post.content }}</p>
+                {% if post.gif_url %}
+                <img src="{{ post.gif_url }}" alt="GIF">
+                {% endif %}
+                <button class="like-button" onclick="likePost({{ post.id }})">
+                    Curtir (<span id="like-count-{{ post.id }}">{{ post.likes|length }}</span>)
+                </button>
+            </div>
+            <div class="comments">
+                {% for comment in comments %}
+                <div class="comment">
+                    <div class="profile-info">
+                        <img src="{{ url_for('static', filename='uploads/' + comment.user.profile_picture) }}" alt="Foto de Perfil" class="profile-picture">
+                        <h3 class="comment-author">{{ comment.user.username }}</h3>
+                    </div>
+                    <p>{{ comment.content }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="comment-form">
+                <textarea id="comment-content" placeholder="Digite seu comentário..."></textarea>
+                <button onclick="commentPost({{ post.id }})">Comentar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function likePost(postId) {
+            fetch(`/like_post/${postId}`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const likeButton = document.querySelector(`.like-button`);
+                    likeButton.classList.add('liked');
+                    document.getElementById(`like-count-${postId}`).textContent = data.like_count;
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+
+        function commentPost(postId) {
+            const commentContent = document.getElementById('comment-content').value;
+            fetch(`/comment_post/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    comment_content: commentContent
+                })
+            })
+            .then(response => response.redirected ? window.location.reload() : response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.reload();
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Vaibes</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #bfbfbf; /* Fundo neutro */
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+            position: relative;
+        }
+
+        .profile-pic {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-info h1 {
+            margin: 0;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-info p {
+            margin: 5px 0;
+        }
+
+        .profile-info .bio {
+            margin: 10px 0;
+        }
+
+        .edit-button {
+            margin-left: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .edit-button:hover {
+            background-color: #0056b3;
+        }
+
+        .posts-container {
+            margin-top: 20px;
+        }
+
+        .post {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            padding: 10px;
+            position: relative;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+        }
+
+        .post-info {
+            flex: 1;
+        }
+
+        .post-content {
+            margin: 10px 0;
+        }
+
+        .post-gif {
+            text-align: center;
+        }
+
+        .wavy-line {
+            height: 2px;
+            background: url('{{ url_for('static', filename='wavy-line.svg') }}') repeat-x;
+            margin: 10px 0;
+            background-size: contain;
+        }
+
+        .filter-container {
+            margin-bottom: 20px;
+        }
+
+        .filter-container select {
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            {% if user.profile_picture %}
+            <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil" class="profile-pic">
+            {% else %}
+            <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+            {% endif %}
+            <div class="profile-info">
+                <h1>{{ user.username }} 
+                    <a href="{{ url_for('profile_settings') }}" class="edit-button">Editar</a>
+                </h1>
+                {% if user.bio %}
+                <p class="bio">{{ user.bio }}</p>
+                {% endif %}
+                <!-- Adicione outros detalhes de perfil se necessário -->
+            </div>
+        </div>
+
+        <div class="filter-container">
+            <label for="filter-posts">Ordenar postagens:</label>
+            <select id="filter-posts" onchange="filterPosts(this.value)">
+                <option value="recent">Mais recentes</option>
+                <option value="oldest">Mais antigas</option>
+            </select>
+        </div>
+
+        <div id="posts-container" class="posts-container">
+            {% for post in posts %}
+            <div class="post">
+                <div class="post-header">
+                    {% if post.author.profile_picture %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ (post.author.profile_picture if post.author.profile_picture else 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-pic">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                    {% endif %}
+                    <div class="post-info">
+                        <strong>{{ post.author.username }}</strong>
+                        <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
+                    </div>
+                    <div class="wavy-line"></div>
+                </div>
+                <div class="post-body">
+                    <div class="post-content">{{ post.content|safe }}</div>
+                    {% if post.gif_url %}
+                    <div class="post-gif">
+                        <img src="{{ post.gif_url }}" alt="GIF">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        function filterPosts(order) {
+            const container = document.getElementById('posts-container');
+            const posts = Array.from(container.getElementsByClassName('post'));
+            posts.sort((a, b) => {
+                const dateA = new Date(a.querySelector('.post-info span').textContent);
+                const dateB = new Date(b.querySelector('.post-info span').textContent);
+                return order === 'recent' ? dateB - dateA : dateA - dateB;
+            });
+            posts.forEach(post => container.appendChild(post));
+        }
+    </script>
+</body>
+</html>
