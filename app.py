@@ -10,8 +10,8 @@ from supabase import create_client, Client
 import io
 
 # Configurações do Supabase
-url = 'https://txyhqnbmlpcywyapxypm.supabase.co/storage/v1/s3'
-key = 'f49e52d4a440bf9692bc48a7c5c9822f'
+url = 'https://txyhqnbmlpcywyapxypm.supabase.co'
+key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4eWhxbmJtbHBjeXd5YXB4eXBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU4MTczMjYsImV4cCI6MjA0MTM5MzMyNn0.vAwDYGlUQ0KlrEkMooHmyxVL88SwkVJKBzghiNzoWJo'
 supabase: Client = create_client(url, key)
 
 
@@ -40,8 +40,7 @@ def save_profile_picture(picture):
         
         try:
             # Suba o arquivo para o Supabase Storage
-            bucket = supabase.storage().from_("vaibes-cloud")
-            response = bucket.upload(new_filename, file_stream)
+            response = supabase.storage().from_("vaibes-cloud").upload(new_filename, file_stream)
             
             if response.status_code == 200:
                 return new_filename
@@ -53,11 +52,6 @@ def save_profile_picture(picture):
             print(f"Erro ao salvar imagem: {e}")
             return None
     return None
-
-def allowed_file(filename):
-    # Função para verificar extensões permitidas
-    allowed_extensions = {'jpg', 'jpeg', 'png', 'gif'}
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 
 # Modelos do banco de dados
