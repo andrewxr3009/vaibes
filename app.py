@@ -5,25 +5,20 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 import uuid
 import os
-from sqlalchemy import text
-from post_functions import share_post, like_post, comment_post
 import requests
+from supabase import create_client, Client
+import io
 
+# Configurações do Supabase
+url = 'https://txyhqnbmlpcywyapxypm.supabase.co/storage/v1/s3'
+key = 'f49e52d4a440bf9692bc48a7c5c9822f'
+supabase: Client = create_client(url, key)
 
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Substitua por uma chave secreta adequada
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///quifoi.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres.txyhqnbmlpcywyapxypm:5edqw3n4lhxCacLm@aws-0-us-west-1.pooler.supabase.com:6543/postgres'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-GIPHY_API_KEY = 'URqPC2QH6fsA2xCx7ySJTbholry57xjy'
-GIPHY_SEARCH_URL = 'https://api.giphy.com/v1/gifs/search'
-
-
-# Configuração para a nova base de dados (para followers)
-app.config['SQLALCHEMY_BINDS'] = {
-    'follows': 'sqlite:///follows.db'
-}
 
 # Configuração de upload de arquivos
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')  # Caminho correto para a pasta uploads
@@ -36,31 +31,57 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
+
 def save_profile_picture(picture):
     if picture and allowed_file(picture.filename):
         ext = picture.filename.rsplit('.', 1)[1].lower()
         new_filename = f"{uuid.uuid4().hex}.{ext}"
-        picture_path = os.path.join(app.config['UPLOAD_FOLDER'], new_filename)
-        if not os.path.exists(app.config['UPLOAD_FOLDER']):
-            os.makedirs(app.config['UPLOAD_FOLDER'])
-        picture.save(picture_path)
-        return new_filename
+        file_stream = io.BytesIO(picture.read())
+        
+        try:
+            # Suba o arquivo para o Supabase Storage
+            bucket = supabase.storage().from_("vaibes-cloud")
+            response = bucket.upload(new_filename, file_stream)
+            
+            if response.status_code == 200:
+                return new_filename
+            else:
+                # Log de erro detalhado
+                print(f"Erro ao fazer upload para o Supabase: {response.text}")
+                return None
+        except Exception as e:
+            print(f"Erro ao salvar imagem: {e}")
+            return None
     return None
 
+def allowed_file(filename):
+    # Função para verificar extensões permitidas
+    allowed_extensions = {'jpg', 'jpeg', 'png', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+
 # Modelos do banco de dados
+class Follower(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    follower_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship('User', foreign_keys=[user_id], back_populates='following')
+    follower = db.relationship('User', foreign_keys=[follower_id], back_populates='followers')
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     bio = db.Column(db.String(255))
-    profile_picture = db.Column(db.String(120))  # Novo campo para a foto de perfil
+    profile_picture = db.Column(db.String(120))
     posts = db.relationship('Post', back_populates='author', lazy=True)
     likes = db.relationship('Like', back_populates='user', lazy=True, cascade="all, delete-orphan")
     comments = db.relationship('Comment', back_populates='user', lazy=True, cascade="all, delete-orphan")
-    followers = db.relationship('Follower', foreign_keys='Follower.follower_id', back_populates='follower', lazy='dynamic')
     following = db.relationship('Follower', foreign_keys='Follower.user_id', back_populates='user', lazy='dynamic')
     shares = db.relationship('Share', back_populates='sharer', lazy=True)
+    followers = db.relationship('Follower', foreign_keys='Follower.follower_id', back_populates='follower', lazy='dynamic')
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -72,6 +93,15 @@ class Post(db.Model):
     shares = db.relationship('Share', back_populates='shared_post', lazy=True)
     author = db.relationship('User', back_populates='posts')
 
+class Share(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    shared_post = db.relationship('Post', back_populates='shares')
+    sharer = db.relationship('User', back_populates='shares', foreign_keys=[user_id])
+
 class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
@@ -80,18 +110,6 @@ class Like(db.Model):
 
     post = db.relationship('Post', back_populates='likes')
     user = db.relationship('User', back_populates='likes')
-
-class Share(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-
-    post = db.relationship('Post', back_populates='shares')
-    user = db.relationship('User', back_populates='shares')
-    
-    sharer = db.relationship('User', overlaps="user", back_populates='shares')
-    shared_post = db.relationship('Post', overlaps="post", back_populates='shares')
 
 
 class Comment(db.Model):
@@ -104,34 +122,10 @@ class Comment(db.Model):
     post = db.relationship('Post', back_populates='comments')
     user = db.relationship('User', back_populates='comments')
 
-
-class Follower(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    follower_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    user = db.relationship('User', foreign_keys=[user_id], back_populates='following')
-    follower = db.relationship('User', foreign_keys=[follower_id], back_populates='followers')
-
-
 # Cria os bancos de dados
 def create_tables():
     with app.app_context():
-        # Cria as tabelas principais
         db.create_all()
-        
-        # Cria as tabelas do banco de dados 'follows'
-        from sqlalchemy import create_engine
-        from sqlalchemy.orm import scoped_session, sessionmaker
-
-        follows_engine = create_engine(app.config['SQLALCHEMY_BINDS']['follows'])
-        follows_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=follows_engine))
-        follows_metadata = db.metadata
-
-        # Ativa a verificação de chaves estrangeiras para o banco de dados 'follows'
-        with follows_engine.connect() as connection:
-            connection.execute(text('PRAGMA foreign_keys=ON;'))
-            follows_metadata.create_all(bind=follows_engine)
 
 create_tables()
 
@@ -139,40 +133,32 @@ def get_user_by_username(username):
     return User.query.filter_by(username=username).first()
 
 def like_post_action(post_id, user):
-    from app import db, Post, Like  # Importa modelos necessários
     post = Post.query.get(post_id)
     if post:
-        # Verifica se o usuário já curtiu o post
         existing_like = Like.query.filter_by(post_id=post_id, user_id=user.id).first()
         if existing_like:
             return {'status': 'error', 'message': 'Você já curtiu este post.'}
 
-        # Adiciona a nova curtida
         new_like = Like(post_id=post.id, user_id=user.id)
         db.session.add(new_like)
         db.session.commit()
 
-        # Retorna a nova contagem de curtidas
         like_count = Like.query.filter_by(post_id=post_id).count()
         return {'status': 'success', 'message': 'Post curtido!', 'like_count': like_count}
     return {'status': 'error', 'message': 'Post não encontrado.'}
 
 def comment_post_action(post_id, user, content):
-    from app import db, Post, Comment  # Importa modelos necessários
     post = Post.query.get(post_id)
     if post:
         new_comment = Comment(post_id=post.id, user_id=user.id, content=content)
         db.session.add(new_comment)
         db.session.commit()
 
-        # Atualiza a contagem de comentários
-        post.comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()        
+        post.comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()
         db.session.commit()
 
         return {'status': 'success', 'message': 'Comentário adicionado!'}
     return {'status': 'error', 'message': 'Post não encontrado.'}
-
-
 
 @app.route('/')
 def home():
@@ -186,12 +172,8 @@ def home():
         
         user_id = user.id
         
-        # Obtém todos os posts do mais recente para o mais antigo
         posts = Post.query.order_by(Post.timestamp.asc()).all()
-        
-        # Itera sobre cada post para adicionar os comentários
         for post in posts:
-            # Ordena os comentários do mais antigo para o mais recente
             post.comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()
         
         recent_users = User.query.order_by(User.id.desc()).limit(5).all()
@@ -223,91 +205,138 @@ def login():
             flash('Por favor, preencha todos os campos.')
     return render_template('login.html')
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
+        
         if username and email and password:
-            if User.query.filter_by(email=email).first() is None:
-                hashed_password = generate_password_hash(password)
+            existing_user = User.query.filter_by(email=email).first()
+            
+            if not existing_user:
+                hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
                 new_user = User(username=username, email=email, password=hashed_password)
                 db.session.add(new_user)
                 db.session.commit()
-                flash('Cadastro realizado com sucesso!')
+                flash('Cadastro realizado com sucesso! Você pode fazer login agora.')
                 return redirect(url_for('login'))
             else:
-                flash('Email já está em uso.')
+                flash('O e-mail já está cadastrado.')
         else:
             flash('Por favor, preencha todos os campos.')
     return render_template('signup.html')
 
+
 @app.route('/post', methods=['POST'])
 def post():
     if 'username' in session:
-        content = request.form.get('content')
-        gif_url = request.form.get('gif_url')
-        
-        if content:
-            user = get_user_by_username(session['username'])
-            new_post = Post(content=content, author=user)
-            db.session.add(new_post)
-            db.session.commit()
-            flash('Postagem criada com sucesso!')
+        user = get_user_by_username(session['username'])
+        if user:
+            content = request.form.get('content')
+            if content:
+                new_post = Post(content=content, user_id=user.id)
+                db.session.add(new_post)
+                db.session.commit()
+                flash('Postagem criada com sucesso!')
+            else:
+                flash('O conteúdo do post não pode estar vazio.')
         else:
-            flash('O conteúdo do post não pode estar vazio.')
-        return redirect(url_for('home'))
-    return redirect(url_for('login'))
-
-@app.route('/share_post/<int:post_id>', methods=['POST', 'GET'])
-def share_post(post_id):
-    if 'username' in session:
-        user = get_user_by_username(session['username'])
-        return share_post(post_id, user)
-    return redirect(url_for('login'))
-
-@app.route('/like_post/<int:post_id>', methods=['POST'])
-def like_post_route(post_id):
-    if 'username' in session:
-        user = get_user_by_username(session['username'])
-        response = like_post_action(post_id, user)  # Use uma função de ação para curtir
-        return jsonify(response)
-    return jsonify({'status': 'error', 'message': 'Usuário não autenticado.'}), 401
-
-@app.route('/comment_post/<int:post_id>', methods=['POST'])
-def comment_post(post_id):
-    if 'username' in session:
-        user = get_user_by_username(session['username'])
-        content = request.form.get('comment_content')
-        response = comment_post_action(post_id, user, content)  # Use uma função de ação para comentar
-        return redirect(url_for('home'))  # Pode ser redirecionado ou retornado JSON
-    return jsonify({'status': 'error', 'message': 'Usuário não autenticado.'}), 401
-
-
-@app.route('/profile')
-def profile():
-    user_agent = request.headers.get('User-Agent')
-    
-    if 'username' in session:
-        user = get_user_by_username(session['username'])
-        if user is None:
             flash('Usuário não encontrado.')
-            return redirect(url_for('logout'))
-
-        # Define o user_id com base no usuário
-        user_id = user.id
-
-        posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
-
-        # Verifica se o User-Agent indica Safari no iPhone
-        if 'iPhone' in user_agent and 'Safari' in user_agent:
-            return render_template('ios_profile.html', user=user, posts=posts, profile_picture=user.profile_picture, user_id=user_id)
-        else:
-            return render_template('profile.html', user=user, posts=posts, profile_picture=user.profile_picture, user_id=user_id)
     else:
+        flash('Você precisa estar logado para postar.')
+    return redirect(url_for('home'))
+
+@app.route('/post_gif', methods=['POST'])
+def post_gif():
+    if 'username' in session:
+        user = get_user_by_username(session['username'])
+        if user:
+            gif_url = request.form.get('gif_url')
+            if gif_url:
+                # Exemplo: você pode usar o URL do GIF aqui
+                new_post = Post(content=f'<img src="{gif_url}" alt="GIF">', user_id=user.id)
+                db.session.add(new_post)
+                db.session.commit()
+                flash('GIF postado com sucesso!')
+            else:
+                flash('O URL do GIF não pode estar vazio.')
+        else:
+            flash('Usuário não encontrado.')
+    else:
+        flash('Você precisa estar logado para postar.')
+    return redirect(url_for('home'))
+
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if 'username' in session:
+        user = get_user_by_username(session['username'])
+        if user:
+            if request.method == 'POST':
+                bio = request.form.get('bio')
+                picture = request.files.get('profile_picture')
+                if picture:
+                    filename = save_profile_picture(picture)
+                    if filename:
+                        user.profile_picture = filename
+                        db.session.commit()
+                if bio:
+                    user.bio = bio
+                    db.session.commit()
+                flash('Perfil atualizado com sucesso!')
+            return render_template('profile.html', user=user)
+        else:
+            flash('Usuário não encontrado.')
+    else:
+        flash('Você precisa estar logado para acessar o perfil.')
+    return redirect(url_for('login'))
+
+
+# app.py
+
+@app.route('/follow/<username>', methods=['POST'])
+def follow_user(username):
+    if 'user_id' not in session:
         return redirect(url_for('login'))
 
+    user_to_follow = User.query.filter_by(username=username).first_or_404()
+    current_user = User.query.get(session['user_id'])
+
+    if user_to_follow != current_user and user_to_follow not in current_user.following:
+        current_user.following.append(user_to_follow)
+        db.session.commit()
+
+    return redirect(url_for('profile', username=username))
+
+@app.route('/unfollow/<username>', methods=['POST'])
+def unfollow_user(username):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_to_unfollow = User.query.filter_by(username=username).first_or_404()
+    current_user = User.query.get(session['user_id'])
+
+    if user_to_unfollow in current_user.following:
+        current_user.following.remove(user_to_unfollow)
+        db.session.commit()
+
+    return redirect(url_for('profile', username=username))
+
+
+@app.route('/search')
+def search():
+    if 'username' in session:
+        query = request.args.get('query')
+        if query:
+            users = User.query.filter(User.username.like(f'%{query}%')).all()
+            return render_template('search.html', users=users)
+        else:
+            flash('Nenhuma consulta fornecida.')
+            return redirect(url_for('profile'))
+    return redirect(url_for('login'))
 
 @app.route('/profile_settings', methods=['GET', 'POST'])
 def profile_settings():
@@ -342,66 +371,17 @@ def profile_settings():
     return redirect(url_for('login'))
 
 
-@app.route('/search')
-def search():
-    if 'username' in session:
-        query = request.args.get('query')
-        if query:
-            users = User.query.filter(User.username.like(f'%{query}%')).all()
-            return render_template('search.html', users=users)
-        else:
-            flash('Nenhuma consulta fornecida.')
-            return redirect(url_for('profile'))
-    return redirect(url_for('login'))
-
 @app.route('/logout')
 def logout():
     session.pop('username', None)
+    flash('Você foi desconectado.')
     return redirect(url_for('login'))
 
-@app.route('/search_gifs', methods=['GET'])
-def search_gifs():
-    query = request.args.get('query', '')
-    if not query:
-        return jsonify({'error': 'No search query provided'}), 400
-
-    response = requests.get(GIPHY_SEARCH_URL, params={
-        'api_key': GIPHY_API_KEY,
-        'q': query,
-        'limit': 10  # Limitando o número de GIFs retornados
-    })
-
-    if response.status_code == 200:
-        gifs = response.json().get('data', [])
-        return jsonify({'gifs': [{'url': gif['images']['fixed_height']['url']} for gif in gifs]})
-    else:
-        return jsonify({'error': 'Failed to fetch GIFs'}), response.status_code
-    
-@app.route('/post_gif', methods=['POST'])
-def post_gif():
-    gif_url = request.form.get('gif_url')
-    
-    if not gif_url:
-        return jsonify({'success': False, 'message': 'No GIF URL provided'}), 400
-    
-    # Exemplo de como lidar com a URL do GIF (exibir ou salvar)
-    return jsonify({'success': True, 'gif_url': gif_url})
-
-
-@app.template_filter('to_datetime_string')
-def to_datetime_string(value):
-    if isinstance(value, datetime):
-        return value.strftime('%d de %B de %Y')  # Ajuste o formato conforme necessário
-    return value
-
-# Rota para exibir os detalhes do post
-@app.route('/post/<int:post_id>', methods=['GET'])
+@app.route('/post/<int:post_id>', methods=["GET"])
 def post_detail(post_id):
     post = Post.query.get_or_404(post_id)
     comments = Comment.query.filter_by(post_id=post_id).all()
     return render_template('post_detail.html', post=post, comments=comments)
-
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

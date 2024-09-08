@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vaibes - Home</title>
     <link rel="manifest" href="/manifest.json">
+
+    <!-- Meta tags para iOS -->
+    <meta name="apple-mobile-web-app-title" content="Vaibes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="/static/icon-192x192.png">
+
+    <!-- Meta tags para Android -->
+    <meta name="theme-color" content="#022247">
+    <link rel="icon" sizes="192x192" href="/static/icon-192x192.png">
+    <link rel="icon" sizes="512x512" href="/static/icon-512x512.png">
+
+    <!-- Adicional para PWA (Progressive Web App) -->
+    <meta name="description" content="Uma aplicação web para compartilhar e interagir com posts.">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -200,6 +215,18 @@
             margin: 5px;
             cursor: pointer;
         }
+
+        .selected-gif-preview {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .selected-gif-preview img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -208,13 +235,11 @@
             {% for post in posts %}
             <div class="post" id="post-{{ post.id }}" onclick="openPostDetail({{ post.id }})">
                 <div class="post-header">
-                    {% if post.author.profile_picture %}
-                    <img src="{{ url_for('static', filename='uploads/' ~ (post.author.profile_picture if post.author.profile_picture else 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-pic">
-                    {% else %}
-                        <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
-                    {% endif %}
+                    <a href="{{ url_for('profile', username=post.author.username) }}">
+                        <img src="{{ url_for('static', filename='uploads/' ~ (post.author.profile_picture if post.author.profile_picture else 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-pic">
+                    </a>
                     <div class="post-info">
-                        <strong>{{ post.author.username }}</strong>
+                        <strong><a href="{{ url_for('profile', username=post.author.username) }}">{{ post.author.username }}</a></strong>
                         <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
                     </div>
                     <div class="wavy-line"></div>
@@ -229,7 +254,7 @@
                 </div>
                 <div class="post-actions">
                     <div class="like-container">
-                        <img id="heart-icon-{{ post.id }}" src="{{ url_for('static', filename='hearth-off-icon.png') }}" alt="Curtir" class="like-icon" onclick="toggleLike({{ post.id }})">
+                        <img id="heart-icon-{{ post.id }}" src="{{ url_for('static', filename='heart-off-icon.png') }}" alt="Curtir" class="like-icon" onclick="toggleLike({{ post.id }})">
                         <span id="like-count-{{ post.id }}" class="like-count">{{ post.like_count }}</span>
                     </div>
                     <img src="{{ url_for('static', filename='send-icon.png') }}" alt="Compartilhar" class="action-icon" onclick="sharePost({{ post.id }})">
@@ -253,23 +278,21 @@
                 <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
             {% endif %}
         </a>
-        <a href="{{ url_for('search') }}" class="bottom-bar-icon">
-            <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
-        </a>
     </div>
 
     <div id="bottom-bar-modal" class="bottom-bar-modal">
         <div class="bottom-bar-modal-content">
-            <button type="button" onclick="closeModal()">Fechar</button>
-            <form action="{{ url_for('post') }}" method="POST">
-                <textarea name="content" placeholder="O que você está pensando?"></textarea>
+            <form action="{{ url_for('post') }}" method="POST" onsubmit="handleSubmit(event)">
+                <textarea name="content" placeholder="O que você está pensando?" required></textarea>
                 <input type="hidden" name="gif_url" id="selected-gif-url" value="">
                 <div class="gif-container">
                     <input type="text" id="gif-search" placeholder="Buscar GIFs">
                     <button type="button" onclick="searchGif()">Buscar GIF</button>
                     <div id="gif-results" class="gif-results"></div>
                 </div>
-                <img src="" alt="Pré-visualização do GIF" class="gif-preview" style="display: block; margin: 10px auto;">
+                <div class="selected-gif-preview">
+                    <img id="selected-gif-preview" src="" alt="GIF Selecionado">
+                </div>
                 <button type="submit">Postar</button>
             </form>
         </div>
@@ -277,22 +300,30 @@
 
     <script>
         function openModal() {
-            document.getElementById('bottom-bar').classList.add('hidden');
             document.getElementById('bottom-bar-modal').classList.add('active');
+            document.getElementById('bottom-bar').classList.add('hidden');
         }
 
         function closeModal() {
-            document.getElementById('bottom-bar').classList.remove('hidden');
             document.getElementById('bottom-bar-modal').classList.remove('active');
+            document.getElementById('bottom-bar').classList.remove('hidden');
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault(); // Evita o envio padrão do formulário
+            console.log('Formulário enviado com GIF URL:', document.getElementById('selected-gif-url').value);
+            // Enviar o formulário manualmente
+            event.target.submit();
         }
 
         function searchGif() {
-            const query = document.getElementById('gif-search').value;
-            const resultsContainer = document.getElementById('gif-results');
-            resultsContainer.innerHTML = '';
-            fetch(`https://api.giphy.com/v1/gifs/search?api_key=URqPC2QH6fsA2xCx7ySJTbholry57xjy&q=${query}&limit=10`)
+            const searchTerm = document.getElementById('gif-search').value;
+            if (!searchTerm) return;
+            fetch(`https://api.giphy.com/v1/gifs/search?api_key=URqPC2QH6fsA2xCx7ySJTbholry57xjy&q=${searchTerm}&limit=10`)
                 .then(response => response.json())
                 .then(data => {
+                    const resultsContainer = document.getElementById('gif-results');
+                    resultsContainer.innerHTML = '';
                     data.data.forEach(gif => {
                         const img = document.createElement('img');
                         img.src = gif.images.fixed_height.url;
@@ -303,8 +334,33 @@
         }
 
         function selectGif(url) {
+            console.log('Selecionado GIF URL:', url);
             document.getElementById('selected-gif-url').value = url;
-            document.querySelector('.bottom-bar-modal-content img.gif-preview').src = url;
+            document.getElementById('selected-gif-preview').src = url; // Atualiza a visualização do GIF
+            closeModal();
+        }
+
+        function openPostDetail(postId) {
+            window.location.href = `/post/${postId}`;
+        }
+
+        function toggleLike(postId) {
+            const likeIcon = document.getElementById(`heart-icon-${postId}`);
+            const likeCount = document.getElementById(`like-count-${postId}`);
+            fetch(`/like/${postId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.liked) {
+                        likeIcon.src = '{{ url_for('static', filename='heart-on-icon.png') }}';
+                        likeCount.textContent = data.like_count;
+                    } else {
+                        likeIcon.src = '{{ url_for('static', filename='heart-off-icon.png') }}';
+                        likeCount.textContent = data.like_count;
+                    }
+                });
+        }
+        function sharePost(postId) {
+            // Implementar a função para compartilhar post
         }
     </script>
 </body>
