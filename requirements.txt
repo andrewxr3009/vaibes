@@ -8,4 +8,4 @@ gunicorn
 requests
 supabase
 firebase_admin
-
+psycopg2
