@@ -7,3 +7,5 @@ itsdangerous==2.1.2
 gunicorn
 requests
 supabase
+firebase_admin
+

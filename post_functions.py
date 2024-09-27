@@ -1,3 +1,4 @@
+
 def share_post(post_id, user):
     from app import db, Post, Share  # Importando dentro da função para evitar importação circular
     post = Post.query.get(post_id)
@@ -28,11 +29,17 @@ def like_post(post_id, user):
     
     return {'status': 'error', 'message': 'Post não encontrado.'}
 def comment_post(post_id, user, content):
-    from app import db, Post, Comment  # Importando dentro da função
+    from app import db, Comment, Post
+
     post = Post.query.get(post_id)
     if post and content:
         new_comment = Comment(post_id=post.id, user_id=user.id, content=content)
         db.session.add(new_comment)
         db.session.commit()
-        return {'status': 'success', 'message': 'Comentário adicionado!'}
+        
+        comments = Comment.query.filter_by(post_id=post_id).all()
+        comments_data = [{'username': c.user.username, 'content': c.content} for c in comments]
+        return {'status': 'success', 'message': 'Comentário adicionado!', 'comments': comments_data}
+    
     return {'status': 'error', 'message': 'Erro ao adicionar comentário.'}
+

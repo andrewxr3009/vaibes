@@ -1,3 +1,7 @@
+
+//* vou ignorar o fato de que os comentários nao funcionam e partir pras próximas funções.
+ Se Deus quiser eu ainda consiguirei corrigir isso*//
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -5,98 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Post</title>
     <style>
-        /* Estilos CSS diretamente no HTML */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f9f9f9;
-        }
-        .container {
-            width: 90%;
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        .post {
-            margin-bottom: 20px;
-        }
-        .post-content {
-            padding: 10px;
-            background-color: #fafafa;
-            border-radius: 4px;
-            position: relative;
-        }
-        .post-content img {
-            max-width: 100%;
-            border-radius: 4px;
-        }
-        .profile-picture {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 10px;
-        }
-        .profile-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .profile-info h2 {
-            margin: 0;
-        }
-        .comments {
-            margin-top: 20px;
-        }
-        .comment {
-            background-color: #f1f1f1;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        .comment-author {
-            font-weight: bold;
-        }
-        .like-button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #007bff;
-        }
-        .like-button.liked {
-            color: #ff5c5c;
-        }
-        .comment-form {
-            display: flex;
-            margin-top: 20px;
-        }
-        .comment-form textarea {
-            width: calc(100% - 100px);
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            resize: vertical;
-        }
-        .comment-form button {
-            width: 100px;
-            padding: 10px;
-            border: none;
-            background-color: #007bff;
-            color: #fff;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+        /* Seus estilos CSS */
     </style>
 </head>
 <body>
     <div class="container">
         <div class="post">
             <div class="profile-info">
-                <iimg src="{{ url_for('static', filename='uploads/' ~ (post.author.profile_picture if post.author.profile_picture else 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-pic">
+                <img src="{{ url_for('static', filename='uploads/' ~ (post.author.profile_picture if post.author.profile_picture else 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-picture">
                 <h2>{{ post.author.username }}</h2>
             </div>
             <div class="post-content">
@@ -104,64 +24,120 @@
                 {% if post.gif_url %}
                 <img src="{{ post.gif_url }}" alt="GIF">
                 {% endif %}
-                <button class="like-button" onclick="likePost({{ post.id }})">
+                <button class="like-button" id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})">
                     Curtir (<span id="like-count-{{ post.id }}">{{ post.likes|length }}</span>)
                 </button>
             </div>
             <div class="comments">
                 {% for comment in comments %}
                 <div class="comment">
-                    <div class="profile-info">
-                        <img src="{{ url_for('static', filename='uploads/' + comment.user.profile_picture) }}" alt="Foto de Perfil" class="profile-picture">
+                    <img src="{{ url_for('static', filename='uploads/' ~ (comment.user.profile_picture if comment.user.profile_picture else 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-picture">
+                    <div class="comment-content">
                         <h3 class="comment-author">{{ comment.user.username }}</h3>
+                        <p>{{ comment.content }}</p>
                     </div>
-                    <p>{{ comment.content }}</p>
                 </div>
                 {% endfor %}
             </div>
-            <div class="comment-form">
-                <textarea id="comment-content" placeholder="Digite seu comentário..."></textarea>
-                <button onclick="commentPost({{ post.id }})">Comentar</button>
-            </div>
+            <form id="comment-form" data-post-id="{{ post.id }}">
+                <textarea id="comment-content" placeholder="Adicione um comentário" required></textarea>
+                <button type="submit">Comentar</button>
+            </form>
         </div>
     </div>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
     <script>
-        function likePost(postId) {
+const firebaseConfig = {
+    apiKey: "AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc",
+    authDomain: "app-vaibes.firebaseapp.com",
+    projectId: "app-vaibes",
+    storageBucket: "app-vaibes.appspot.com",
+    messagingSenderId: "842665045470",
+    appId: "1:842665045470:web:edbe6c0cf3db4ac71c014f",
+    measurementId: "G-3WTKSP88V9"
+};
+firebase.initializeApp(firebaseConfig);
+
+        // Função para verificar se o usuário está logado
+        function isUserLoggedIn() {
+            return firebase.auth().currentUser !== null;
+        }
+
+        // Função para curtir post
+        async function likePost(postId) {
+            if (!isUserLoggedIn()) {
+                alert('Você precisa estar logado para curtir este post.');
+                return;
+            }
+
+            const token = await firebase.auth().currentUser.getIdToken();
+
             fetch(`/like_post/${postId}`, {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    const likeButton = document.querySelector(`.like-button`);
+                    const likeButton = document.getElementById(`like-button-${postId}`);
                     likeButton.classList.add('liked');
                     document.getElementById(`like-count-${postId}`).textContent = data.like_count;
                 } else {
                     alert(data.message);
                 }
+            })
+            .catch(error => {
+                console.error('Erro ao curtir post:', error);
             });
         }
 
-        function commentPost(postId) {
-            const commentContent = document.getElementById('comment-content').value;
-            fetch(`/comment_post/${postId}`, {
+        // Adicionando o listener de envio no formulário de comentários
+        document.getElementById('comment-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Impede o comportamento padrão do formulário
+            if (!isUserLoggedIn()) {
+                alert('Você precisa estar logado para comentar.');
+                return;
+            }
+
+            const content = document.getElementById('comment-content').value;
+            const token = await firebase.auth().currentUser.getIdToken();
+            const postId = this.getAttribute('data-post-id');
+
+            fetch(`/comment/${postId}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
-                body: new URLSearchParams({
-                    comment_content: commentContent
-                })
+                body: JSON.stringify({ content: content })
             })
-            .then(response => response.redirected ? window.location.reload() : response.json())
+            .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    window.location.reload();
+                    const commentsContainer = document.querySelector('.comments');
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'comment';
+                    commentElement.innerHTML = `
+                        <img src="${data.comment.user_profile_picture}" alt="Foto de Perfil" class="profile-picture">
+                        <div class="comment-content">
+                            <h3 class="comment-author">${data.comment.username}</h3>
+                            <p>${data.comment.content}</p>
+                        </div>
+                    `;
+                    commentsContainer.appendChild(commentElement);
+                    document.getElementById('comment-content').value = ''; // Limpa o textarea
                 } else {
                     alert(data.message);
                 }
+            })
+            .catch(error => {
+                console.error('Erro ao comentar:', error);
             });
-        }
+        });
     </script>
 </body>
 </html>

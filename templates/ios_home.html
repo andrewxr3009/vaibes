@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-title" content="Vaibes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="/static/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
 
     <!-- Meta tags para Android -->
     <meta name="theme-color" content="#022247">
@@ -76,7 +76,7 @@
 
         .wavy-line {
             height: 2px;
-            background: url('{{ url_for('static', filename='wavy-line.svg') }}') repeat-x;
+            background: url('/static/wavy-line.svg') repeat-x;
             margin: 10px 0;
             background-size: contain;
         }
@@ -223,11 +223,9 @@
             {% for post in posts %}
             <div class="post" id="post-{{ post.id }}" onclick="openPostDetail({{ post.id }})">
                 <div class="post-header">
-                    <a href="{{ url_for('profile', username=post.author.username) }}">
-                        <img src="{{ url_for('static', filename='uploads/' ~ (post.author.profile_picture if post.author.profile_picture else 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-pic">
-                    </a>
+                    <img src="{{ post.author.profile_picture or url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
                     <div class="post-info">
-                        <strong><a href="{{ url_for('profile', username=post.author.username) }}">{{ post.author.username }}</a></strong>
+                        <strong>{{ post.author.username }}</strong>
                         <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
                     </div>
                     <div class="wavy-line"></div>
@@ -242,10 +240,10 @@
                 </div>
                 <div class="post-actions">
                     <div class="like-container">
-                        <img id="heart-icon-{{ post.id }}" src="{{ url_for('static', filename='heart-off-icon.png') }}" alt="Curtir" class="like-icon" onclick="toggleLike({{ post.id }})">
+                        <img id="heart-icon-{{ post.id }}" src="/static/hearth-off-icon.png" alt="Curtir" class="like-icon" onclick="toggleLike({{ post.id }})">
                         <span id="like-count-{{ post.id }}" class="like-count">{{ post.like_count }}</span>
                     </div>
-                    <img src="{{ url_for('static', filename='send-icon.png') }}" alt="Compartilhar" class="action-icon" onclick="sharePost({{ post.id }})">
+                    <img src="/static/send-icon.png" alt="Compartilhar" class="action-icon" onclick="sharePost({{ post.id }})">
                 </div>
             </div>
             {% endfor %}
@@ -254,68 +252,63 @@
 
     <div id="bottom-bar" class="bottom-bar">
         <a href="{{ url_for('home') }}" class="bottom-bar-icon">
-            <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+            <img src="/static/home-icon.png" alt="Home">
         </a>
         <a href="#" class="bottom-bar-icon" onclick="openModal()">
-            <img src="{{ url_for('static', filename='vibe-icon.png') }}" alt="Criar Post">
+            <img src="/static/vibe-icon.png" alt="Criar Post">
         </a>
         <a href="{{ url_for('profile', username=session['username']) }}" class="bottom-bar-icon">
-            {% if user.profile_picture %}
-                <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil">
-            {% else %}
-                <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
-            {% endif %}
+            <img src="{{ user.profile_picture or url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
         </a>
         <a href="{{ url_for('search') }}" class="bottom-bar-icon">
-            <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
+            <img src="/static/search-icon.png" alt="Pesquisar">
         </a>
     </div>
 
     <div id="bottom-bar-modal" class="bottom-bar-modal">
         <div class="bottom-bar-modal-content">
             <button type="button" onclick="closeModal()">Fechar</button>
-            <form action="{{ url_for('post') }}" method="POST">
+            <form action="/post" method="POST">
                 <textarea name="content" placeholder="O que você está pensando?"></textarea>
                 <input type="hidden" name="gif_url" id="selected-gif-url" value="">
                 <div class="gif-container">
                     <input type="text" id="gif-search" placeholder="Buscar GIFs">
-                    <button type="button" onclick="searchGif()">Buscar GIF</button>
+                    <button type="button" onclick="searchGifs()">Buscar</button>
                     <div id="gif-results" class="gif-results"></div>
                 </div>
                 <button type="submit">Postar</button>
-            </form>            
+            </form>
         </div>
     </div>
 
     <script>
-        function openPostDetail(postId) {
-            window.location.href = `/post/${postId}`;
-        }
-
         function openModal() {
-            document.getElementById('bottom-bar').classList.add('hidden');
             document.getElementById('bottom-bar-modal').classList.add('active');
+            document.getElementById('bottom-bar').classList.add('hidden');
         }
 
         function closeModal() {
-            document.getElementById('bottom-bar').classList.remove('hidden');
             document.getElementById('bottom-bar-modal').classList.remove('active');
+            document.getElementById('bottom-bar').classList.remove('hidden');
         }
 
-        function searchGif() {
+        function searchGifs() {
             const query = document.getElementById('gif-search').value;
-            const resultsContainer = document.getElementById('gif-results');
-            resultsContainer.innerHTML = '';
-            fetch(`https://api.giphy.com/v1/gifs/search?api_key=URqPC2QH6fsA2xCx7ySJTbholry57xjy&q=${query}&limit=10`)
+            // Altere a URL para o seu novo endpoint
+            fetch(`/api/gifs/search?query=${query}`)
                 .then(response => response.json())
                 .then(data => {
-                    data.data.forEach(gif => {
+                    const resultsContainer = document.getElementById('gif-results');
+                    resultsContainer.innerHTML = ''; // Limpa resultados anteriores
+                    data.gifs.forEach(gif => {
                         const img = document.createElement('img');
-                        img.src = gif.images.fixed_height.url;
-                        img.onclick = () => selectGif(gif.images.fixed_height.url);
+                        img.src = gif.url;
+                        img.alt = gif.title;
+                        img.onclick = () => selectGif(gif.url);
                         resultsContainer.appendChild(img);
                     });
-                });
+                })
+                .catch(error => console.error('Erro ao buscar GIFs:', error));
         }
 
         function selectGif(url) {
@@ -324,23 +317,32 @@
         }
 
         function toggleLike(postId) {
-            const likeIcon = document.getElementById(`heart-icon-${postId}`);
-            const likeCount = document.getElementById(`like-count-${postId}`);
-            fetch(`/like/${postId}`, { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.liked) {
-                        likeIcon.src = '{{ url_for('static', filename='heart-on-icon.png') }}';
-                        likeCount.textContent = data.like_count;
-                    } else {
-                        likeIcon.src = '{{ url_for('static', filename='heart-off-icon.png') }}';
-                        likeCount.textContent = data.like_count;
-                    }
-                });
+            // Alterar a URL para o novo endpoint de like
+            fetch(`/api/posts/${postId}/like`, {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                const heartIcon = document.getElementById(`heart-icon-${postId}`);
+                const likeCount = document.getElementById(`like-count-${postId}`);
+                if (data.liked) {
+                    heartIcon.src = '/static/hearth-on-icon.png'; // Ícone de curtir
+                } else {
+                    heartIcon.src = '/static/hearth-off-icon.png'; // Ícone de não curtir
+                }
+                likeCount.textContent = data.like_count;
+            })
+            .catch(error => console.error('Erro ao alternar like:', error));
         }
 
         function sharePost(postId) {
-            // Adicione a lógica para compartilhar post aqui
+            // Aqui você pode implementar a lógica de compartilhamento, se necessário
+            alert(`Compartilhando o post ${postId}`);
+        }
+
+        function openPostDetail(postId) {
+            // Aqui você pode implementar a lógica para abrir o detalhamento do post
+            alert(`Abrindo detalhes do post ${postId}`);
         }
     </script>
 </body>

@@ -8,15 +8,22 @@ import os
 import requests
 from supabase import create_client, Client
 import io
+import firebase_admin
+from firebase_admin import credentials, auth
+import bcrypt
+
+
+# Inicializar o Firebase Admin SDK
+cred = credentials.Certificate("serviceAccountKey.json")
+firebase_admin.initialize_app(cred)
 
 # Configurações do Supabase
 url = 'https://txyhqnbmlpcywyapxypm.supabase.co'
 key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4eWhxbmJtbHBjeXd5YXB4eXBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU4MTczMjYsImV4cCI6MjA0MTM5MzMyNn0.vAwDYGlUQ0KlrEkMooHmyxVL88SwkVJKBzghiNzoWJo'
 supabase: Client = create_client(url, key)
 
-
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Substitua por uma chave secreta adequada
+app.secret_key = 'a3n0d0r4e0w9'  # Substitua por uma chave secreta adequada
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres.txyhqnbmlpcywyapxypm:5edqw3n4lhxCacLm@aws-0-us-west-1.pooler.supabase.com:6543/postgres'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -30,7 +37,6 @@ db = SQLAlchemy(app)
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
-
 
 def save_profile_picture(picture):
     if picture and allowed_file(picture.filename):
@@ -53,7 +59,6 @@ def save_profile_picture(picture):
             return None
     return None
 
-
 # Modelos do banco de dados
 class Follower(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -65,6 +70,7 @@ class Follower(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    firebase_id = db.Column(db.String(255), unique=True, nullable=False)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
@@ -105,7 +111,6 @@ class Like(db.Model):
     post = db.relationship('Post', back_populates='likes')
     user = db.relationship('User', back_populates='likes')
 
-
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(500), nullable=False)
@@ -136,246 +141,303 @@ def like_post_action(post_id, user):
         new_like = Like(post_id=post.id, user_id=user.id)
         db.session.add(new_like)
         db.session.commit()
-
+        
+        # Atualiza a contagem de curtidas
         like_count = Like.query.filter_by(post_id=post_id).count()
-        return {'status': 'success', 'message': 'Post curtido!', 'like_count': like_count}
+        return {'status': 'success', 'like_count': like_count}
+    
     return {'status': 'error', 'message': 'Post não encontrado.'}
 
 def comment_post_action(post_id, user, content):
     post = Post.query.get(post_id)
-    if post:
+    if post and content:
         new_comment = Comment(post_id=post.id, user_id=user.id, content=content)
         db.session.add(new_comment)
         db.session.commit()
-
-        post.comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()
-        db.session.commit()
-
-        return {'status': 'success', 'message': 'Comentário adicionado!'}
-    return {'status': 'error', 'message': 'Post não encontrado.'}
+        
+        comments = Comment.query.filter_by(post_id=post_id).all()
+        comments_data = [{'username': c.user.username, 'content': c.content} for c in comments]
+        return {'status': 'success', 'message': 'Comentário adicionado!', 'comments': comments_data}
+    
+    return {'status': 'error', 'message': 'Erro ao adicionar comentário.'}
 
 @app.route('/')
 def home():
+    if 'firebase_user' not in session:
+        return redirect(url_for('login'))
+    
+    # Se o usuário estiver autenticado, busque as informações necessárias
+    user = User.query.filter_by(email=session.get('username')).first()  # Ou use 'firebase_user' para buscar o id do Firebase
+    
+    if user is None:
+        flash('Usuário não encontrado.')
+        return redirect(url_for('logout'))
+
+    user_id = user.id
+    posts = Post.query.order_by(Post.timestamp.asc()).all()
+    for post in posts:
+        post.comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()
+
+    recent_users = User.query.order_by(User.id.desc()).limit(5).all()
+    
     user_agent = request.headers.get('User-Agent')
     
-    if 'username' in session:
-        user = get_user_by_username(session['username'])
-        if user is None:
-            flash('Usuário não encontrado.')
-            return redirect(url_for('logout'))
-        
-        user_id = user.id
-        
-        posts = Post.query.order_by(Post.timestamp.asc()).all()
-        for post in posts:
-            post.comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()
-        
-        recent_users = User.query.order_by(User.id.desc()).limit(5).all()
-        
-        if 'iPhone' in user_agent and 'Safari' in user_agent:
-            return render_template('ios_home.html', posts=posts, username=session['username'], 
-                                   recent_users=recent_users, profile_picture=user.profile_picture, 
-                                   user=user, user_id=user_id)
-        else:
-            return render_template('home.html', posts=posts, username=session['username'], 
-                                   recent_users=recent_users, profile_picture=user.profile_picture, 
-                                   user=user)
+    # Verifica o User-Agent para renderizar o template correto
+    if 'Mobile' in user_agent:
+        return render_template('ios_home.html', posts=posts, recent_users=recent_users, user=user)
     else:
+        return render_template('home.html', posts=posts, recent_users=recent_users, user=user)
+
+@app.route('/profile/<username>')
+def profile(username):
+    user = get_user_by_username(username)
+    if user is None:
+        flash('Usuário não encontrado.')
+        return redirect(url_for('home'))
+
+    posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
+    return render_template('profile.html', user=user, posts=posts)
+
+from flask import request, jsonify, render_template
+from firebase_admin import auth  # Certifique-se de que você tenha a biblioteca do Firebase Admin instalada
+import bcrypt
+
+@app.route('/signup', methods=['POST', 'GET'])
+def signup():
+    if request.method == 'POST':
+        # Captura os dados do formulário
+        email = request.form.get('email')
+        username = request.form.get('username')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        
+        # Debug: imprimir dados recebidos
+        print(f"Email: {email}, Username: {username}, Password: {password}, Confirm Password: {confirm_password}")
+
+        # Verifica se todos os campos necessários foram preenchidos
+        if not email or not username or not password or not confirm_password:
+            return jsonify({'message': 'Todos os campos são obrigatórios'}), 400
+        
+        # Verifica se as senhas coincidem
+        if password != confirm_password:
+            return jsonify({'message': 'As senhas não coincidem'}), 400
+
+        try:
+            # Cria um novo usuário no Firebase
+            firebase_user = auth.create_user(
+                email=email,
+                password=password,
+            )
+            # Captura o firebase_id
+            firebase_id = firebase_user.uid
+
+            # Criptografa a senha antes de armazená-la no banco de dados
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+            # Cria um novo usuário na sua base de dados
+            new_user = User(firebase_id=firebase_id, username=username, email=email, password=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+
+            return jsonify({'message': 'Usuário criado com sucesso'}), 201
+        except Exception as e:
+            # Adiciona um log de erro se a criação do usuário falhar
+            print(f"Erro ao criar usuário: {e}")
+            return jsonify({'message': 'Erro ao criar usuário. Tente novamente.'}), 400
+
+    return render_template('signup.html')  # Retorna o formulário de cadastro se for um GET
+
+@app.route('/post', methods=['GET', 'POST'])
+def create_post():
+    if 'firebase_user' not in session:
         return redirect(url_for('login'))
+
+    user = User.query.get(session['firebase_user'])
+
+    if request.method == 'POST':
+        content = request.form['content']
+        if content:
+            new_post = Post(content=content, user_id=user.id)
+            db.session.add(new_post)
+            db.session.commit()
+            flash('Post criado com sucesso!')
+            return redirect(url_for('home'))
+        else:
+            flash('Conteúdo do post não pode estar vazio.')
+
+    return render_template('create_post.html', user=user)
+
+# Adicione essa rota para ver os posts de um usuário
+@app.route('/user/<username>/posts')
+def user_posts(username):
+    user = get_user_by_username(username)
+    if user is None:
+        flash('Usuário não encontrado.')
+        return redirect(url_for('home'))
+
+    posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
+    return render_template('user_posts.html', user=user, posts=posts)
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        if email and password:
-            user = User.query.filter_by(email=email).first()
-            if user and check_password_hash(user.password, password):
-                session['username'] = user.username
-                return redirect(url_for('home'))
-            else:
-                flash('Login falhou. Verifique seu e-mail e senha.')
+        email = request.form['email']
+        password = request.form['password']
+
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password, password):
+            session['username'] = user.email
+            session['firebase_user'] = user.id  # Armazena o id do Firebase
+
+            flash('Login realizado com sucesso!')
+            return redirect(url_for('home'))
         else:
-            flash('Por favor, preencha todos os campos.')
+            flash('Email ou senha incorretos.')
+
     return render_template('login.html')
-
-from werkzeug.security import generate_password_hash, check_password_hash
-
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        
-        if username and email and password:
-            existing_user = User.query.filter_by(email=email).first()
-            
-            if not existing_user:
-                hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-                new_user = User(username=username, email=email, password=hashed_password)
-                db.session.add(new_user)
-                db.session.commit()
-                flash('Cadastro realizado com sucesso! Você pode fazer login agora.')
-                return redirect(url_for('login'))
-            else:
-                flash('O e-mail já está cadastrado.')
-        else:
-            flash('Por favor, preencha todos os campos.')
-    return render_template('signup.html')
-
-
-@app.route('/post', methods=['POST'])
-def post():
-    if 'username' in session:
-        user = get_user_by_username(session['username'])
-        if user:
-            content = request.form.get('content')
-            if content:
-                new_post = Post(content=content, user_id=user.id)
-                db.session.add(new_post)
-                db.session.commit()
-                flash('Postagem criada com sucesso!')
-            else:
-                flash('O conteúdo do post não pode estar vazio.')
-        else:
-            flash('Usuário não encontrado.')
-    else:
-        flash('Você precisa estar logado para postar.')
-    return redirect(url_for('home'))
-
-@app.route('/post_gif', methods=['POST'])
-def post_gif():
-    if 'username' in session:
-        user = get_user_by_username(session['username'])
-        if user:
-            gif_url = request.form.get('gif_url')
-            if gif_url:
-                # Exemplo: você pode usar o URL do GIF aqui
-                new_post = Post(content=f'<img src="{gif_url}" alt="GIF">', user_id=user.id)
-                db.session.add(new_post)
-                db.session.commit()
-                flash('GIF postado com sucesso!')
-            else:
-                flash('O URL do GIF não pode estar vazio.')
-        else:
-            flash('Usuário não encontrado.')
-    else:
-        flash('Você precisa estar logado para postar.')
-    return redirect(url_for('home'))
-
-@app.route('/profile', methods=['GET', 'POST'])
-def profile():
-    if 'username' in session:
-        user = get_user_by_username(session['username'])
-        if user:
-            if request.method == 'POST':
-                bio = request.form.get('bio')
-                picture = request.files.get('profile_picture')
-                if picture:
-                    filename = save_profile_picture(picture)
-                    if filename:
-                        user.profile_picture = filename
-                        db.session.commit()
-                if bio:
-                    user.bio = bio
-                    db.session.commit()
-                flash('Perfil atualizado com sucesso!')
-            return render_template('profile.html', user=user)
-        else:
-            flash('Usuário não encontrado.')
-    else:
-        flash('Você precisa estar logado para acessar o perfil.')
-    return redirect(url_for('login'))
-
-
-# app.py
-
-@app.route('/follow/<username>', methods=['POST'])
-def follow_user(username):
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
-    user_to_follow = User.query.filter_by(username=username).first_or_404()
-    current_user = User.query.get(session['user_id'])
-
-    if user_to_follow != current_user and user_to_follow not in current_user.following:
-        current_user.following.append(user_to_follow)
-        db.session.commit()
-
-    return redirect(url_for('profile', username=username))
-
-@app.route('/unfollow/<username>', methods=['POST'])
-def unfollow_user(username):
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
-    user_to_unfollow = User.query.filter_by(username=username).first_or_404()
-    current_user = User.query.get(session['user_id'])
-
-    if user_to_unfollow in current_user.following:
-        current_user.following.remove(user_to_unfollow)
-        db.session.commit()
-
-    return redirect(url_for('profile', username=username))
-
-
-@app.route('/search')
-def search():
-    if 'username' in session:
-        query = request.args.get('query')
-        if query:
-            users = User.query.filter(User.username.like(f'%{query}%')).all()
-            return render_template('search.html', users=users)
-        else:
-            flash('Nenhuma consulta fornecida.')
-            return redirect(url_for('profile'))
-    return redirect(url_for('login'))
-
-@app.route('/profile_settings', methods=['GET', 'POST'])
-def profile_settings():
-    if 'username' in session:
-        user = get_user_by_username(session['username'])
-        if not user:
-            flash('Usuário não encontrado.')
-            return redirect(url_for('logout'))
-
-        if request.method == 'POST':
-            # Atualiza a bio
-            bio = request.form.get('bio')
-            if bio:
-                user.bio = bio
-
-            # Atualiza a foto de perfil, se foi enviada
-            if 'profile_picture' in request.files:
-                picture = request.files['profile_picture']
-                if picture and allowed_file(picture.filename):
-                    new_picture = save_profile_picture(picture)
-                    if new_picture:
-                        user.profile_picture = new_picture
-
-            # Salva as alterações no banco de dados
-            db.session.commit()
-            flash('Perfil atualizado com sucesso!')
-            return redirect(url_for('profile', username=user.username))  # Redireciona para o perfil atualizado
-
-        # Exibe a página de configurações de perfil (GET)
-        return render_template('profile_settings.html', user=user)
-
-    return redirect(url_for('login'))
-
 
 @app.route('/logout')
 def logout():
     session.pop('username', None)
-    flash('Você foi desconectado.')
+    session.pop('firebase_user', None)
+    flash('Logout realizado com sucesso!')
     return redirect(url_for('login'))
 
-@app.route('/post/<int:post_id>', methods=["GET"])
-def post_detail(post_id):
-    post = Post.query.get_or_404(post_id)
-    comments = Comment.query.filter_by(post_id=post_id).all()
-    return render_template('post_detail.html', post=post, comments=comments)
+@app.route('/upload_profile_picture', methods=['POST'])
+def upload_profile_picture():
+    if 'firebase_user' not in session:
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['firebase_user'])
+    if request.method == 'POST':
+        picture = request.files['profile_picture']
+        filename = save_profile_picture(picture)
+        if filename:
+            user.profile_picture = filename
+            db.session.commit()
+            flash('Imagem de perfil atualizada com sucesso!')
+        else:
+            flash('Erro ao fazer upload da imagem.')
+    
+    return redirect(url_for('profile', username=user.username))
+
+@app.route('/like_post/<int:post_id>', methods=['POST'])
+def like_post(post_id):
+    if 'firebase_user' not in session:
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['firebase_user'])
+    result = like_post_action(post_id, user)
+
+    return jsonify(result)
+
+@app.route('/comment_post/<int:post_id>', methods=['POST'])
+def comment_post(post_id):
+    if 'firebase_user' not in session:
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['firebase_user'])
+    content = request.form['content']
+    result = comment_post_action(post_id, user, content)
+
+    return jsonify(result)
+
+@app.route('/share_post/<int:post_id>', methods=['POST'])
+def share_post(post_id):
+    if 'firebase_user' not in session:
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['firebase_user'])
+    post = Post.query.get(post_id)
+
+    if post:
+        new_share = Share(post_id=post.id, user_id=user.id)
+        db.session.add(new_share)
+        db.session.commit()
+        flash('Post compartilhado com sucesso!')
+    else:
+        flash('Post não encontrado.')
+
+    return redirect(url_for('home'))
+
+@app.route('/user/<username>/followers')
+def manage_followers(username):
+    user = get_user_by_username(username)
+    if user is None:
+        flash('Usuário não encontrado.')
+        return redirect(url_for('home'))
+
+    followers_list = Follower.query.filter_by(user_id=user.id).all()
+    follower_usernames = [User.query.get(f.follower_id).username for f in followers_list]
+
+    return render_template('followers.html', user=user, followers=follower_usernames)
+
+@app.route('/user/<username>/following')
+def following(username):
+    user = get_user_by_username(username)
+    if user is None:
+        flash('Usuário não encontrado.')
+        return redirect(url_for('home'))
+
+    following_list = Follower.query.filter_by(follower_id=user.id).all()
+    following_usernames = [User.query.get(f.user_id).username for f in following_list]
+
+    return render_template('following.html', user=user, following=following_usernames)
+
+@app.route('/follow_user/<username>', methods=['POST'])
+def follow_user(username):
+    if 'firebase_user' not in session:
+        return redirect(url_for('login'))
+
+    user_to_follow = get_user_by_username(username)
+    user = User.query.get(session['firebase_user'])
+
+    if user_to_follow and user_to_follow.id != user.id:
+        existing_follow = Follower.query.filter_by(user_id=user_to_follow.id, follower_id=user.id).first()
+        if existing_follow:
+            flash('Você já está seguindo este usuário.')
+        else:
+            new_follow = Follower(user_id=user_to_follow.id, follower_id=user.id)
+            db.session.add(new_follow)
+            db.session.commit()
+            flash('Você começou a seguir este usuário!')
+    else:
+        flash('Erro ao seguir o usuário.')
+
+    return redirect(url_for('profile', username=username))
+
+@app.route('/unfollow_user/<username>', methods=['POST'])
+def unfollow_user(username):
+    if 'firebase_user' not in session:
+        return redirect(url_for('login'))
+
+    user_to_unfollow = get_user_by_username(username)
+    user = User.query.get(session['firebase_user'])
+
+    if user_to_unfollow:
+        existing_follow = Follower.query.filter_by(user_id=user_to_unfollow.id, follower_id=user.id).first()
+        if existing_follow:
+            db.session.delete(existing_follow)
+            db.session.commit()
+            flash('Você deixou de seguir este usuário.')
+        else:
+            flash('Você não está seguindo este usuário.')
+    else:
+        flash('Erro ao deixar de seguir o usuário.')
+
+    return redirect(url_for('profile', username=username))
+
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query')
+    if query:
+        users = User.query.filter(User.username.ilike(f'%{query}%')).all()
+        posts = Post.query.filter(Post.content.ilike(f'%{query}%')).all()
+        return render_template('search_results.html', users=users, posts=posts)
+    flash('Por favor, insira um termo de pesquisa válido.')
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True)

@@ -68,7 +68,25 @@
         button:hover {
             background-color: #003055;
         }
+
+        .google-button {
+            background-color: #4285F4;
+            margin-top: 10px;
+        }
+
+        .google-button:hover {
+            background-color: #357ae8;
+        }
+
+        .google-button img {
+            width: 20px;
+            margin-right: 10px;
+        }
     </style>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-auth.js"></script>
 </head>
 <body>
 
@@ -87,7 +105,49 @@
             <input type="password" name="confirm_password" placeholder="Confirmar Senha" required>
             <button type="submit">Confirmar</button>
         </form>
+
+        <!-- Botão "Entrar com o Google" -->
+        <button class="google-button" id="googleSignIn">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo">
+            Entrar com o Google
+        </button>
     </div>
 
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc",
+
+authDomain: "app-vaibes.firebaseapp.com",
+
+projectId: "app-vaibes",
+
+storageBucket: "app-vaibes.appspot.com",
+
+messagingSenderId: "842665045470",
+
+appId: "1:842665045470:web:edbe6c0cf3db4ac71c014f",
+
+measurementId: "G-3WTKSP88V9"
+
+        };
+
+        // Inicializa o Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Função para entrar com Google
+        document.getElementById('googleSignIn').addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then((result) => {
+                // O usuário foi autenticado com sucesso
+                console.log(result);
+                // Você pode redirecionar ou realizar outras ações aqui
+            }).catch((error) => {
+                // Lidar com erros aqui
+                console.error("Erro ao autenticar: ", error);
+            });
+        });
+    </script>
 </body>
 </html>
