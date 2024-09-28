@@ -20,7 +20,7 @@ firebase_admin.initialize_app(cred, {
 
 # Configurações do Firebase Storage
 storage_client = storage.Client.from_service_account_json("serviceAccountKey.json")
-bucket_name = "your-bucket-name.appspot.com"  # Substitua pelo nome do seu bucket do Firebase Storage
+bucket_name = "app-vaibes.appspot.com"  # Substitua pelo nome do seu bucket do Firebase Storage
 bucket = storage_client.bucket(bucket_name)
 
 # Inicialização do Flask
@@ -319,7 +319,7 @@ def user_posts(username):
     return render_template('user_posts.html', user=user, posts=posts)
 
 # Defina sua API Key do Firebase
-FIREBASE_API_KEY = "YOUR_FIREBASE_API_KEY"  # Substitua com a sua API Key do Firebase
+FIREBASE_API_KEY = "AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc"  # Substitua com a sua API Key do Firebase
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
