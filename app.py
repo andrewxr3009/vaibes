@@ -1,27 +1,29 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import uuid
 import os
 import requests
-from supabase import create_client, Client
 import io
 import firebase_admin
-from firebase_admin import credentials, auth
+from firebase_admin import credentials, auth, firestore
 import bcrypt
-
+from google.cloud import storage
+import json
 
 # Inicializar o Firebase Admin SDK
 cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'app-vaibes.appspot.com'  # Substitua pelo seu bucket do Firebase Storage
+})
 
-# Configurações do Supabase
-url = 'https://txyhqnbmlpcywyapxypm.supabase.co'
-key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4eWhxbmJtbHBjeXd5YXB4eXBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU4MTczMjYsImV4cCI6MjA0MTM5MzMyNn0.vAwDYGlUQ0KlrEkMooHmyxVL88SwkVJKBzghiNzoWJo'
-supabase: Client = create_client(url, key)
+# Configurações do Firebase Storage
+storage_client = storage.Client.from_service_account_json("serviceAccountKey.json")
+bucket_name = "your-bucket-name.appspot.com"  # Substitua pelo nome do seu bucket do Firebase Storage
+bucket = storage_client.bucket(bucket_name)
 
+# Inicialização do Flask
 app = Flask(__name__)
 app.secret_key = 'a3n0d0r4e0w9'  # Substitua por uma chave secreta adequada
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres.txyhqnbmlpcywyapxypm:5edqw3n4lhxCacLm@aws-0-us-west-1.pooler.supabase.com:6543/postgres'
@@ -34,6 +36,7 @@ app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png'}
 # Instância do SQLAlchemy
 db = SQLAlchemy(app)
 
+# Funções auxiliares
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -43,17 +46,13 @@ def save_profile_picture(picture):
         ext = picture.filename.rsplit('.', 1)[1].lower()
         new_filename = f"{uuid.uuid4().hex}.{ext}"
         file_stream = io.BytesIO(picture.read())
-        
+
         try:
-            # Suba o arquivo para o Supabase Storage
-            response = supabase.storage().from_("vaibes-cloud").upload(new_filename, file_stream)
-            
-            if response.status_code == 200:
-                return new_filename
-            else:
-                # Log de erro detalhado
-                print(f"Erro ao fazer upload para o Supabase: {response.text}")
-                return None
+            # Suba o arquivo para o Firebase Storage
+            blob = bucket.blob(new_filename)
+            blob.upload_from_file(file_stream, content_type=picture.content_type)
+            blob.make_public()  # Opcional: tornar a imagem pública
+            return blob.public_url
         except Exception as e:
             print(f"Erro ao salvar imagem: {e}")
             return None
@@ -75,7 +74,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     bio = db.Column(db.String(255))
-    profile_picture = db.Column(db.String(120))
+    profile_picture = db.Column(db.String(255))
     posts = db.relationship('Post', back_populates='author', lazy=True)
     likes = db.relationship('Like', back_populates='user', lazy=True, cascade="all, delete-orphan")
     comments = db.relationship('Comment', back_populates='user', lazy=True, cascade="all, delete-orphan")
@@ -128,6 +127,20 @@ def create_tables():
 
 create_tables()
 
+def update_last_login(user_id):
+    db_fs = firestore.client()
+    
+    # Data e hora atuais
+    last_login_time = datetime.now()
+    
+    # Atualizando o campo 'last_login' no Firestore (coleção 'users')
+    try:
+        db_fs.collection('users').document(user_id).update({
+            'last_login': last_login_time
+        })
+    except Exception as e:
+        print(f"Erro ao atualizar último login: {e}")
+
 def get_user_by_username(username):
     return User.query.filter_by(username=username).first()
 
@@ -163,11 +176,11 @@ def comment_post_action(post_id, user, content):
 
 @app.route('/')
 def home():
-    if 'firebase_user' not in session:
+    if 'user_id' not in session:
         return redirect(url_for('login'))
     
     # Se o usuário estiver autenticado, busque as informações necessárias
-    user = User.query.filter_by(email=session.get('username')).first()  # Ou use 'firebase_user' para buscar o id do Firebase
+    user = User.query.get(session.get('user_id'))
     
     if user is None:
         flash('Usuário não encontrado.')
@@ -198,10 +211,6 @@ def profile(username):
     posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
     return render_template('profile.html', user=user, posts=posts)
 
-from flask import request, jsonify, render_template
-from firebase_admin import auth  # Certifique-se de que você tenha a biblioteca do Firebase Admin instalada
-import bcrypt
-
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
     if request.method == 'POST':
@@ -216,43 +225,74 @@ def signup():
 
         # Verifica se todos os campos necessários foram preenchidos
         if not email or not username or not password or not confirm_password:
-            return jsonify({'message': 'Todos os campos são obrigatórios'}), 400
+            flash('Todos os campos são obrigatórios', 'danger')
+            return redirect(url_for('signup'))
         
         # Verifica se as senhas coincidem
         if password != confirm_password:
-            return jsonify({'message': 'As senhas não coincidem'}), 400
+            flash('As senhas não coincidem', 'danger')
+            return redirect(url_for('signup'))
+
+        # Verificar se já existe um usuário com esse email ou username
+        existing_user = User.query.filter((User.email == email) | (User.username == username)).first()
+        if existing_user:
+            flash('Email ou nome de usuário já existe.', 'danger')
+            return redirect(url_for('signup'))
 
         try:
             # Cria um novo usuário no Firebase
             firebase_user = auth.create_user(
                 email=email,
                 password=password,
+                display_name=username
             )
             # Captura o firebase_id
             firebase_id = firebase_user.uid
 
-            # Criptografa a senha antes de armazená-la no banco de dados
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            # Salvar imagem de perfil no Firebase Storage
+            picture = request.files.get('profile_picture')
+            profile_picture_url = save_profile_picture(picture) if picture else None
 
-            # Cria um novo usuário na sua base de dados
-            new_user = User(firebase_id=firebase_id, username=username, email=email, password=hashed_password)
+            # Criptografa a senha antes de armazená-la no banco de dados
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+            # Criar um novo usuário na base de dados
+            new_user = User(
+                firebase_id=firebase_id,
+                username=username,
+                email=email,
+                password=hashed_password,
+                profile_picture=profile_picture_url
+            )
             db.session.add(new_user)
             db.session.commit()
 
-            return jsonify({'message': 'Usuário criado com sucesso'}), 201
+            # Criar documento no Firestore para o usuário
+            db_fs = firestore.client()
+            db_fs.collection('users').document(firebase_id).set({
+                'email': email,
+                'username': username,
+                'bio': '',
+                'profile_picture': profile_picture_url,
+                'last_login': datetime.now()
+            })
+
+            flash('Usuário criado com sucesso! Faça o login.', 'success')
+            return redirect(url_for('login'))
         except Exception as e:
             # Adiciona um log de erro se a criação do usuário falhar
             print(f"Erro ao criar usuário: {e}")
-            return jsonify({'message': 'Erro ao criar usuário. Tente novamente.'}), 400
+            flash('Erro ao criar usuário. Tente novamente.', 'danger')
+            return redirect(url_for('signup'))
 
     return render_template('signup.html')  # Retorna o formulário de cadastro se for um GET
 
 @app.route('/post', methods=['GET', 'POST'])
 def create_post():
-    if 'firebase_user' not in session:
+    if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    user = User.query.get(session['firebase_user'])
+    user = User.query.get(session['user_id'])
 
     if request.method == 'POST':
         content = request.form['content']
@@ -260,10 +300,10 @@ def create_post():
             new_post = Post(content=content, user_id=user.id)
             db.session.add(new_post)
             db.session.commit()
-            flash('Post criado com sucesso!')
+            flash('Post criado com sucesso!', 'success')
             return redirect(url_for('home'))
         else:
-            flash('Conteúdo do post não pode estar vazio.')
+            flash('Conteúdo do post não pode estar vazio.', 'danger')
 
     return render_template('create_post.html', user=user)
 
@@ -272,93 +312,138 @@ def create_post():
 def user_posts(username):
     user = get_user_by_username(username)
     if user is None:
-        flash('Usuário não encontrado.')
+        flash('Usuário não encontrado.', 'danger')
         return redirect(url_for('home'))
 
     posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
     return render_template('user_posts.html', user=user, posts=posts)
 
-
+# Defina sua API Key do Firebase
+FIREBASE_API_KEY = "YOUR_FIREBASE_API_KEY"  # Substitua com a sua API Key do Firebase
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-        user = User.query.filter_by(email=email).first()
-        if user and check_password_hash(user.password, password):
-            session['username'] = user.email
-            session['firebase_user'] = user.id  # Armazena o id do Firebase
+        if not email or not password:
+            flash("Por favor, preencha todos os campos.", "danger")
+            return redirect(url_for('login'))
 
-            flash('Login realizado com sucesso!')
-            return redirect(url_for('home'))
-        else:
-            flash('Email ou senha incorretos.')
+        try:
+            # Fazer a chamada à API REST do Firebase para autenticação
+            payload = {
+                "email": email,
+                "password": password,
+                "returnSecureToken": True
+            }
 
+            response = requests.post(
+                f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={FIREBASE_API_KEY}",
+                data=json.dumps(payload),
+                headers={"Content-Type": "application/json"}
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+                id_token = data['idToken']
+                local_id = data['localId']
+
+                # Verificar o usuário no banco de dados
+                user = User.query.filter_by(email=email).first()
+                if not user:
+                    flash("Usuário não encontrado no banco de dados.", "danger")
+                    return redirect(url_for('login'))
+
+                # Set session
+                session['user_id'] = user.id
+                session['firebase_id'] = local_id
+
+                flash("Login bem-sucedido!", "success")
+
+                # Atualizar último login no Firebase
+                update_last_login(local_id)
+
+                # Redirecionar para a página inicial
+                return redirect(url_for('home'))
+            else:
+                data = response.json()
+                error_message = data.get('error', {}).get('message', 'Erro desconhecido.')
+                flash(f"Erro ao tentar logar: {error_message}", "danger")
+                return redirect(url_for('login'))
+
+        except Exception as e:
+            flash(f"Erro ao tentar logar: {str(e)}", "danger")
+            return redirect(url_for('login'))
+
+    # Método GET: renderiza o formulário de login
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
-    session.pop('username', None)
-    session.pop('firebase_user', None)
-    flash('Logout realizado com sucesso!')
+    session.pop('user_id', None)
+    session.pop('firebase_id', None)
+    flash('Logout realizado com sucesso!', 'success')
     return redirect(url_for('login'))
 
 @app.route('/upload_profile_picture', methods=['POST'])
 def upload_profile_picture():
-    if 'firebase_user' not in session:
+    if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    user = User.query.get(session['firebase_user'])
+    user = User.query.get(session['user_id'])
     if request.method == 'POST':
-        picture = request.files['profile_picture']
-        filename = save_profile_picture(picture)
-        if filename:
-            user.profile_picture = filename
-            db.session.commit()
-            flash('Imagem de perfil atualizada com sucesso!')
+        picture = request.files.get('profile_picture')
+        if picture:
+            filename = save_profile_picture(picture)
+            if filename:
+                user.profile_picture = filename
+                db.session.commit()
+                flash('Imagem de perfil atualizada com sucesso!', 'success')
+            else:
+                flash('Erro ao fazer upload da imagem.', 'danger')
         else:
-            flash('Erro ao fazer upload da imagem.')
+            flash('Nenhuma imagem foi enviada.', 'warning')
     
     return redirect(url_for('profile', username=user.username))
 
 @app.route('/like_post/<int:post_id>', methods=['POST'])
 def like_post(post_id):
-    if 'firebase_user' not in session:
+    if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    user = User.query.get(session['firebase_user'])
+    user = User.query.get(session['user_id'])
     result = like_post_action(post_id, user)
 
     return jsonify(result)
 
 @app.route('/comment_post/<int:post_id>', methods=['POST'])
 def comment_post(post_id):
-    if 'firebase_user' not in session:
+    if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    user = User.query.get(session['firebase_user'])
-    content = request.form['content']
+    user = User.query.get(session['user_id'])
+    content = request.form.get('content')
     result = comment_post_action(post_id, user, content)
 
     return jsonify(result)
 
 @app.route('/share_post/<int:post_id>', methods=['POST'])
 def share_post(post_id):
-    if 'firebase_user' not in session:
+    if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    user = User.query.get(session['firebase_user'])
+    user = User.query.get(session['user_id'])
     post = Post.query.get(post_id)
 
     if post:
         new_share = Share(post_id=post.id, user_id=user.id)
         db.session.add(new_share)
         db.session.commit()
-        flash('Post compartilhado com sucesso!')
+        flash('Post compartilhado com sucesso!', 'success')
     else:
-        flash('Post não encontrado.')
+        flash('Post não encontrado.', 'danger')
 
     return redirect(url_for('home'))
 
@@ -366,7 +451,7 @@ def share_post(post_id):
 def manage_followers(username):
     user = get_user_by_username(username)
     if user is None:
-        flash('Usuário não encontrado.')
+        flash('Usuário não encontrado.', 'danger')
         return redirect(url_for('home'))
 
     followers_list = Follower.query.filter_by(user_id=user.id).all()
@@ -378,7 +463,7 @@ def manage_followers(username):
 def following(username):
     user = get_user_by_username(username)
     if user is None:
-        flash('Usuário não encontrado.')
+        flash('Usuário não encontrado.', 'danger')
         return redirect(url_for('home'))
 
     following_list = Follower.query.filter_by(follower_id=user.id).all()
@@ -388,44 +473,44 @@ def following(username):
 
 @app.route('/follow_user/<username>', methods=['POST'])
 def follow_user(username):
-    if 'firebase_user' not in session:
+    if 'user_id' not in session:
         return redirect(url_for('login'))
 
     user_to_follow = get_user_by_username(username)
-    user = User.query.get(session['firebase_user'])
+    user = User.query.get(session['user_id'])
 
     if user_to_follow and user_to_follow.id != user.id:
         existing_follow = Follower.query.filter_by(user_id=user_to_follow.id, follower_id=user.id).first()
         if existing_follow:
-            flash('Você já está seguindo este usuário.')
+            flash('Você já está seguindo este usuário.', 'warning')
         else:
             new_follow = Follower(user_id=user_to_follow.id, follower_id=user.id)
             db.session.add(new_follow)
             db.session.commit()
-            flash('Você começou a seguir este usuário!')
+            flash('Você começou a seguir este usuário!', 'success')
     else:
-        flash('Erro ao seguir o usuário.')
+        flash('Erro ao seguir o usuário.', 'danger')
 
     return redirect(url_for('profile', username=username))
 
 @app.route('/unfollow_user/<username>', methods=['POST'])
 def unfollow_user(username):
-    if 'firebase_user' not in session:
+    if 'user_id' not in session:
         return redirect(url_for('login'))
 
     user_to_unfollow = get_user_by_username(username)
-    user = User.query.get(session['firebase_user'])
+    user = User.query.get(session['user_id'])
 
     if user_to_unfollow:
         existing_follow = Follower.query.filter_by(user_id=user_to_unfollow.id, follower_id=user.id).first()
         if existing_follow:
             db.session.delete(existing_follow)
             db.session.commit()
-            flash('Você deixou de seguir este usuário.')
+            flash('Você deixou de seguir este usuário.', 'success')
         else:
-            flash('Você não está seguindo este usuário.')
+            flash('Você não está seguindo este usuário.', 'warning')
     else:
-        flash('Erro ao deixar de seguir o usuário.')
+        flash('Erro ao deixar de seguir o usuário.', 'danger')
 
     return redirect(url_for('profile', username=username))
 
@@ -436,8 +521,9 @@ def search():
         users = User.query.filter(User.username.ilike(f'%{query}%')).all()
         posts = Post.query.filter(Post.content.ilike(f'%{query}%')).all()
         return render_template('search_results.html', users=users, posts=posts)
-    flash('Por favor, insira um termo de pesquisa válido.')
+    flash('Por favor, insira um termo de pesquisa válido.', 'warning')
     return redirect(url_for('home'))
 
+# Inicialização da aplicação
 if __name__ == '__main__':
     app.run(debug=True)

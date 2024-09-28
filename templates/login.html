@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Vaibes</title>
@@ -79,8 +80,26 @@
         a:hover {
             text-decoration: underline;
         }
+
+        /* Exibição de mensagens de erro */
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
     </style>
 </head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-X2PT21PM9Y"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-X2PT21PM9Y');
+</script>
+
 <body>
 
     <div class="container">
@@ -91,10 +110,16 @@
         <h1>Login</h1>
 
         <!-- Formulário de login -->
-        <form action="{{ url_for('login') }}" method="post">
-            <input type="email" id="email" name="email" placeholder="E-mail" required>
-            <input type="password" id="password" name="password" placeholder="Senha" required>
-            <button type="submit">Entrar</button>
+        <form action="{{ url_for('login') }}" method="POST">
+            <!-- Exibe mensagem de erro se houver -->
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
+
+            <!-- Campos de email e senha -->
+            <input type="email" name="email" placeholder="Digite seu email" required>
+            <input type="password" name="password" placeholder="Digite sua senha" required>
+            <button type="submit">Login</button>
         </form>
 
         <!-- Link para a página de cadastro -->

@@ -10,3 +10,4 @@ supabase
 firebase_admin
 psycopg2
 bcrypt
+google-cloud
