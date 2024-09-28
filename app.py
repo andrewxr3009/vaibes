@@ -524,6 +524,25 @@ def search():
     flash('Por favor, insira um termo de pesquisa válido.', 'warning')
     return redirect(url_for('home'))
 
+@app.route('/post/<int:post_id>')
+def post_detail(post_id):
+    # Verifica se o usuário está autenticado
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    # Busca o post pelo ID
+    post = Post.query.get(post_id)
+    if post is None:
+        flash('Post não encontrado.', 'danger')
+        return redirect(url_for('home'))
+
+    # Busca os comentários do post
+    comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()
+
+    # Renderiza o template com os detalhes do post e comentários
+    return render_template('post_detail.html', post=post, comments=comments)
+
+
 # Inicialização da aplicação
 if __name__ == '__main__':
     app.run(debug=True)

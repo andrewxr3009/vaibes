@@ -1,17 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-X2PT21PM9Y"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-X2PT21PM9Y');
-</script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vaibes - Home</title>
@@ -31,18 +20,17 @@
     <!-- Adicional para PWA (Progressive Web App) -->
     <meta name="description" content="Uma aplicação web para compartilhar e interagir com posts.">
 
-
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #bfbfbf; /* Fundo neutro */
+            background-color: #bfbfbf;
         }
 
         .action-icon {
-            width: 24px; /* Ajuste o tamanho conforme necessário */
-            height: 24px; /* Ajuste o tamanho conforme necessário */
+            width: 24px;
+            height: 24px;
             cursor: pointer;
         }
 
@@ -57,17 +45,17 @@
             overflow-y: auto;
             padding: 10px;
             display: flex;
-            flex-direction: column-reverse; /* Ordem reversa dos posts */
+            flex-direction: column-reverse;
         }
 
         .post {
             background: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 15px;
             padding: 10px;
             position: relative;
-            cursor: pointer; /* Adicionado cursor de ponteiro */
+            cursor: pointer;
         }
 
         .post-header {
@@ -117,8 +105,8 @@
         }
 
         .like-icon {
-            width: 24px; /* Tamanho adequado */
-            height: 24px; /* Tamanho adequado */
+            width: 24px;
+            height: 24px;
             cursor: pointer;
         }
 
@@ -135,7 +123,7 @@
         .comment {
             background: #f9f9f9;
             border-radius: 8px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             padding: 5px 10px;
             margin-bottom: 5px;
         }
@@ -146,7 +134,7 @@
             align-items: center;
             background: #fff;
             padding: 10px;
-            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
             position: fixed;
             bottom: 0;
             width: 100%;
@@ -165,7 +153,7 @@
             bottom: 0;
             width: 100%;
             height: 70%;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0, 0, 0, 0.4);
             transition: transform 0.3s ease;
             transform: translateY(100%);
         }
@@ -193,7 +181,7 @@
         }
 
         .bottom-bar-modal-content button {
-            background-color: #022247; /* Azul escuro */
+            background-color: #022247;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -210,7 +198,6 @@
             height: 24px;
         }
 
-        /* Estilos para a área de seleção de GIFs */
         .gif-container {
             margin-top: 15px;
         }
@@ -230,19 +217,6 @@
     </style>
 </head>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-X2PT21PM9Y"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-X2PT21PM9Y');
-</script>
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3814244836764328"
-     crossorigin="anonymous"></script>
-
 <body>
     <div class="app-container">
         <div class="posts-container">
@@ -252,7 +226,7 @@
                     {% if post.author.profile_picture %}
                     <img src="{{ url_for('static', filename='uploads/' ~ (post.author.profile_picture if post.author.profile_picture else 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-pic">
                     {% else %}
-                        <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                    <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
                     {% endif %}
                     <div class="post-info">
                         <strong>{{ post.author.username }}</strong>
@@ -264,7 +238,7 @@
                     <div class="post-content">{{ post.content|safe }}</div>
                     {% if post.gif_url %}
                     <div class="post-gif">
-                        <img src="{{ post.gif_url }}" alt="GIF">
+                        <img src="{{ post.gif_url }}" alt="GIF" style="max-width: 100%; height: auto;">
                     </div>
                     {% endif %}
                 </div>
@@ -289,9 +263,9 @@
         </a>
         <a href="{{ url_for('profile', username=session['username']) }}" class="bottom-bar-icon">
             {% if user.profile_picture %}
-                <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil">
+            <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil">
             {% else %}
-                <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
+            <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
             {% endif %}
         </a>
         <a href="{{ url_for('search') }}" class="bottom-bar-icon">
@@ -302,137 +276,71 @@
     <div id="bottom-bar-modal" class="bottom-bar-modal">
         <div class="bottom-bar-modal-content">
             <button type="button" onclick="closeModal()">Fechar</button>
-            <form action="{{ url_for('post') }}" method="POST">
-                <textarea name="content" placeholder="O que você está pensando?"></textarea>
-                <input type="hidden" name="gif_url" id="selected-gif-url" value="">
-                <div class="gif-container">
-                    <input type="text" id="gif-search" placeholder="Buscar GIFs">
-                    <button type="button" onclick="searchGif()">Buscar GIF</button>
-                    <div id="gif-results" class="gif-results"></div>
-                </div>
+            <form id="postForm" action="{{ url_for('create_post') }}" method="POST">
+                <textarea name="content" placeholder="O que você está pensando?" required></textarea>
+                <input type="text" id="gif-url" name="gif_url" placeholder="Cole o link do GIF (opcional)">
                 <button type="submit">Postar</button>
-            </form>            
+            </form>
+            <div class="gif-container">
+                <input type="text" id="gif-search" placeholder="Buscar GIFs...">
+                <div class="gif-results" id="gif-results"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        function openPostDetail(postId) {
-            window.location.href = `/post/${postId}`;
-        }
-
         function openModal() {
-            document.getElementById('bottom-bar').classList.add('hidden');
             document.getElementById('bottom-bar-modal').classList.add('active');
+            document.getElementById('bottom-bar').classList.add('hidden');
         }
 
         function closeModal() {
-            document.getElementById('bottom-bar').classList.remove('hidden');
             document.getElementById('bottom-bar-modal').classList.remove('active');
-        }
-
-        function searchGif() {
-            const query = document.getElementById('gif-search').value;
-            const resultsContainer = document.getElementById('gif-results');
-            resultsContainer.innerHTML = '';
-            fetch(`https://api.giphy.com/v1/gifs/search?api_key=URqPC2QH6fsA2xCx7ySJTbholry57xjy&q=${query}&limit=10`)
-                .then(response => response.json())
-                .then(data => {
-                    data.data.forEach(gif => {
-                        const img = document.createElement('img');
-                        img.src = gif.images.fixed_height.url;
-                        img.onclick = () => selectGif(gif.images.fixed_height.url);
-                        resultsContainer.appendChild(img);
-                    });
-                });
-        }
-
-        function selectGif(url) {
-            document.getElementById('selected-gif-url').value = url;
-            closeModal();
+            document.getElementById('bottom-bar').classList.remove('hidden');
+            document.getElementById('gif-search').value = '';
+            document.getElementById('gif-results').innerHTML = '';
         }
 
         function toggleLike(postId) {
-        fetch(`/like_post/${postId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.staUncaught ReferenceError: commentPost is not defined
-    onclick http://localhost:5000/post/19:1
-tus === 'success') {
-                const likeIcon = document.getElementById(`heart-icon-${postId}`);
-                const likeCount = document.getElementById(`like-count-${postId}`);
+            const likeCountElement = document.getElementById(`like-count-${postId}`);
+            const heartIconElement = document.getElementById(`heart-icon-${postId}`);
+            const currentCount = parseInt(likeCountElement.innerText);
 
-                likeIcon.src = '/static/hearth-on-icon.png';  // Atualizar o ícone para indicar curtida
-                likeCount.textContent = parseInt(likeCount.textContent) + 1;  // Atualizar o número de curtidas
+            // Exemplo de lógica de curtir/descurtir
+            if (heartIconElement.src.includes('hearth-off-icon.png')) {
+                heartIconElement.src = "{{ url_for('static', filename='hearth-on-icon.png') }}";
+                likeCountElement.innerText = currentCount + 1;
             } else {
-                alert(data.message);  // Exibir mensagem de erro
+                heartIconElement.src = "{{ url_for('static', filename='hearth-off-icon.png') }}";
+                likeCountElement.innerText = currentCount - 1;
             }
-        });
-    }
+        }
 
         function sharePost(postId) {
-            // Lógica para compartilhar o post
-            alert('Compartilhar post ' + postId);
+            alert(`Post ${postId} compartilhado!`);
         }
-    </script>
-    <script>
-        // Detectar se o usuário chegou ao topo e recarregar os posts
-        document.querySelector('.posts-container').addEventListener('scroll', function() {
-            if (this.scrollTop === 0) {
-                reloadPosts();
+
+        document.getElementById('gif-search').addEventListener('input', function () {
+            const query = this.value;
+            const resultsContainer = document.getElementById('gif-results');
+            resultsContainer.innerHTML = ''; // Limpa resultados anteriores
+
+            if (query.length > 2) {
+                fetch(`https://api.giphy.com/v1/gifs/search?api_key=YOUR_GIPHY_API_KEY&q=${query}&limit=5`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.data.forEach(gif => {
+                            const img = document.createElement('img');
+                            img.src = gif.images.fixed_height.url;
+                            img.onclick = function () {
+                                document.getElementById('gif-url').value = gif.images.original.url;
+                                closeModal(); // Fecha o modal após selecionar o GIF
+                            };
+                            resultsContainer.appendChild(img);
+                        });
+                    });
             }
         });
-    
-        // Função para recarregar posts
-        function reloadPosts() {
-            fetch('/get_latest_posts')
-                .then(response => response.json())
-                .then(data => {
-                    const postsContainer = document.querySelector('.posts-container');
-                    postsContainer.innerHTML = '';  // Limpar posts atuais
-                    data.posts.forEach(post => {
-                        // Recriar os elementos dos posts (pode ser necessário adaptar conforme seu HTML)
-                        const postElement = createPostElement(post);
-                        postsContainer.appendChild(postElement);
-                    });
-                });
-        }
-    
-        // Função auxiliar para criar elementos de post (adapte conforme necessário)
-        function createPostElement(post) {
-            const postDiv = document.createElement('div');
-            postDiv.classList.add('post');
-            postDiv.id = `post-${post.id}`;
-            postDiv.onclick = () => openPostDetail(post.id);
-    
-            postDiv.innerHTML = `
-                <div class="post-header">
-                    <img src="${post.profile_picture}" alt="Foto de perfil" class="profile-pic">
-                    <div class="post-info">
-                        <strong>${post.username}</strong>
-                        <span>${new Date(post.timestamp).toLocaleDateString('pt-BR')}</span>
-                    </div>
-                    <div class="wavy-line"></div>
-                </div>
-                <div class="post-body">
-                    <div class="post-content">${post.content}</div>
-                    ${post.gif_url ? `<div class="post-gif"><img src="${post.gif_url}" alt="GIF"></div>` : ''}
-                </div>
-                <div class="post-actions">
-                    <div class="like-container">
-                        <img id="heart-icon-${post.id}" src="/static/hearth-off-icon.png" class="like-icon" onclick="toggleLike(${post.id})">
-                        <span id="like-count-${post.id}" class="like-count">${post.like_count}</span>
-                    </div>
-                    <img src="/static/send-icon.png" class="action-icon" onclick="sharePost(${post.id})">
-                </div>
-            `;
-            return postDiv;
-        }
     </script>
-    
 </body>
 </html>
