@@ -1,16 +1,170 @@
-
-//* vou ignorar o fato de que os comentários nao funcionam e partir pras próximas funções.
- Se Deus quiser eu ainda consiguirei corrigir isso*//
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Post</title>
     <style>
-        /* Seus estilos CSS */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .post {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 20px;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .post-content {
+            margin-bottom: 15px;
+        }
+
+        .post-content p {
+            font-size: 1.1em;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .post-content img {
+            max-width: 100%;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        .like-button {
+            background-color: #022247;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .like-button.liked {
+            background-color: #022247;
+        }
+
+        .comments {
+            margin-top: 20px;
+        }
+
+        .comment {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .comment .profile-picture {
+            width: 35px;
+            height: 35px;
+            margin-right: 10px;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        #comment-form {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        #comment-content {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+            resize: none;
+        }
+
+        #comment-form button {
+            background-color: #022247;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        #comment-form button:hover {
+            background-color: #022247;
+        }
+
+        .bottom-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #fff; /* Cor da barra inferior */
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .bottom-bar-icon img {
+            width: 24px;
+            height: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 10px;
+            }
+
+            .like-button, #comment-form button {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            #comment-form {
+                flex-direction: column;
+            }
+
+            #comment-content {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
     </style>
 </head>
 
@@ -20,12 +174,10 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-X2PT21PM9Y');
 </script>
 
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3814244836764328"
-     crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3814244836764328" crossorigin="anonymous"></script>
 
 <body>
     <div class="container">
@@ -43,6 +195,7 @@
                     Curtir (<span id="like-count-{{ post.id }}">{{ post.likes|length }}</span>)
                 </button>
             </div>
+           
             <div class="comments">
                 {% for comment in comments %}
                 <div class="comment">
@@ -54,25 +207,49 @@
                 </div>
                 {% endfor %}
             </div>
+            
             <form id="comment-form" data-post-id="{{ post.id }}">
                 <textarea id="comment-content" placeholder="Adicione um comentário" required></textarea>
                 <button type="submit">Comentar</button>
             </form>
         </div>
     </div>
+
+    <div id="bottom-bar" class="bottom-bar">
+        <a href="{{ url_for('home') }}" class="bottom-bar-icon">
+            <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+        </a>
+        <a href="#" class="bottom-bar-icon" onclick="openModal()">
+            <img src="{{ url_for('static', filename='vibe-icon.png') }}" alt="Criar Post">
+        </a>
+        <a href="{{ url_for('notifications') }}" class="bottom-bar-icon">
+            <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+        </a>
+        <a href="{{ url_for('profile', username=session['username']) }}" class="bottom-bar-icon">
+            {% if user.profile_picture %}
+            <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil">
+            {% else %}
+            <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
+            {% endif %}
+        </a>
+        <a href="{{ url_for('search') }}" class="bottom-bar-icon">
+            <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
+        </a>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
     <script>
-const firebaseConfig = {
-    apiKey: "AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc",
-    authDomain: "app-vaibes.firebaseapp.com",
-    projectId: "app-vaibes",
-    storageBucket: "app-vaibes.appspot.com",
-    messagingSenderId: "842665045470",
-    appId: "1:842665045470:web:edbe6c0cf3db4ac71c014f",
-    measurementId: "G-3WTKSP88V9"
-};
-firebase.initializeApp(firebaseConfig);
+        const firebaseConfig = {
+            apiKey: "AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc",
+            authDomain: "app-vaibes.firebaseapp.com",
+            projectId: "app-vaibes",
+            storageBucket: "app-vaibes.appspot.com",
+            messagingSenderId: "842665045470",
+            appId: "1:842665045470:web:edbe6c0cf3db4ac71c014f",
+            measurementId: "G-3WTKSP88V9"
+        };
+        firebase.initializeApp(firebaseConfig);
 
         // Função para verificar se o usuário está logado
         function isUserLoggedIn() {
@@ -96,61 +273,64 @@ firebase.initializeApp(firebaseConfig);
                 }
             })
             .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
+            .then(responseData => {
+                if (responseData.success) {
+                    const likeCountElement = document.getElementById(`like-count-${postId}`);
+                    likeCountElement.textContent = responseData.new_like_count;
                     const likeButton = document.getElementById(`like-button-${postId}`);
-                    likeButton.classList.add('liked');
-                    document.getElementById(`like-count-${postId}`).textContent = data.like_count;
+                    likeButton.classList.toggle('liked', responseData.user_liked);
                 } else {
-                    alert(data.message);
+                    alert('Erro ao curtir o post.');
                 }
             })
             .catch(error => {
-                console.error('Erro ao curtir post:', error);
+                console.error('Erro:', error);
             });
         }
 
-        // Adicionando o listener de envio no formulário de comentários
+        // Adiciona novo comentário
         document.getElementById('comment-form').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Impede o comportamento padrão do formulário
+            event.preventDefault();
+
+            const postId = this.getAttribute('data-post-id');
+            const commentContent = document.getElementById('comment-content').value;
+
             if (!isUserLoggedIn()) {
                 alert('Você precisa estar logado para comentar.');
                 return;
             }
 
-            const content = document.getElementById('comment-content').value;
             const token = await firebase.auth().currentUser.getIdToken();
-            const postId = this.getAttribute('data-post-id');
 
-            fetch(`/comment/${postId}`, {
+            fetch(`/add_comment/${postId}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ content: content })
+                body: JSON.stringify({ content: commentContent })
             })
             .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const commentsContainer = document.querySelector('.comments');
-                    const commentElement = document.createElement('div');
-                    commentElement.className = 'comment';
-                    commentElement.innerHTML = `
-                        <img src="${data.comment.user_profile_picture}" alt="Foto de Perfil" class="profile-picture">
+            .then(responseData => {
+                if (responseData.success) {
+                    const commentsDiv = document.querySelector('.comments');
+                    const newComment = document.createElement('div');
+                    newComment.classList.add('comment');
+                    newComment.innerHTML = `
+                        <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil" class="profile-picture">
                         <div class="comment-content">
-                            <h3 class="comment-author">${data.comment.username}</h3>
-                            <p>${data.comment.content}</p>
+                            <h3 class="comment-author">${responseData.username}</h3>
+                            <p>${commentContent}</p>
                         </div>
                     `;
-                    commentsContainer.appendChild(commentElement);
-                    document.getElementById('comment-content').value = ''; // Limpa o textarea
+                    commentsDiv.appendChild(newComment);
+                    document.getElementById('comment-content').value = ''; // Limpa o campo de comentário
                 } else {
-                    alert(data.message);
+                    alert('Erro ao adicionar comentário.');
                 }
             })
             .catch(error => {
-                console.error('Erro ao comentar:', error);
+                console.error('Erro:', error);
             });
         });
     </script>

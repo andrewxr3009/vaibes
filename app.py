@@ -120,6 +120,22 @@ class Comment(db.Model):
     post = db.relationship('Post', back_populates='comments')
     user = db.relationship('User', back_populates='comments')
 
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)  # Certifique-se de que este campo exista
+    message = db.Column(db.String(255), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='notifications')
+    post = db.relationship('Post', backref='notifications')
+
+    def __init__(self, user_id, post_id, message):
+        self.user_id = user_id
+        self.post_id = post_id
+        self.message = message
+
+
 # Cria os bancos de dados
 def create_tables():
     with app.app_context():
@@ -144,6 +160,11 @@ def update_last_login(user_id):
 def get_user_by_username(username):
     return User.query.filter_by(username=username).first()
 
+def create_notification(user_id, message):
+    notification = Notification(user_id=user_id, message=message)
+    db.session.add(notification)
+    db.session.commit()
+
 def like_post_action(post_id, user):
     post = Post.query.get(post_id)
     if post:
@@ -154,8 +175,11 @@ def like_post_action(post_id, user):
         new_like = Like(post_id=post.id, user_id=user.id)
         db.session.add(new_like)
         db.session.commit()
-        
-        # Atualiza a contagem de curtidas
+
+        # Notificar o autor do post sobre a nova curtida
+        if post.user_id != user.id:  # Evita notificar o próprio usuário
+            create_notification(post.user_id, f"{user.username} curtiu seu post.")
+
         like_count = Like.query.filter_by(post_id=post_id).count()
         return {'status': 'success', 'like_count': like_count}
     
@@ -167,7 +191,11 @@ def comment_post_action(post_id, user, content):
         new_comment = Comment(post_id=post.id, user_id=user.id, content=content)
         db.session.add(new_comment)
         db.session.commit()
-        
+
+        # Notificar o autor do post sobre o novo comentário
+        if post.user_id != user.id:  # Evita notificar o próprio usuário
+            create_notification(post.user_id, f"{user.username} comentou em seu post.")
+
         comments = Comment.query.filter_by(post_id=post_id).all()
         comments_data = [{'username': c.user.username, 'content': c.content} for c in comments]
         return {'status': 'success', 'message': 'Comentário adicionado!', 'comments': comments_data}
@@ -200,6 +228,8 @@ def home():
         return render_template('ios_home.html', posts=posts, recent_users=recent_users, user=user)
     else:
         return render_template('home.html', posts=posts, recent_users=recent_users, user=user)
+    
+    
 
 @app.route('/profile/<username>')
 def profile(username):
@@ -300,12 +330,22 @@ def create_post():
             new_post = Post(content=content, user_id=user.id)
             db.session.add(new_post)
             db.session.commit()
+
+            # Notificar todos os usuários
+            all_users = User.query.all()
+            for recipient in all_users:
+                if recipient.id != user.id:  # Evitar notificar o próprio usuário
+                    notification = Notification(user_id=recipient.id, post_id=new_post.id, message=f"{user.username} criou um novo post.")
+                    db.session.add(notification)
+
+            db.session.commit()  # Salvar todas as notificações
             flash('Post criado com sucesso!', 'success')
             return redirect(url_for('home'))
         else:
             flash('Conteúdo do post não pode estar vazio.', 'danger')
 
     return render_template('create_post.html', user=user)
+
 
 # Adicione essa rota para ver os posts de um usuário
 @app.route('/user/<username>/posts')
@@ -539,8 +579,40 @@ def post_detail(post_id):
     # Busca os comentários do post
     comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()
 
-    # Renderiza o template com os detalhes do post e comentários
-    return render_template('post_detail.html', post=post, comments=comments)
+    # Busca o usuário da sessão
+    user = User.query.get(session['user_id'])  # Altere aqui para obter o usuário
+
+    # Renderiza o template com os detalhes do post, comentários e usuário
+    return render_template('post_detail.html', post=post, comments=comments, user=user)
+
+
+@app.route('/notifications')
+def notifications():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['user_id'])
+    notifications = Notification.query.filter_by(user_id=user.id).order_by(Notification.timestamp.desc()).all()
+
+    # Debug: Imprimir as notificações para verificar se estão sendo carregadas
+    print(notifications)
+
+    return render_template('notifications.html', user=user, notifications=notifications)
+
+
+@app.route('/mark_notification_read/<int:notification_id>', methods=['POST'])
+def mark_notification_read(notification_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    notification = Notification.query.get(notification_id)
+    if notification and notification.user_id == session['user_id']:
+        notification.read = True
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Notificação marcada como lida.'})
+    
+    return jsonify({'status': 'error', 'message': 'Notificação não encontrada ou acesso negado.'})
+
 
 
 # Inicialização da aplicação

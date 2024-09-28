@@ -261,6 +261,9 @@
         <a href="#" class="bottom-bar-icon" onclick="openModal()">
             <img src="{{ url_for('static', filename='vibe-icon.png') }}" alt="Criar Post">
         </a>
+        <a href="{{ url_for('notifications') }}" class="bottom-bar-icon">
+            <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+        </a>
         <a href="{{ url_for('profile', username=session['username']) }}" class="bottom-bar-icon">
             {% if user.profile_picture %}
             <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil">
@@ -272,6 +275,7 @@
             <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
         </a>
     </div>
+
 
     <div id="bottom-bar-modal" class="bottom-bar-modal">
         <div class="bottom-bar-modal-content">
