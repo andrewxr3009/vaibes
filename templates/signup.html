@@ -82,6 +82,21 @@
             width: 20px;
             margin-right: 10px;
         }
+
+        .terms {
+            font-size: 12px;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .terms a {
+            color: #022247;
+            text-decoration: none;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
+        }
     </style>
 
     <!-- Firebase SDK -->
@@ -112,13 +127,17 @@
         <h1>Cadastro</h1>
 
         <!-- Formulário de cadastro -->
-        <form action="{{ url_for('signup') }}" method="POST">
+        <form id="signupForm" action="{{ url_for('signup') }}" method="POST">
             <input type="email" name="email" placeholder="E-mail" required>
             <input type="text" name="username" placeholder="Nome de Usuário" required>
             <input type="password" name="password" placeholder="Senha" required>
             <input type="password" name="confirm_password" placeholder="Confirmar Senha" required>
             <button type="submit">Confirmar</button>
         </form>
+
+        <!-- Texto de termos de uso -->
+        <p class="terms">Ao clicar em "Cadastrar", você concorda com os <a href="{{ url_for('static', filename='privacy.html') }}">Termos de Uso e Política de Privacidade</a> do Vaibes.</p>
+
 
         <!-- Botão "Entrar com o Google" -->
         <button class="google-button" id="googleSignIn">
@@ -131,34 +150,43 @@
         // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc",
-
-authDomain: "app-vaibes.firebaseapp.com",
-
-projectId: "app-vaibes",
-
-storageBucket: "app-vaibes.appspot.com",
-
-messagingSenderId: "842665045470",
-
-appId: "1:842665045470:web:edbe6c0cf3db4ac71c014f",
-
-measurementId: "G-3WTKSP88V9"
-
+            authDomain: "app-vaibes.firebaseapp.com",
+            projectId: "app-vaibes",
+            storageBucket: "app-vaibes.appspot.com",
+            messagingSenderId: "842665045470",
+            appId: "1:842665045470:web:edbe6c0cf3db4ac71c014f",
+            measurementId: "G-3WTKSP88V9"
         };
 
         // Inicializa o Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
+        // Função para redirecionar para login após o cadastro
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            event.preventDefault();  // Evita o comportamento padrão do formulário
+
+            const email = event.target.email.value;
+            const password = event.target.password.value;
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => {
+                    // Redireciona para a tela de login após o cadastro bem-sucedido
+                    window.location.href = "/login.html";
+                })
+                .catch((error) => {
+                    console.error("Erro ao criar conta: ", error);
+                });
+        });
+
         // Função para entrar com Google
         document.getElementById('googleSignIn').addEventListener('click', () => {
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider).then((result) => {
-                // O usuário foi autenticado com sucesso
                 console.log(result);
-                // Você pode redirecionar ou realizar outras ações aqui
+                // Redirecionar após login bem-sucedido
+                window.location.href = "/login.html";
             }).catch((error) => {
-                // Lidar com erros aqui
                 console.error("Erro ao autenticar: ", error);
             });
         });
