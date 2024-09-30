@@ -769,6 +769,7 @@ def insights(post_id):
 def ads():
     return send_from_directory('static', 'ads.txt')
 
+<<<<<<< HEAD
 @app.route('/manifest.json')
 def manifest():
     return send_from_directory('static', 'manifest.json')
@@ -781,6 +782,8 @@ def fbm():
 def fiv():
     return send_from_directory('static', 'favicon.ico')
 
+=======
+>>>>>>> 2bf73e22b35b9bc030b9c7bf3e168b3e85ab16f9
 @app.route('/increment_impression/<int:post_id>', methods=['POST'])
 def increment_impression(post_id):
     post = Post.query.get_or_404(post_id)
