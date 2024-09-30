@@ -706,6 +706,10 @@ def insights(post_id):
     # Renderiza a página de insights com as informações do post
     return render_template('insights.html', post=post, user=user, like_count=like_count, impression_count=impression_count)
 
+@app.route('/ads.txt')
+def ads():
+    return send_from_directory('static', 'ads.txt')
+
 @app.route('/increment_impression/<int:post_id>', methods=['POST'])
 def increment_impression(post_id):
     post = Post.query.get_or_404(post_id)
