@@ -168,22 +168,11 @@
     </style>
 </head>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-X2PT21PM9Y"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-X2PT21PM9Y');
-</script>
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3814244836764328" crossorigin="anonymous"></script>
-
 <body>
     <div class="container">
         <div class="post">
             <div class="profile-info">
-                <img src="{{ url_for('static', filename='uploads/' ~ (post.author.profile_picture if post.author.profile_picture else 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-picture">
+                <img src="{{ post.author.profile_picture if post.author.profile_picture else url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-picture">
                 <h2>{{ post.author.username }}</h2>
             </div>
             <div class="post-content">
@@ -199,7 +188,7 @@
             <div class="comments">
                 {% for comment in comments %}
                 <div class="comment">
-                    <img src="{{ url_for('static', filename='uploads/' ~ (comment.user.profile_picture if comment.user.profile_picture else 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-picture">
+                    <img src="{{ comment.user.profile_picture if comment.user.profile_picture else url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-picture">
                     <div class="comment-content">
                         <h3 class="comment-author">{{ comment.user.username }}</h3>
                         <p>{{ comment.content }}</p>
@@ -226,11 +215,7 @@
             <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
         </a>
         <a href="{{ url_for('profile', username=session['username']) }}" class="bottom-bar-icon">
-            {% if user.profile_picture %}
-            <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil">
-            {% else %}
-            <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
-            {% endif %}
+            <img src="{{ user.profile_picture if user.profile_picture else url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
         </a>
         <a href="{{ url_for('search') }}" class="bottom-bar-icon">
             <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
@@ -317,7 +302,7 @@
                     const newComment = document.createElement('div');
                     newComment.classList.add('comment');
                     newComment.innerHTML = `
-                        <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil" class="profile-picture">
+                        <img src="{{ user.profile_picture if user.profile_picture else url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-picture">
                         <div class="comment-content">
                             <h3 class="comment-author">${responseData.username}</h3>
                             <p>${commentContent}</p>

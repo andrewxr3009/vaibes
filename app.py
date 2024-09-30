@@ -100,7 +100,7 @@ class Post(db.Model):
     impressions = db.Column(db.Integer, default=0)  # Novo atributo para contar impressões
     gif_url = db.Column(db.String, nullable=True)  # Adicione esta linha se ainda não existir
     hashtags = db.relationship('PostHashtag', backref='post', lazy=True)  # Nova linha para relacionar com PostHashtag
-
+    views = db.Column(db.Integer, default=0)
 
 class Share(db.Model):
     id = db.Column(db.Integer, primary_key=True)
