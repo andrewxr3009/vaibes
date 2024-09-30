@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaibes - Insights</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #022247;
+            text-align: center;
+        }
+
+        .insight-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .insight-header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .insight-title {
+            font-size: 1.2em;
+            color: #022247;
+        }
+
+        .insight-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .insight-stat {
+            text-align: center;
+        }
+
+        .insight-stat h2 {
+            color: #022247;
+            margin: 0;
+        }
+
+        .insight-stat p {
+            margin: 0;
+            font-size: 0.9em;
+        }
+
+        .bottom-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #fff;
+            padding: 10px;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .bottom-bar-icon img {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Insights do Post</h1>
+        <div class="insight-card">
+            <div class="insight-header">
+                <div class="insight-title">{{ post.content }}</div>
+                <div>{{ post.timestamp.strftime('%d de %B de %Y') }}</div>
+            </div>
+            <div class="insight-stats">
+                <div class="insight-stat">
+                    <h2>{{ view_count }}</h2>
+                    <p>Visualizações</p>
+                </div>
+                <div class="insight-stat">
+                    <h2>{{ like_count }}</h2>
+                    <p>Curtidas</p>
+                </div>
+                <div class="insight-stat">
+                    <h2>{{ impression_count }}</h2>
+                    <p>Impressões</p>
+                </div>
+            </div>
+        </div>
+        <a href="{{ url_for('home') }}" style="text-align: center; display: block; color: #022247;">Voltar para a Home</a>
+    </div>
+
+    <div id="bottom-bar" class="bottom-bar">
+        <a href="{{ url_for('home') }}" class="bottom-bar-icon">
+            <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+        </a>
+        <a href="#" onclick="openModal()" class="bottom-bar-icon">
+            <img src="{{ url_for('static', filename='vibe-icon.png') }}" alt="Criar Post">
+        </a>
+        <a href="{{ url_for('notifications') }}" class="bottom-bar-icon">
+            <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+        </a>
+        <a href="{{ url_for('profile', username=session['username']) }}" class="bottom-bar-icon">
+            {% if user.profile_picture %}
+            <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil">
+            {% else %}
+            <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
+            {% endif %}
+        </a>
+        <a href="{{ url_for('search') }}" class="bottom-bar-icon">
+            <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
+        </a>
+    </div>
+</body>
+</html>

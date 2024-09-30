@@ -91,6 +91,10 @@ class Post(db.Model):
     comments = db.relationship('Comment', back_populates='post', lazy=True, cascade="all, delete-orphan")
     shares = db.relationship('Share', back_populates='shared_post', lazy=True)
     author = db.relationship('User', back_populates='posts')
+    impressions = db.Column(db.Integer, default=0)  # Novo atributo para contar impressões
+    gif_url = db.Column(db.String, nullable=True)  # Adicione esta linha se ainda não existir
+    hashtags = db.relationship('PostHashtag', backref='post', lazy=True)  # Nova linha para relacionar com PostHashtag
+
 
 class Share(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -134,6 +138,18 @@ class Notification(db.Model):
         self.user_id = user_id
         self.post_id = post_id
         self.message = message
+
+class Hashtag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    post_count = db.Column(db.Integer, default=0)  # Contador de quantos posts usam a hashtag
+    posts = db.relationship('PostHashtag', backref='hashtag', lazy=True)
+
+class PostHashtag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    hashtag_id = db.Column(db.Integer, db.ForeignKey('hashtag.id'), nullable=False)
+
 
 
 # Cria os bancos de dados
@@ -326,15 +342,31 @@ def create_post():
 
     if request.method == 'POST':
         content = request.form['content']
+        gif_url = request.form['gif_url']
+        hashtags_input = request.form.get('hashtags', '')
+        hashtags = [h.strip() for h in hashtags_input.split(',') if h.strip()]  # Captura hashtags do formulário
+
         if content:
-            new_post = Post(content=content, user_id=user.id)
+            new_post = Post(content=content, gif_url=gif_url, user_id=user.id)
             db.session.add(new_post)
-            db.session.commit()
+
+            for hashtag_name in hashtags:
+                hashtag = Hashtag.query.filter_by(name=hashtag_name).first()
+                if not hashtag:
+                    hashtag = Hashtag(name=hashtag_name, post_count=1)  # Criar nova hashtag
+                    db.session.add(hashtag)
+                else:
+                    hashtag.post_count += 1  # Incrementar contador de posts
+                db.session.flush()  # Permitir que o ID da hashtag esteja disponível
+
+                # Vincular post e hashtag
+                post_hashtag = PostHashtag(post_id=new_post.id, hashtag_id=hashtag.id)
+                db.session.add(post_hashtag)
 
             # Notificar todos os usuários
             all_users = User.query.all()
             for recipient in all_users:
-                if recipient.id != user.id:  # Evitar notificar o próprio usuário
+                if recipient.id != user.id:
                     notification = Notification(user_id=recipient.id, post_id=new_post.id, message=f"{user.username} criou um novo post.")
                     db.session.add(notification)
 
@@ -572,6 +604,8 @@ def post_detail(post_id):
 
     # Busca o post pelo ID
     post = Post.query.get(post_id)
+    post.views += 1
+    db.session.commit()
     if post is None:
         flash('Post não encontrado.', 'danger')
         return redirect(url_for('home'))
@@ -612,6 +646,73 @@ def mark_notification_read(notification_id):
         return jsonify({'status': 'success', 'message': 'Notificação marcada como lida.'})
     
     return jsonify({'status': 'error', 'message': 'Notificação não encontrada ou acesso negado.'})
+
+@app.route('/hashtag_suggestions')
+def hashtag_suggestions():
+    query = request.args.get('query', '')
+    hashtags = Hashtag.query.filter(Hashtag.name.like(f'%{query}%')).all()
+    return jsonify(hashtags=[{'name': h.name, 'post_count': h.post_count} for h in hashtags])
+
+@app.route('/hashtag/<string:hashtag_name>')
+def view_hashtag_posts(hashtag_name):
+    hashtag = Hashtag.query.filter_by(name=hashtag_name).first()
+    if hashtag:
+        posts = Post.query.join(PostHashtag).filter(PostHashtag.hashtag_id == hashtag.id).all()
+        return render_template('hashtag_posts.html', posts=posts, hashtag=hashtag_name)
+    else:
+        flash('Hashtag não encontrada.', 'danger')
+        return redirect(url_for('home'))
+
+@app.route('/delete_post/<int:post_id>', methods=['DELETE'])
+def delete_post(post_id):
+    # Busca o post pelo ID
+    post = Post.query.get_or_404(post_id)
+
+    # Verifica se o usuário tem permissão para excluir o post
+    if post.author.id != session['user_id']:
+        return jsonify(success=False, message="Você não tem permissão para excluir este post."), 403
+
+    # Exclui todas as notificações associadas ao post
+    Notification.query.filter_by(post_id=post_id).delete()
+
+    # Exclui o post
+    db.session.delete(post)
+    db.session.commit()
+
+    return jsonify(success=True)
+
+
+@app.route('/insights/<int:post_id>')
+def insights(post_id):
+    # Verifica se o usuário está autenticado
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    # Busca o post pelo ID
+    user = User.query.get(session['user_id'])
+    post = Post.query.get(post_id)
+    if post is None:
+        flash('Post não encontrado.', 'danger')
+        return redirect(url_for('home'))
+
+    # Verifica se o usuário é o autor do post
+    if post.user_id != session['user_id']:
+        flash('Você não tem permissão para acessar os insights deste post.', 'danger')
+        return redirect(url_for('home'))
+     # Ou o método que você usa para contar as visualizações
+    like_count = len(post.likes)  # Conta as curtidas associadas ao post
+    impression_count = post.impressions  # Adicione esta propriedade ao modelo de Post
+
+    # Renderiza a página de insights com as informações do post
+    return render_template('insights.html', post=post, user=user, like_count=like_count, impression_count=impression_count)
+
+@app.route('/increment_impression/<int:post_id>', methods=['POST'])
+def increment_impression(post_id):
+    post = Post.query.get_or_404(post_id)
+    post.impressions += 1  # Assegure-se que a coluna 'impressions' exista no seu modelo Post
+    db.session.commit()
+    return jsonify(success=True)
+
 
 
 
