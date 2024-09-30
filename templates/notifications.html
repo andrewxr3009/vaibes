@@ -5,19 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vaibes - Notificações</title>
     <link rel="manifest" href="/manifest.json">
-
-    <!-- Meta tags para iOS -->
     <meta name="apple-mobile-web-app-title" content="Vaibes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-
-    <!-- Meta tags para Android -->
     <meta name="theme-color" content="#022247">
     <link rel="icon" sizes="192x192" href="/static/icon-192x192.png">
     <link rel="icon" sizes="512x512" href="/static/icon-512x512.png">
 
     <style>
+        /* Estilos mantidos do seu código original */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -83,21 +80,25 @@
 
 <body>
     <h1>Notificações</h1>
-    <ul>
+    <div class="posts-container">
         {% if notifications %}
             {% for notification in notifications %}
-                <li>
-                    <a href="{{ url_for('post_detail', post_id=notification.post_id) }}">
-                        {{ notification.message }} - {{ notification.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
-                    </a>
-                </li>
+                <div class="notification">
+                    <div class="notification-header">
+                        <img src="{{ notification.user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="notification-profile-pic">
+                        <strong>{{ notification.user.username }}</strong>
+                    </div>
+                    <div class="notification-body">
+                        <a href="{{ url_for('post_detail', post_id=notification.post_id) }}">
+                            {{ notification.message }} - {{ notification.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+                        </a>
+                    </div>
+                </div>
             {% endfor %}
         {% else %}
-            <li class="no-notifications">Nenhuma notificação.</li>
+            <div class="no-notifications">Nenhuma notificação.</div>
         {% endif %}
-    </ul>
-</body>
-
+    </div>
 
     <div id="bottom-bar" class="bottom-bar">
         <a href="{{ url_for('home') }}" class="bottom-bar-icon">
@@ -111,9 +112,9 @@
         </a>
         <a href="{{ url_for('profile', username=session['username']) }}" class="bottom-bar-icon">
             {% if user.profile_picture %}
-            <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil">
+                <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil">
             {% else %}
-            <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
+                <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
             {% endif %}
         </a>
         <a href="{{ url_for('search') }}" class="bottom-bar-icon">

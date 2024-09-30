@@ -1,7 +1,7 @@
 from app import app, db, User, Post, Follower
 from flask import request, jsonify, redirect, url_for, session, flash, render_template
 
-# Implementação de nova funcionalidade: Seguir usuários
+# Impementação de nova funcionalidade: Seguir usuários
 @app.route('/follow/<int:user_id>', methods=['POST'])
 def follow(user_id):
     if 'username' in session:

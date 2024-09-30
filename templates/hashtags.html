@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posts com a Hashtag #{{ hashtag }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Inclua outros links de estilo e scripts conforme necessário -->
+</head>
+<body>
+    <div class="app-container">
+        <div class="posts-container">
+            <h1>Posts com a Hashtag #{{ hashtag }}</h1>
+            {% if posts %}
+                {% for post in posts %}
+                <div class="post" id="post-{{ post.id }}">
+                    <div class="post-header">
+                        <img src="{{ post.author.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                        <div class="post-info">
+                            <strong>{{ post.author.username }}</strong>
+                            <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
+                        </div>
+                    </div>
+                    <div class="post-body">
+                        {% set content = post.content %}
+                        {% for word in content.split() %}
+                            {% if word.startswith('#') %}
+                                <a href="/hashtag/{{ word[1:] }}">{{ word }}</a>
+                            {% else %}
+                                {{ word }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="post-actions">
+                        <div class="like-container">
+                            <img src="{{ url_for('static', filename='hearth-off-icon.png') }}" alt="Curtir" class="like-icon" onclick="toggleLike({{ post.id }})">
+                            <span>{{ post.like_count }}</span>
+                        </div>
+                        <img src="{{ url_for('static', filename='send-icon.png') }}" alt="Compartilhar" class="action-icon">
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>Nenhum post encontrado para esta hashtag.</p>
+            {% endif %}
+        </div>
+
+        <div class="bottom-bar">
+            <a href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+                <span>Início</span>
+            </a>
+            <a href="{{ url_for('notifications') }}">
+                <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+                <span>Notificações</span>
+            </a>
+            <div class="create-post-button" onclick="openModal()">
+                <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar Post">
+                <span>Criar</span>
+            </div>
+            <a href="{{ url_for('profile', username=user.username) }}">
+                <img src="{{ user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                <span>Perfil</span>
+            </a>
+            <a href="{{ url_for('search') }}">
+                <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
+                <span>Buscar</span>
+            </a>
+        </div>
+
+        <div id="bottom-bar-modal" class="bottom-bar-modal">
+            <div class="bottom-bar-modal-content">
+                <button type="button" onclick="closeModal()">Fechar</button>
+                <form id="postForm" action="{{ url_for('create_post') }}" method="POST">
+                    <textarea name="content" placeholder="O que você está pensando?" required></textarea>
+                    <input type="text" id="gif-url" name="gif_url" placeholder="Cole o link do GIF aqui...">
+                    <button type="submit">Publicar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleLike(postId) {
+            // Lógica para curtir/descurtir post
+        }
+        function openModal() {
+            document.getElementById('bottom-bar-modal').classList.add('active');
+        }
+        function closeModal() {
+            document.getElementById('bottom-bar-modal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

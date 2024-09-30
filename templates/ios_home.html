@@ -4,12 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vaibes - Home</title>
+    
+    <!-- Meta tags para web app -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Ícones para iOS -->
+    <link rel="apple-touch-icon" sizes="180x180" href="static/vibe-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/vibe-icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/vibe-icon.png">
+
+    <!-- Manifest do Web App -->
     <link rel="manifest" href="/manifest.json">
+    
+    <!-- Meta tags para Android -->
     <meta name="theme-color" content="#022247">
-    <link rel="icon" sizes="192x192" href="/static/icon-192x192.png">
-    <link rel="icon" sizes="512x512" href="/static/icon-512x512.png">
+    <link rel="icon" sizes="192x192" href="/static/vibe-icon.png">
+    <link rel="icon" sizes="512x512" href="/static/vibe-icon.png">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X2PT21PM9Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-X2PT21PM9Y');
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3814244836764328" crossorigin="anonymous"></script>
+
     <style>
-        body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; padding: 0; }
         .app-container { display: flex; flex-direction: column; height: 100vh; }
         .posts-container { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column-reverse; }
         .post { background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); margin-bottom: 10px; padding: 10px; cursor: pointer; position: relative; } /* Adicionado position: relative */
@@ -45,33 +71,34 @@
         .bottom-bar-modal-content textarea { width: 100%; height: 60px; margin-bottom: 10px; border: 1px solid #ddd; padding: 10px; }
         .bottom-bar-modal-content button { background-color: #022247; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; }
         .bottom-bar-modal-content button:hover { background-color: #0056b3; }
+
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="posts-container">
-            {% for post in posts %}
-            <div class="post" id="post-{{ post.id }}">
-                <div class="post-header">
-                    <img src="{{ url_for('static', filename='uploads/' ~ (post.author.profile_picture or 'default-profile-pic.png')) }}" alt="Foto de perfil" class="profile-pic">
-                    <div class="post-info">
-                        <strong>{{ post.author.username }}</strong>
-                        <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
+            {% if posts %}
+                {% for post in posts %}
+                <div class="post" id="post-{{ post.id }}">
+                    <div class="post-header">
+                        <img src="{{ post.author.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                        <div class="post-info">
+                            <strong>{{ post.author.username }}</strong>
+                            <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
+                        </div>
+                        <div class="post-options" onclick="toggleOptions({{ post.id }})">•••</div>
+                        <div class="post-options-menu" id="options-menu-{{ post.id }}">
+                            {% if session['user_id'] == post.author.id %}
+                                <button onclick="deletePost({{ post.id }})">Excluir</button>
+                                <button onclick="viewInsights({{ post.id }})">Ver Insights</button>
+                            {% else %}
+                                <button>Denunciar</button>
+                                <button>Silenciar</button>
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="post-options" onclick="toggleOptions({{ post.id }})">•••</div>
-                    <div class="post-options-menu" id="options-menu-{{ post.id }}">
-                        {% if session['user_id'] == post.author.id %}
-                        <button onclick="deletePost({{ post.id }})">Excluir</button>
-                        <button onclick="viewInsights({{ post.id }})">Ver Insights</button>
-                        {% else %}
-                        <button>Denunciar</button>
-                        <button>Silenciar</button>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="post-body">
-                    {% set content = post.content %}
-                    {% if '#' in content %}
+                    <div class="post-body">
+                        {% set content = post.content %}
                         {% for word in content.split() %}
                             {% if word.startswith('#') %}
                                 <a href="/hashtag/{{ word[1:] }}">{{ word }}</a>
@@ -79,85 +106,98 @@
                                 {{ word }}
                             {% endif %}
                         {% endfor %}
-                    {% else %}
-                        {{ content }}
-                    {% endif %}
-                </div>
-                <div class="post-actions">
-                    <div class="like-container">
-                        <img src="{{ url_for('static', filename='hearth-off-icon.png') }}" alt="Curtir" class="like-icon" onclick="toggleLike({{ post.id }})">
-                        <span>{{ post.like_count }}</span>
                     </div>
-                    <img src="{{ url_for('static', filename='send-icon.png') }}" alt="Compartilhar" class="action-icon">
+                    <div class="post-actions">
+                        <div class="like-container">
+                            <img src="{{ url_for('static', filename='hearth-off-icon.png') }}" alt="Curtir" class="like-icon" onclick="toggleLike({{ post.id }})">
+                            <span>{{ post.like_count }}</span>
+                        </div>
+                        <img src="{{ url_for('static', filename='send-icon.png') }}" alt="Compartilhar" class="action-icon">
+                    </div>
                 </div>
+                {% endfor %}
+            {% else %}
+                <p>Nenhum post encontrado.</p>
+            {% endif %}
+        </div>
+
+        <div class="bottom-bar">
+            <a href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+                <span>Início</span>
+            </a>
+            <a href="{{ url_for('notifications') }}">
+                <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+                <span>Notificações</span>
+            </a>
+            <div class="create-post-button" onclick="openModal()">
+                <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar Post">
+                <span>Criar</span>
             </div>
-            {% endfor %}
+            <a href="{{ url_for('profile', username=user.username) }}">
+                <img src="{{ user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                <span>Perfil</span>
+            </a>
+            <a href="{{ url_for('search') }}">
+                <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
+                <span>Buscar</span>
+            </a>
         </div>
-    </div>
-
-    <div class="bottom-bar">
-        <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home"></a>
-        <a href="#" onclick="openModal()"><img src="{{ url_for('static', filename='vibe-icon.png') }}" alt="Criar Post"></a>
-        <a href="{{ url_for('notifications') }}"><img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações"></a>
-        <a href="{{ url_for('profile', username=session['username']) }}">
-            <img src="{{ url_for('static', filename='uploads/' ~ (user.profile_picture or 'default-profile-pic.png')) }}" alt="Foto de perfil">
-        </a>
-        <a href="{{ url_for('search') }}"><img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar"></a>
-    </div>
-
-    <div id="bottom-bar-modal" class="bottom-bar-modal">
-        <div class="bottom-bar-modal-content">
-            <button type="button" onclick="closeModal()">Fechar</button>
-            <form id="postForm" action="{{ url_for('create_post') }}" method="POST">
-                <textarea name="content" placeholder="O que você está pensando?" required></textarea>
-                <input type="text" id="gif-url" name="gif_url" placeholder="Cole o link do GIF (opcional)">
-                <input type="hidden" id="hashtag-input" name="hashtags">
-                <button type="submit">Postar</button>
-            </form>
+        
+        <div id="bottom-bar-modal" class="bottom-bar-modal">
+            <div class="bottom-bar-modal-content">
+                <button type="button" onclick="closeModal()">Fechar</button>
+                <form id="postForm" action="{{ url_for('create_post') }}" method="POST">
+                    <textarea name="content" placeholder="O que você está pensando?" required></textarea>
+                    <input type="text" id="gif-url" name="gif_url" placeholder="Cole o link do GIF (opcional)">
+                    <input type="hidden" id="hashtag-input" name="hashtags">
+                    <button type="submit">Postar</button>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <script>
-        function toggleOptions(postId) {
-            document.getElementById(`options-menu-${postId}`).classList.toggle('active');
-        }
-
-        function deletePost(postId) {
-            if (confirm('Tem certeza que deseja excluir este post?')) {
-                fetch(`/delete_post/${postId}`, { method: 'DELETE' })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            document.getElementById(`post-${postId}`).remove();
-                            alert('Post excluído com sucesso!');
-                        } else {
-                            alert('Erro ao excluir o post.');
-                        }
-                    });
+        <script>
+            function toggleOptions(postId) {
+                document.getElementById(`options-menu-${postId}`).classList.toggle('active');
             }
-        }
 
-        function viewInsights(postId) {
-            window.location.href = `/insights/${postId}`;
-        }
+            function deletePost(postId) {
+                if (confirm('Tem certeza que deseja excluir este post?')) {
+                    fetch(`/delete_post/${postId}`, { method: 'DELETE' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById(`post-${postId}`).remove();
+                                alert('Post excluído com sucesso!');
+                            } else {
+                                alert('Erro ao excluir o post.');
+                            }
+                        });
+                }
+            }
 
-        function openModal() {
-            document.getElementById('bottom-bar-modal').classList.add('active');
-            document.getElementById('bottom-bar').classList.add('hidden');
-        }
+            function viewInsights(postId) {
+                window.location.href = `/insights/${postId}`;
+            }
 
-        function closeModal() {
-            document.getElementById('bottom-bar-modal').classList.remove('active');
-            document.getElementById('bottom-bar').classList.remove('hidden');
-            document.getElementById('gif-url').value = '';
-            document.getElementById('hashtag-input').value = ''; // Limpar campo de hashtags
-        }
+            function openModal() {
+                document.getElementById('bottom-bar-modal').classList.add('active');
+                document.getElementById('bottom-bar').classList.add('hidden');
+            }
 
-        document.getElementById('postForm').addEventListener('submit', function(event) {
-            const content = document.querySelector('textarea[name="content"]').value;
-            const hashtags = content.match(/#\w+/g) || []; // Captura hashtags ou um array vazio
-            document.getElementById('hashtag-input').value = hashtags.join(','); // Armazena hashtags no campo oculto
-        });
-    </script>
+            function closeModal() {
+                document.getElementById('bottom-bar-modal').classList.remove('active');
+                document.getElementById('bottom-bar').classList.remove('hidden');
+                document.getElementById('gif-url').value = '';
+                document.getElementById('hashtag-input').value = ''; // Limpar campo de hashtags
+            }
+
+            document.getElementById('postForm').addEventListener('submit', function(event) {
+                const content = document.querySelector('textarea[name="content"]').value;
+                const hashtags = content.match(/#\w+/g) || []; // Captura hashtags ou um array vazio
+                document.getElementById('hashtag-input').value = hashtags.join(','); // Armazena hashtags no campo oculto
+            });
+        </script>
+    </div>
 </body>
 </html>

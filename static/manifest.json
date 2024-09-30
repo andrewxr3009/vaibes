@@ -1,11 +1,11 @@
 {
   "name": "Vaibes",
   "short_name": "Vaibes",
-  "description": "Um aplicativo de rede social para compartilhar vibes.",
+  "description": "Sua nova Rede Social de posts com até 300 Caracteres!",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#007bff",
+  "theme_color": "#022247",
   "icons": [
     {
       "src": "/static/icon-180x180.png",

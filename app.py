@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash
+from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -7,10 +7,11 @@ import os
 import requests
 import io
 import firebase_admin
-from firebase_admin import credentials, auth, firestore
+from firebase_admin import credentials, auth, firestore, messaging
 import bcrypt
 from google.cloud import storage
 import json
+from flask_cors import CORS
 
 # Inicializar o Firebase Admin SDK
 cred = credentials.Certificate("serviceAccountKey.json")
@@ -36,6 +37,8 @@ app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png'}
 # Instância do SQLAlchemy
 db = SQLAlchemy(app)
 
+CORS(app)
+
 # Funções auxiliares
 def allowed_file(filename):
     return '.' in filename and \
@@ -57,6 +60,7 @@ def save_profile_picture(picture):
             print(f"Erro ao salvar imagem: {e}")
             return None
     return None
+
 
 # Modelos do banco de dados
 class Follower(db.Model):
@@ -81,6 +85,8 @@ class User(db.Model):
     following = db.relationship('Follower', foreign_keys='Follower.user_id', back_populates='user', lazy='dynamic')
     shares = db.relationship('Share', back_populates='sharer', lazy=True)
     followers = db.relationship('Follower', foreign_keys='Follower.follower_id', back_populates='follower', lazy='dynamic')
+    device_token = db.Column(db.Text)  
+    subscription_info = db.Column(db.Text)  # Para armazenar a inscrição do usuário    
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -218,6 +224,8 @@ def comment_post_action(post_id, user, content):
     
     return {'status': 'error', 'message': 'Erro ao adicionar comentário.'}
 
+
+
 @app.route('/')
 def home():
     if 'user_id' not in session:
@@ -249,6 +257,7 @@ def home():
 
 @app.route('/profile/<username>')
 def profile(username):
+    print(f"Username recebido: {username}")  # Debug
     user = get_user_by_username(username)
     if user is None:
         flash('Usuário não encontrado.')
@@ -256,6 +265,7 @@ def profile(username):
 
     posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
     return render_template('profile.html', user=user, posts=posts)
+
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
@@ -351,6 +361,10 @@ def create_post():
             db.session.add(new_post)
 
             for hashtag_name in hashtags:
+                # Remover o '#' do nome da hashtag, se presente
+                if hashtag_name.startswith('#'):
+                    hashtag_name = hashtag_name[1:]
+
                 hashtag = Hashtag.query.filter_by(name=hashtag_name).first()
                 if not hashtag:
                     hashtag = Hashtag(name=hashtag_name, post_count=1)  # Criar nova hashtag
@@ -377,6 +391,7 @@ def create_post():
             flash('Conteúdo do post não pode estar vazio.', 'danger')
 
     return render_template('create_post.html', user=user)
+
 
 
 # Adicione essa rota para ver os posts de um usuário
@@ -422,11 +437,18 @@ def login():
                 id_token = data['idToken']
                 local_id = data['localId']
 
+                # Obter o token de dispositivo (você deve implementar isso na parte do cliente)
+                device_token = request.form.get('device_token')
+
                 # Verificar o usuário no banco de dados
                 user = User.query.filter_by(email=email).first()
                 if not user:
                     flash("Usuário não encontrado no banco de dados.", "danger")
                     return redirect(url_for('login'))
+
+                # Atualizar o token de dispositivo no banco de dados
+                user.device_token = device_token
+                db.session.commit()
 
                 # Set session
                 session['user_id'] = user.id
@@ -620,6 +642,7 @@ def post_detail(post_id):
     return render_template('post_detail.html', post=post, comments=comments, user=user)
 
 
+
 @app.route('/notifications')
 def notifications():
     if 'user_id' not in session:
@@ -633,6 +656,34 @@ def notifications():
 
     return render_template('notifications.html', user=user, notifications=notifications)
 
+def send_push_notification(token, title, body):
+    # Cria a mensagem para enviar
+    message = messaging.Message(
+        notification=messaging.Notification(
+            title=title,
+            body=body,
+        ),
+        token=token,
+    )
+    
+    # Envia a mensagem
+    response = messaging.send(message)
+    print('Successfully sent message:', response)
+
+# Exemplo de onde você pode chamar a função send_push_notification
+def create_notification(user_id, post):
+    notification = Notification(user_id=user_id, post_id=post.id, message=f"{post.author.username} adicionou um novo post: {post.content}")
+    db.session.add(notification)
+    db.session.commit()
+
+    # Obtenha o token do usuário
+    user_device_token = get_user_device_token(user_id)
+    send_push_notification(user_device_token, "Novo Post", notification.message)
+
+def get_user_device_token(user_id):
+    # Aqui você deve buscar o token na sua tabela de usuários
+    user = User.query.get(user_id)
+    return user.device_token  # Supondo que você tenha uma coluna device_token na tabela User
 
 @app.route('/mark_notification_read/<int:notification_id>', methods=['POST'])
 def mark_notification_read(notification_id):
@@ -655,13 +706,21 @@ def hashtag_suggestions():
 
 @app.route('/hashtag/<string:hashtag_name>')
 def view_hashtag_posts(hashtag_name):
+    # Remover o '#' se necessário
+    if hashtag_name.startswith('#'):
+        hashtag_name = hashtag_name[1:]
+
+    print(hashtag_name)
+    user = User.query.get(session['user_id'])
     hashtag = Hashtag.query.filter_by(name=hashtag_name).first()
     if hashtag:
         posts = Post.query.join(PostHashtag).filter(PostHashtag.hashtag_id == hashtag.id).all()
-        return render_template('hashtag_posts.html', posts=posts, hashtag=hashtag_name)
+        return render_template('hashtags.html', posts=posts, hashtag=hashtag_name, user=user)
     else:
         flash('Hashtag não encontrada.', 'danger')
         return redirect(url_for('home'))
+
+
 
 @app.route('/delete_post/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
@@ -706,12 +765,73 @@ def insights(post_id):
     # Renderiza a página de insights com as informações do post
     return render_template('insights.html', post=post, user=user, like_count=like_count, impression_count=impression_count)
 
+@app.route('/ads.txt')
+def ads():
+    return send_from_directory('static', 'ads.txt')
+
+@app.route('/manifest.json')
+def manifest():
+    return send_from_directory('static', 'manifest.json')
+
+@app.route('/firebase-messaging-sw.js')
+def fbm():
+    return send_from_directory('static', 'firebase-messaging-sw.js')
+
+@app.route('/favicon.ico')
+def fiv():
+    return send_from_directory('static', 'favicon.ico')
+
 @app.route('/increment_impression/<int:post_id>', methods=['POST'])
 def increment_impression(post_id):
     post = Post.query.get_or_404(post_id)
     post.impressions += 1  # Assegure-se que a coluna 'impressions' exista no seu modelo Post
     db.session.commit()
     return jsonify(success=True)
+
+@app.route('/profile_settings', methods=['POST', 'GET'])
+def profile_settings():
+    user = User.query.get(session['user_id'])
+
+    if request.method == 'POST':
+        # Atualizar bio
+        bio = request.form.get('bio')
+        if bio:
+            user.bio = bio
+            flash('Bio atualizada com sucesso!', 'success')
+
+        # Alterar senha
+        old_password = request.form.get('old_password')
+        new_password = request.form.get('new_password')
+        if old_password and new_password:
+            if bcrypt.checkpw(old_password.encode('utf-8'), user.password.encode('utf-8')):
+                user.password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                flash('Senha alterada com sucesso!', 'success')
+            else:
+                flash('Senha antiga incorreta!', 'danger')
+
+        # Atualizar foto de perfil
+        picture = request.files.get('profile_picture')
+        if picture and allowed_file(picture.filename):
+            profile_picture_url = save_profile_picture(picture)
+            user.profile_picture = profile_picture_url
+            flash('Foto de perfil atualizada!', 'success')
+
+        db.session.commit()
+        return redirect(url_for('profile_settings'))
+
+    return render_template('profile_settings.html', user=user)
+
+@app.route('/save-token', methods=['POST'])
+def save_token():
+    data = request.get_json()
+    token = data.get('token')
+    user_id = session['user_id']  # Supondo que o usuário esteja autenticado
+    print(f'Token recebido: {token}')
+
+    user = User.query.get(user_id)
+    user.device_token = token  # Armazena o token
+    db.session.commit()
+    return jsonify({'success': True}), 200
 
 
 
