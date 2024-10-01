@@ -14,3 +14,4 @@ google-cloud
 flask-cors
 cryptography
 pywebpush
+pusher

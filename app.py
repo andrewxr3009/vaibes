@@ -272,7 +272,7 @@ def home():
         return redirect(url_for('logout'))
 
     user_id = user.id
-    posts = Post.query.order_by(Post.timestamp.asc()).all()
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
     for post in posts:
         post.comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()
 
@@ -380,6 +380,19 @@ def signup():
 
     return render_template('signup.html')  # Retorna o formulário de cadastro se for um GET
 
+
+
+import pusher
+
+# Inicializa o cliente Pusher
+pusher_client = pusher.Pusher(
+    app_id='1873813',
+    key='125aed71fd441d77aae7',
+    secret='c72a17eb22ed7d06c4d4',
+    cluster='sa1',
+    ssl=True
+)
+
 @app.route('/post', methods=['GET', 'POST'])
 def create_post():
     if 'user_id' not in session:
@@ -421,6 +434,9 @@ def create_post():
                     notification = Notification(user_id=recipient.id, post_id=new_post.id, message=f"{user.username} criou um novo post.")
                     db.session.add(notification)
 
+                    # Envia o evento para o Pusher
+                    pusher_client.trigger('my-channel', 'my-event', {'message': f"{user.username} criou um novo post."})
+
             db.session.commit()  # Salvar todas as notificações
             flash('Post criado com sucesso!', 'success')
             return redirect(url_for('home'))
@@ -428,6 +444,8 @@ def create_post():
             flash('Conteúdo do post não pode estar vazio.', 'danger')
 
     return render_template('create_post.html', user=user)
+
+
 
 
 
@@ -779,42 +797,6 @@ def notifications():
 
     return render_template('notifications.html', user=user, notifications=notifications)
 
-def send_push_notification(token, title, body):
-    # Cria a mensagem para enviar
-    message = messaging.Message(
-        notification=messaging.Notification(
-            title=title,
-            body=body,
-        ),
-        token=token,
-    )
-    
-    # Envia a mensagem
-    response = messaging.send(message)
-    print('Successfully sent message:', response)
-
-# Exemplo de onde você pode chamar a função send_push_notification
-def create_notification(user_id, post, message):
-    # Obter o usuário a partir do user_id
-    user = User.query.get(user_id)
-    
-    # Agora podemos acessar o username
-    notification_message = f"{user.username} adicionou um novo post: {post.content}"
-    
-    notification = Notification(user_id=user_id, post_id=Post.id, message=notification_message)
-    db.session.add(notification)
-    db.session.commit()
-
-    # Obtenha o token do usuário
-    user_device_token = get_user_device_token(user_id)
-    send_push_notification(user_device_token, "Novo Post", message)
-
-
-
-def get_user_device_token(user_id):
-    # Aqui você deve buscar o token na sua tabela de usuários
-    user = User.query.get(user_id)
-    return user.device_token  # Supondo que você tenha uma coluna device_token na tabela User
 
 @app.route('/mark_notification_read/<int:notification_id>', methods=['POST'])
 def mark_notification_read(notification_id):
@@ -912,6 +894,11 @@ def fbm():
 @app.route('/favicon.ico')
 def fiv():
     return send_from_directory('static', 'favicon.ico')
+
+@app.route('/service-worker.js', endpoint='service_worker')
+def fiv():
+    return send_from_directory('static', 'service-worker.js')
+
 
 
 @app.route('/increment_impression/<int:post_id>', methods=['POST'])

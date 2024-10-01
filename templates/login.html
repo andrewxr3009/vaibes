@@ -5,54 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Vaibes</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='script.css') }}">
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-        import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging.js';
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc",
-            authDomain: "app-vaibes.firebaseapp.com",
-            projectId: "app-vaibes",
-            storageBucket: "app-vaibes.appspot.com",
-            messagingSenderId: "842665045470",
-            appId: "1:842665045470:web:edbe6c0cf3db4ac71c014f",
-            measurementId: "G-3WTKSP88V9"
-        };
+    <!-- Pusher Beams -->
+    <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 
-        const app = initializeApp(firebaseConfig);
-        const messaging = getMessaging(app);
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const beamsClient = new PusherPushNotifications.Client({
+                instanceId: 'f2a1468e-40d9-4beb-a382-52525b38948b'
+            });
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/firebase-messaging-sw.js')
-                .then((registration) => {
-                    console.log('Service Worker registrado com sucesso:', registration);
-                })
-                .catch((err) => {
-                    console.log('Falha ao registrar o Service Worker:', err);
-                });
-        }
-
-        async function requestDeviceToken() {
-            try {
-                const currentToken = await getToken(messaging, { vapidKey: 'BPFHsWVpmdz4ttOgwkr25F1hSlxlNJSyJDvVd4X7k2Jmi1rJlATt1non' });
-                if (currentToken) {
+            // Função para obter o token do dispositivo e inscrever-se no interesse
+            async function requestDeviceToken() {
+                try {
+                    const currentToken = await beamsClient.start();
                     console.log("Token de dispositivo encontrado:", currentToken);
                     document.getElementById('device-token').value = currentToken;
-                } else {
-                    console.log("Não foi possível obter o token de dispositivo.");
-                }
-            } catch (err) {
-                console.error("Erro ao obter token de dispositivo:", err);
-            }
-        }
 
-        window.onload = function() {
-            document.getElementById('login-button').addEventListener('click', async () => {
-                await requestDeviceToken();
+                    // Inscreve-se em um interesse específico
+                    await beamsClient.addDeviceInterest('hello');
+                    console.log('Dispositivo inscrito com sucesso!');
+                } catch (err) {
+                    console.error("Erro ao obter token de dispositivo:", err);
+                }
+            }
+
+            // Ação ao clicar no botão de login
+            document.getElementById('login-button').addEventListener('click', async (e) => {
+                e.preventDefault(); // Impede envio do formulário imediatamente
+                await requestDeviceToken(); // Aguarda obter o token do dispositivo
                 document.querySelector('form').submit(); // Submete o formulário após obter o token
             });
-        };
+        });
+    </script>
 
+    <script>
+        // Inicializa o Pusher
+        const pusher = new Pusher('125aed71fd441d77aae7', {
+            cluster: 'sa1'
+        });
+
+        // Inscreve-se no canal específico
+        const channel = pusher.subscribe('my-channel');
+
+        // Escuta o evento 'my-event'
+        channel.bind('my-event', function(data) {
+            // Lógica ao receber a notificação
+            alert('Nova notificação: ' + data.message);
+            console.log('Notificação recebida:', data);
+        });
     </script>
 </head>
 
@@ -72,7 +74,7 @@
             <input type="email" name="email" placeholder="Digite seu email" required>
             <input type="password" name="password" placeholder="Digite sua senha" required>
             <input type="hidden" name="device_token" id="device-token">
-            <button type="button" id="login-button">Login</button>
+            <button type="submit" id="login-button">Login</button>
         </form>
         
         <p>Ainda não tem uma conta? <a href="{{ url_for('signup') }}">Clique aqui para criar uma!</a></p>

@@ -38,8 +38,7 @@
 body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; padding: 0; }
         .app-container { display: flex; flex-direction: column; height: 100vh; }
         .posts-container { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; } /* Alterado de column-reverse para column */
-        .post { background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); margin-bottom: 10px; padding: 10px; cursor: pointer; position: relative; }        .post-header { display: flex; align-items: center; }
-        .profile-pic { border-radius: 50%; width: 36px; height: 36px; margin-right: 8px; }
+        .post { background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); margin-bottom: 10px; padding: 10px; cursor: pointer; position: relative; }               .profile-pic { border-radius: 50%; width: 36px; height: 36px; margin-right: 8px; }
         .post-info { flex: 1; }
         .post-options { position: absolute; top: 10px; right: 10px; cursor: pointer; }
         .post-options-menu { display: none; position: absolute; top: 30px; right: 10px; background-color: #fff; border: 1px solid #ddd; border-radius: 5px; z-index: 999; }
@@ -84,7 +83,24 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
 .like-button.liked {
     background-color: #022247;
 }
+.follow-button {
+    background-color: #022247; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    border: none; /* Sem borda */
+    padding: 5px 10px; /* Ajuste do padding para um botão menor */
+    border-radius: 15px; /* Bordas arredondadas */
+    cursor: pointer; /* Cursor pointer */
+    font-size: 0.9em; /* Tamanho da fonte ajustado */
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Para que a data fique à direita */
+}
+
     </style>
+    <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -94,11 +110,18 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                 <div class="post" id="post-{{ post.id }}">
                     <div class="post-header">
                         <img src="{{ post.user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
-                        <div class="post-info">
+                        <div class="post-info" style="flex-grow: 1;">
                             <a href="{{ url_for('profile', username=post.user.username) }}">
                                 <strong>{{ post.user.username }}</strong>
                             </a>
-                            <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
+                            <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST" style="display: inline;">
+                                {% if user.is_following(post.user) %}
+                                    <button type="submit" class="follow-button" style="margin-left: 10px;">Deixar de Seguir</button>
+                                {% else %}
+                                    <button type="submit" class="follow-button" style="margin-left: 10px;">Seguir</button>
+                                {% endif %}
+                            </form>
+                            <span style="float: right;">{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
                         </div>
                         <div class="post-options" onclick="toggleOptions({{ post.id }})">•••</div>
                         <div class="post-options-menu" id="options-menu-{{ post.id }}">
@@ -127,11 +150,7 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                                 Curtir (<span id="like-count-{{ post.id }}">{{ post.likes|length }}</span>)
                             </button>
                         </div>
-                        <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST">
-                            <button type="submit" class="btn {{ 'btn-danger' if is_following else 'btn-primary' }}">
-                                {{ 'Deixar de Seguir' if is_following else 'Seguir' }}
-                            </button>
-                        </form>
+
                         <img src="{{ url_for('static', filename='send-icon.png') }}" alt="Compartilhar" class="action-icon" onclick="sharePost({{ post.id }})">
                     </div>
                 </div>
@@ -210,7 +229,7 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
         </script>
         
         <div class="bottom-bar">
-            <a href="{{ url_for('home') }}">
+                <a href="{{ url_for('home') }}">
                 <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
                 <span>Início</span>
             </a>
@@ -229,7 +248,7 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
             <a href="{{ url_for('search') }}">
                 <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
                 <span>Buscar</span>
-            </a>
+                </a>
         </div>
         
         <div id="bottom-bar-modal" class="bottom-bar-modal">
