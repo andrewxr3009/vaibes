@@ -63,15 +63,8 @@ def save_profile_picture(picture):
 
 
 # Modelos do banco de dados
-class Follower(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    follower_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    user = db.relationship('User', foreign_keys=[user_id], back_populates='following')
-    follower = db.relationship('User', foreign_keys=[follower_id], back_populates='followers')
-
 class User(db.Model):
+    __tablename__ = 'user'  
     id = db.Column(db.Integer, primary_key=True)
     firebase_id = db.Column(db.String(255), unique=True, nullable=False)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -79,79 +72,106 @@ class User(db.Model):
     password = db.Column(db.String(120), nullable=False)
     bio = db.Column(db.String(255))
     profile_picture = db.Column(db.String(255))
-    posts = db.relationship('Post', back_populates='author', lazy=True)
+    
+    # Relacionamentos
+    posts = db.relationship('Post', back_populates='user')
+    comments = db.relationship('Comment', back_populates='user')
     likes = db.relationship('Like', back_populates='user', lazy=True, cascade="all, delete-orphan")
-    comments = db.relationship('Comment', back_populates='user', lazy=True, cascade="all, delete-orphan")
-    following = db.relationship('Follower', foreign_keys='Follower.user_id', back_populates='user', lazy='dynamic')
     shares = db.relationship('Share', back_populates='sharer', lazy=True)
-    followers = db.relationship('Follower', foreign_keys='Follower.follower_id', back_populates='follower', lazy='dynamic')
     device_token = db.Column(db.Text)  
-    subscription_info = db.Column(db.Text)  # Para armazenar a inscrição do usuário    
+    subscription_info = db.Column(db.Text)  # Para armazenar a inscrição do usuário 
+    followers = db.relationship('Follower', foreign_keys='Follower.follower_id', back_populates='follower', lazy='dynamic')
+    following = db.relationship('Follower', foreign_keys='Follower.user_id', back_populates='user', lazy='dynamic')
+
+
+class Follower(db.Model):
+    __tablename__ = 'follower'  
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    follower_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship('User', foreign_keys=[user_id], back_populates='following')
+    follower = db.relationship('User', foreign_keys=[follower_id], back_populates='followers')
+
 
 class Post(db.Model):
+    __tablename__ = 'post'  
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    # Relacionamentos
     likes = db.relationship('Like', back_populates='post', lazy=True, cascade="all, delete-orphan")
     comments = db.relationship('Comment', back_populates='post', lazy=True, cascade="all, delete-orphan")
     shares = db.relationship('Share', back_populates='shared_post', lazy=True)
-    author = db.relationship('User', back_populates='posts')
-    impressions = db.Column(db.Integer, default=0)  # Novo atributo para contar impressões
-    gif_url = db.Column(db.String, nullable=True)  # Adicione esta linha se ainda não existir
-    hashtags = db.relationship('PostHashtag', backref='post', lazy=True)  # Nova linha para relacionar com PostHashtag
+    user = db.relationship('User', back_populates='posts')
+    impressions = db.Column(db.Integer, default=0)  
+    gif_url = db.Column(db.String, nullable=True)  
+    hashtags = db.relationship('PostHashtag', backref='post', lazy=True)  
     views = db.Column(db.Integer, default=0)
 
-class Share(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-
-    shared_post = db.relationship('Post', back_populates='shares')
-    sharer = db.relationship('User', back_populates='shares', foreign_keys=[user_id])
-
-class Like(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-
-    post = db.relationship('Post', back_populates='likes')
-    user = db.relationship('User', back_populates='likes')
 
 class Comment(db.Model):
+    __tablename__ = 'comment'  
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    post = db.relationship('Post', back_populates='comments')
+    # Relacionamentos
     user = db.relationship('User', back_populates='comments')
+    post = db.relationship('Post', back_populates='comments')
+
+
+class Share(db.Model):
+    __tablename__ = 'share'  
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relacionamentos
+    shared_post = db.relationship('Post', back_populates='shares')
+    sharer = db.relationship('User', back_populates='shares', foreign_keys=[user_id])
+
+
+class Like(db.Model):
+    __tablename__ = 'like'  
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relacionamentos
+    post = db.relationship('Post', back_populates='likes')
+    user = db.relationship('User', back_populates='likes')
+
 
 class Notification(db.Model):
+    __tablename__ = 'notification'  
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)  # Certifique-se de que este campo exista
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     message = db.Column(db.String(255), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Relacionamentos
     user = db.relationship('User', backref='notifications')
     post = db.relationship('Post', backref='notifications')
 
-    def __init__(self, user_id, post_id, message):
-        self.user_id = user_id
-        self.post_id = post_id
-        self.message = message
 
 class Hashtag(db.Model):
+    __tablename__ = 'hashtag'  
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-    post_count = db.Column(db.Integer, default=0)  # Contador de quantos posts usam a hashtag
+    post_count = db.Column(db.Integer, default=0)  
     posts = db.relationship('PostHashtag', backref='hashtag', lazy=True)
 
+
 class PostHashtag(db.Model):
+    __tablename__ = 'post_hashtag'  
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     hashtag_id = db.Column(db.Integer, db.ForeignKey('hashtag.id'), nullable=False)
@@ -188,7 +208,10 @@ def create_notification(user_id, message):
     db.session.commit()
 
 def like_post_action(post_id, user):
-    post = Post.query.get(post_id)
+    post = Post.query.get(post_id)  # Certifique-se de obter o objeto Post corretamente
+    if not post:
+        return {"status": "error", "message": "Post não encontrado."}
+    
     if post:
         existing_like = Like.query.filter_by(post_id=post_id, user_id=user.id).first()
         if existing_like:
@@ -199,8 +222,9 @@ def like_post_action(post_id, user):
         db.session.commit()
 
         # Notificar o autor do post sobre a nova curtida
-        if post.user_id != user.id:  # Evita notificar o próprio usuário
-            create_notification(post.user_id, f"{user.username} curtiu seu post.")
+        post = Post.query.get(post_id)  # Adicione esta linha para garantir que 'post' seja um objeto Post.
+        create_notification(post.user, f"{user.username} curtiu seu post.")
+   
 
         like_count = Like.query.filter_by(post_id=post_id).count()
         return {'status': 'success', 'like_count': like_count}
@@ -215,11 +239,11 @@ def comment_post_action(post_id, user, content):
         db.session.commit()
 
         # Notificar o autor do post sobre o novo comentário
-        if post.user_id != user.id:  # Evita notificar o próprio usuário
-            create_notification(post.user_id, f"{user.username} comentou em seu post.")
+        if post.p.author != user.id:  # Evita notificar o próprio usuário
+            create_notification(post.p.author, f"{user.username} comentou em seu post.")
 
         comments = Comment.query.filter_by(post_id=post_id).all()
-        comments_data = [{'username': c.user.username, 'content': c.content} for c in comments]
+        comments_data = [{'username': c.c_user.username, 'content': c.content} for c in comments]
         return {'status': 'success', 'message': 'Comentário adicionado!', 'comments': comments_data}
     
     return {'status': 'error', 'message': 'Erro ao adicionar comentário.'}
@@ -512,16 +536,33 @@ def like_post(post_id):
 
     return jsonify(result)
 
-@app.route('/comment_post/<int:post_id>', methods=['POST'])
-def comment_post(post_id):
+@app.route('/add_comment/<int:post_id>', methods=['POST'])
+def add_comment(post_id):
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return jsonify({'status': 'error', 'message': 'Usuário não autenticado.'})
 
     user = User.query.get(session['user_id'])
-    content = request.form.get('content')
-    result = comment_post_action(post_id, user, content)
+    data = request.get_json()
+    content = data.get('content')
 
-    return jsonify(result)
+    if not content:
+        return jsonify({'status': 'error', 'message': 'O comentário não pode estar vazio.'})
+
+    post = Post.query.get(post_id)
+    if post:
+        new_comment = Comment(content=content, user_id=user.id, post_id=post_id)
+        db.session.add(new_comment)
+        db.session.commit()
+
+        return jsonify({
+            'status': 'success',
+            'comment': {
+                'author': user.username,
+                'content': new_comment.content
+            }
+        })
+    return jsonify({'status': 'error', 'message': 'Post não encontrado.'})
+
 
 @app.route('/share_post/<int:post_id>', methods=['POST'])
 def share_post(post_id):
@@ -566,26 +607,35 @@ def following(username):
     return render_template('following.html', user=user, following=following_usernames)
 
 @app.route('/follow_user/<username>', methods=['POST'])
-def follow_user(username):
+def toggle_follow(username):
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    user_to_follow = get_user_by_username(username)
-    user = User.query.get(session['user_id'])
+    user_to_follow = User.query.filter_by(username=username).first()
+    current_user_instance = User.query.get(session['user_id'])
 
-    if user_to_follow and user_to_follow.id != user.id:
-        existing_follow = Follower.query.filter_by(user_id=user_to_follow.id, follower_id=user.id).first()
+    if user_to_follow and user_to_follow.id != current_user_instance.id:
+        # Verificar se já está seguindo
+        existing_follow = Follower.query.filter_by(user_id=user_to_follow.id, follower_id=current_user_instance.id).first()
+        
         if existing_follow:
-            flash('Você já está seguindo este usuário.', 'warning')
+            # Deixar de seguir
+            db.session.delete(existing_follow)
+            db.session.commit()
+            message = 'Você deixou de seguir este usuário.'
+            following_status = False
         else:
-            new_follow = Follower(user_id=user_to_follow.id, follower_id=user.id)
+            # Seguir
+            new_follow = Follower(user_id=user_to_follow.id, follower_id=current_user_instance.id)
             db.session.add(new_follow)
             db.session.commit()
-            flash('Você começou a seguir este usuário!', 'success')
-    else:
-        flash('Erro ao seguir o usuário.', 'danger')
+            message = 'Você começou a seguir este usuário!'
+            following_status = True
+            
+        return jsonify({'message': message, 'following': following_status}), 200
 
-    return redirect(url_for('profile', username=username))
+    return jsonify({'message': 'Erro ao processar a solicitação.'}), 400
+
 
 @app.route('/unfollow_user/<username>', methods=['POST'])
 def unfollow_user(username):
@@ -620,27 +670,29 @@ def search():
 
 @app.route('/post/<int:post_id>')
 def post_detail(post_id):
-    # Verifica se o usuário está autenticado
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    # Busca o post pelo ID
     post = Post.query.get(post_id)
-    post.views += 1
-    db.session.commit()
     if post is None:
         flash('Post não encontrado.', 'danger')
         return redirect(url_for('home'))
 
-    # Busca os comentários do post
+    # Incrementa a contagem de visualizações
+    post.views += 1
+    db.session.commit()
+
+    # Obtém os comentários associados ao post, ordenados por timestamp
     comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()
+    
+    # Obtém o usuário que criou o post
+    user_to_follow = post.user  
+    user = User.query.get(session['user_id'])
 
-    # Busca o usuário da sessão
-    user = User.query.get(session['user_id'])  # Altere aqui para obter o usuário
+    # Verifica se o usuário atual está seguindo o autor do post
+    is_following = user.following.filter(Follower.user_id == user_to_follow.id).count() > 0
 
-    # Renderiza o template com os detalhes do post, comentários e usuário
-    return render_template('post_detail.html', post=post, comments=comments, user=user)
-
+    return render_template('post_detail.html', post=post, comments=comments, user=user, user_to_follow=user_to_follow, is_following=is_following)
 
 
 @app.route('/notifications')
@@ -672,7 +724,7 @@ def send_push_notification(token, title, body):
 
 # Exemplo de onde você pode chamar a função send_push_notification
 def create_notification(user_id, post):
-    notification = Notification(user_id=user_id, post_id=post.id, message=f"{post.author.username} adicionou um novo post: {post.content}")
+    notification = Notification(user_id=user_id, post_id=post.id, message=f"{post.user.username} adicionou um novo post: {post.content}")
     db.session.add(notification)
     db.session.commit()
 
@@ -755,15 +807,16 @@ def insights(post_id):
         return redirect(url_for('home'))
 
     # Verifica se o usuário é o autor do post
-    if post.user_id != session['user_id']:
+    if post.user != session['user_id']:
         flash('Você não tem permissão para acessar os insights deste post.', 'danger')
         return redirect(url_for('home'))
      # Ou o método que você usa para contar as visualizações
     like_count = len(post.likes)  # Conta as curtidas associadas ao post
     impression_count = post.impressions  # Adicione esta propriedade ao modelo de Post
+    view_count = post.views
 
     # Renderiza a página de insights com as informações do post
-    return render_template('insights.html', post=post, user=user, like_count=like_count, impression_count=impression_count)
+    return render_template('insights.html', post=post, user=user, like_count=like_count, impression_count=impression_count, view_count=view_count)
 
 @app.route('/ads.txt')
 def ads():
