@@ -60,21 +60,34 @@
         }
 
         .bottom-bar {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            background: #fff;
-            padding: 10px;
-            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: #fff;
+    padding: 5px 0;  /* Reduzindo o padding */
+    height: 50px;    /* Definindo uma altura fixa */
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
 
-        .bottom-bar-icon img {
-            width: 24px;
-            height: 24px;
-        }
+.bottom-bar-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bottom-bar-icon img {
+    width: 24px;   /* Tamanho do ícone */
+    height: 24px;  /* Tamanho do ícone */
+    margin-bottom: 3px; /* Margem inferior para espaço entre ícone e texto */
+}
+
+.bottom-bar-icon span {
+    font-size: 12px; /* Tamanho do texto menor */
+}
+
     </style>
 </head>
 
@@ -98,26 +111,35 @@
     </div>
 
     <div class="bottom-bar">
-        <a href="{{ url_for('home') }}">
-        <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
-        <span>Início</span>
-    </a>
-    <a href="{{ url_for('notifications') }}">
-        <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
-        <span>Notificações</span>
-    </a>
-    <div class="create-post-button" onclick="openModal()">
-        <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar Post">
-        <span>Criar</span>
+        <div class="bottom-bar-icon">
+            <a href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+                <span>Início</span>
+            </a>
+        </div>
+        <div class="bottom-bar-icon">
+            <a href="{{ url_for('notifications') }}">
+                <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+                <span>Notificações</span>
+            </a>
+        </div>
+        <div class="bottom-bar-icon create-post-button" onclick="openModal()">
+            <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar Post">
+            <span>Criar</span>
+        </div>
+        <div class="bottom-bar-icon">
+            <a href="{{ url_for('profile', username=user.username) }}">
+                <img src="{{ user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                <span>Perfil</span>
+            </a>
+        </div>
+        <div class="bottom-bar-icon">
+            <a href="{{ url_for('search') }}">
+                <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
+                <span>Buscar</span>
+            </a>
+        </div>
     </div>
-    <a href="{{ url_for('profile', username=user.username) }}">
-        <img src="{{ user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
-        <span>Perfil</span>
-    </a>
-    <a href="{{ url_for('search') }}">
-        <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
-        <span>Buscar</span>
-        </a>
-</div>
+    
 </body>
 </html>

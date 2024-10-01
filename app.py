@@ -216,7 +216,7 @@ def like_post_action(post_id, user):
     post = Post.query.get(post_id)  # Certifique-se de obter o objeto Post corretamente
     if not post:
         return {"status": "error", "message": "Post não encontrado."}
-    
+
     if post:
         existing_like = Like.query.filter_by(post_id=post_id, user_id=user.id).first()
         if existing_like:
@@ -227,14 +227,18 @@ def like_post_action(post_id, user):
         db.session.commit()
 
         # Notificar o autor do post sobre a nova curtida
-        post = Post.query.get(post_id)  # Adicione esta linha para garantir que 'post' seja um objeto Post.
-        create_notification(post.user_id, f"{user.username} curtiu seu post.")
-   
+        post_owner = User.query.get(post.user_id)  # Identificar o dono do post
+        if post_owner and post_owner.id != user.id:  # Verifica se o post não é do usuário que curtiu
+            notification_message = f"{user.username} curtiu seu post."
+            notification = Notification(user_id=post_owner.id, post_id=post.id, message=notification_message)
+            db.session.add(notification)
+            db.session.commit()  # Certifique-se de salvar a notificação
 
         like_count = Like.query.filter_by(post_id=post_id).count()
         return {'status': 'success', 'like_count': like_count}
-    
+
     return {'status': 'error', 'message': 'Post não encontrado.'}
+
 
 def comment_post_action(post_id, user, content):
     post = Post.query.get(post_id)
@@ -292,7 +296,11 @@ def profile(username):
         flash('Usuário não encontrado.')
         return redirect(url_for('home'))
 
-    posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
+    try:
+        posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
+    except Exception as e:
+        print(f"Erro ao buscar posts: {e}")
+    posts = []  # Ou redirecionar para uma página de erro
     return render_template('profile.html', user=user, posts=posts)
 
 
@@ -537,9 +545,27 @@ def like_post(post_id):
         return redirect(url_for('login'))
 
     user = User.query.get(session['user_id'])
+    post = Post.query.get(post_id)
+
+    # Inicializa post_owner
+    post_owner = post.user_id if post else None
+
+    # Tente realizar a ação de curtir o post
     result = like_post_action(post_id, user)
 
+    if result.get('status') == 'success':
+        post = Post.query.get(post_id)  # Obter o post que foi curtido
+        post_owner = User.query.get(post.user_id)  # Identificar o dono do post
+
+        # Enviar notificação ao dono do post
+        if post_owner and post_owner.id != user.id:  # Verifica se o post não é do usuário que curtiu
+            notification_message = f"{user.username} curtiu seu post."
+            notification = Notification(user_id=post_owner.id, post_id=post.id, message=notification_message)
+            db.session.add(notification)
+            db.session.commit()  # Certifique-se de salvar a notificação
+
     return jsonify(result)
+
 
 @app.route('/add_comment/<int:post_id>', methods=['POST'])
 def add_comment(post_id):
@@ -557,6 +583,14 @@ def add_comment(post_id):
     if post:
         new_comment = Comment(content=content, user_id=user.id, post_id=post_id)
         db.session.add(new_comment)
+
+        # Enviar notificação ao dono do post
+        post_owner = User.query.get(post.user_id)  # Identificar o dono do post
+        if post_owner and post_owner.id != user.id:  # Verifica se o post não é do comentarista
+            notification_message = f"{user.username} comentou no seu post."
+            notification = Notification(user_id=post_owner.id, post_id=post.id, message=notification_message)
+            db.session.add(notification)
+
         db.session.commit()
 
         return jsonify({
@@ -567,7 +601,6 @@ def add_comment(post_id):
             }
         })
     return jsonify({'status': 'error', 'message': 'Post não encontrado.'})
-
 
 @app.route('/share_post/<int:post_id>', methods=['POST'])
 def share_post(post_id):
@@ -761,14 +794,22 @@ def send_push_notification(token, title, body):
     print('Successfully sent message:', response)
 
 # Exemplo de onde você pode chamar a função send_push_notification
-def create_notification(user_id, post):
-    notification = Notification(user_id=user_id, post_id=post.id, message=f"{post.user_id.username} adicionou um novo post: {post.content}")
+def create_notification(user_id, post, message):
+    # Obter o usuário a partir do user_id
+    user = User.query.get(user_id)
+    
+    # Agora podemos acessar o username
+    notification_message = f"{user.username} adicionou um novo post: {post.content}"
+    
+    notification = Notification(user_id=user_id, post_id=Post.id, message=notification_message)
     db.session.add(notification)
     db.session.commit()
 
     # Obtenha o token do usuário
     user_device_token = get_user_device_token(user_id)
-    send_push_notification(user_device_token, "Novo Post", notification.message)
+    send_push_notification(user_device_token, "Novo Post", message)
+
+
 
 def get_user_device_token(user_id):
     # Aqui você deve buscar o token na sua tabela de usuários
