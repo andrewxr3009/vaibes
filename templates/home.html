@@ -71,6 +71,19 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
         .bottom-bar-modal-content textarea { width: 100%; height: 60px; margin-bottom: 10px; border: 1px solid #ddd; padding: 10px; }
         .bottom-bar-modal-content button { background-color: #022247; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; }
         .bottom-bar-modal-content button:hover { background-color: #0056b3; }
+        .like-button, .share-button {
+    background-color: #022247;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-right: 10px;
+}
+
+.like-button.liked {
+    background-color: #022247;
 
     </style>
 </head>
@@ -83,7 +96,9 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                     <div class="post-header">
                         <img src="{{ post.user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
                         <div class="post-info">
-                            <strong>{{ post.user.username }}</strong>
+                            <a href="{{ url_for('profile', username=post.user.username) }}">
+                                <strong>{{ post.user.username }}</strong>
+                            </a>
                             <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
                         </div>
                         <div class="post-options" onclick="toggleOptions({{ post.id }})">•••</div>
@@ -97,7 +112,7 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                             {% endif %}
                         </div>
                     </div>
-                    <div class="post-body">
+                    <div class="post-body" onclick="redirectToPost({{ post.id }})">
                         {% set content = post.content %}
                         {% for word in content.split() %}
                             {% if word.startswith('#') %}
@@ -109,10 +124,16 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                     </div>
                     <div class="post-actions">
                         <div class="like-container">
-                            <img src="{{ url_for('static', filename='hearth-off-icon.png') }}" alt="Curtir" class="like-icon" onclick="toggleLike({{ post.id }})">
-                            <span>{{ post.like_count }}</span>
+                            <button class="like-button" id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})">
+                                Curtir (<span id="like-count-{{ post.id }}">{{ post.likes|length }}</span>)
+                            </button>
                         </div>
-                        <img src="{{ url_for('static', filename='send-icon.png') }}" alt="Compartilhar" class="action-icon">
+                        <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST">
+                            <button type="submit" class="btn {{ 'btn-danger' if is_following else 'btn-primary' }}">
+                                {{ 'Deixar de Seguir' if is_following else 'Seguir' }}
+                            </button>
+                        </form>
+                        <img src="{{ url_for('static', filename='send-icon.png') }}" alt="Compartilhar" class="action-icon" onclick="sharePost({{ post.id }})">
                     </div>
                 </div>
                 {% endfor %}
@@ -120,7 +141,75 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                 <p>Nenhum post encontrado.</p>
             {% endif %}
         </div>
-
+        
+        <script>
+            // Função para curtir o post
+            function likePost(postId) {
+                fetch(`/like_post/${postId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById(`like-count-${postId}`).innerText = data.like_count;
+                        const likeButton = document.getElementById(`like-button-${postId}`);
+                        likeButton.classList.toggle('liked');
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Erro ao curtir o post: ' + error);
+                });
+            }
+        
+            // Função para seguir/deixar de seguir
+            document.querySelectorAll('form[id^="follow-form-"]').forEach(form => {
+                form.onsubmit = function(event) {
+                    event.preventDefault(); // Impede o envio do formulário
+                    const form = this;
+                    fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response => response.json()).then(data => {
+                        const button = form.querySelector('button');
+                        if (data.following) {
+                            button.classList.remove('btn-primary');
+                            button.classList.add('btn-danger');
+                            button.textContent = 'Deixar de Seguir';
+                        } else {
+                            button.classList.remove('btn-danger');
+                            button.classList.add('btn-primary');
+                            button.textContent = 'Seguir';
+                        }
+                        alert(data.message);
+                    }).catch(error => {
+                        alert('Erro ao seguir/deixar de seguir: ' + error);
+                    });
+                };
+            });
+        
+            // Função para redirecionar para a página de detalhes do post
+            function redirectToPost(postId) {
+                window.location.href = `/post/${postId}`;
+            }
+        
+            // Função para compartilhar o post
+            function sharePost(postId) {
+                alert("Post compartilhado! (Lógica de compartilhamento será implementada)");
+            }
+        
+            // Função para alternar o menu de opções do post
+            function toggleOptions(postId) {
+                document.getElementById(`options-menu-${postId}`).classList.toggle('active');
+            }
+        </script>
+        
         <div class="bottom-bar">
             <a href="{{ url_for('home') }}">
                 <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
@@ -157,9 +246,6 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
         </div>
 
         <script>
-            function toggleOptions(postId) {
-                document.getElementById(`options-menu-${postId}`).classList.toggle('active');
-            }
 
             function deletePost(postId) {
                 if (confirm('Tem certeza que deseja excluir este post?')) {

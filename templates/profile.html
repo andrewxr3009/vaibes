@@ -125,14 +125,14 @@
             {% for post in posts %}
             <div class="post" id="post-{{ post.id }}">
                 <div class="post-header">
-                    <img src="{{ post.author.profile_picture }}" alt="Foto de perfil" class="profile-pic">
+                    <img src="{{ post.user_id.profile_picture }}" alt="Foto de perfil" class="profile-pic">
                     <div class="post-info">
-                        <strong>{{ post.author.username }}</strong>
+                        <strong>{{ post.user_id.username }}</strong>
                         <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
                     </div>
                     <div class="post-options" onclick="toggleOptions({{ post.id }})">•••</div>
                     <div class="post-options-menu" id="options-menu-{{ post.id }}">
-                        {% if session['user_id'] == post.author.id %}
+                        {% if session['user_id'] == post.user_id.id %}
                         <button onclick="deletePost({{ post.id }})">Excluir</button>
                         <button onclick="viewInsights({{ post.id }})">Ver Insights</button>
                         {% else %}

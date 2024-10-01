@@ -223,7 +223,7 @@ def like_post_action(post_id, user):
 
         # Notificar o autor do post sobre a nova curtida
         post = Post.query.get(post_id)  # Adicione esta linha para garantir que 'post' seja um objeto Post.
-        create_notification(post.user, f"{user.username} curtiu seu post.")
+        create_notification(post.user_id, f"{user.username} curtiu seu post.")
    
 
         like_count = Like.query.filter_by(post_id=post_id).count()
@@ -611,7 +611,12 @@ def toggle_follow(username):
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    user_to_follow = User.query.filter_by(username=username).first()
+    # Corrija a maneira de obter 'user_to_follow'
+    user_to_follow = User.query.get(post.user_id)
+
+# Verifica se o usuário atual está seguindo 'user_to_follow'
+    is_following = User.following.filter(Follower.user_id == user_to_follow.id).count() > 0
+
     current_user_instance = User.query.get(session['user_id'])
 
     if user_to_follow and user_to_follow.id != current_user_instance.id:
@@ -668,7 +673,7 @@ def search():
     flash('Por favor, insira um termo de pesquisa válido.', 'warning')
     return redirect(url_for('home'))
 
-@app.route('/post/<int:post_id>')
+@app.route('/post/<int:post_id>', methods=['GET'])
 def post_detail(post_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -684,16 +689,17 @@ def post_detail(post_id):
 
     # Obtém os comentários associados ao post, ordenados por timestamp
     comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()
-    
+
     # Obtém o usuário que criou o post
-    user_to_follow = post.user  
+    user_to_follow = User.query.get(post.user_id)  # Corrigido para obter o usuário com base no user_id
+
+    # Obtém o usuário atual
     user = User.query.get(session['user_id'])
 
     # Verifica se o usuário atual está seguindo o autor do post
-    is_following = user.following.filter(Follower.user_id == user_to_follow.id).count() > 0
+    is_following = user.following.filter(Follower.user_id == user_to_follow.id).count() > 0 if user_to_follow else False
 
     return render_template('post_detail.html', post=post, comments=comments, user=user, user_to_follow=user_to_follow, is_following=is_following)
-
 
 @app.route('/notifications')
 def notifications():
@@ -724,7 +730,7 @@ def send_push_notification(token, title, body):
 
 # Exemplo de onde você pode chamar a função send_push_notification
 def create_notification(user_id, post):
-    notification = Notification(user_id=user_id, post_id=post.id, message=f"{post.user.username} adicionou um novo post: {post.content}")
+    notification = Notification(user_id=user_id, post_id=post.id, message=f"{post.user_id.username} adicionou um novo post: {post.content}")
     db.session.add(notification)
     db.session.commit()
 
@@ -807,7 +813,7 @@ def insights(post_id):
         return redirect(url_for('home'))
 
     # Verifica se o usuário é o autor do post
-    if post.user != session['user_id']:
+    if post.user_id != session['user_id']:
         flash('Você não tem permissão para acessar os insights deste post.', 'danger')
         return redirect(url_for('home'))
      # Ou o método que você usa para contar as visualizações
