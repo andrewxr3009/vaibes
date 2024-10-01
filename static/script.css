@@ -154,6 +154,17 @@ body {
     margin-right: 10px;
 }
 
+.btn-sm {
+    background-color: #022247;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-right: 10px;
+}
+
 .like-button.liked {
     background-color: #022247;
 }
