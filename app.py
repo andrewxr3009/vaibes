@@ -427,15 +427,18 @@ def create_post():
                 post_hashtag = PostHashtag(post_id=new_post.id, hashtag_id=hashtag.id)
                 db.session.add(post_hashtag)
 
-            # Notificar todos os usuários
+            # Criar uma única notificação para o Pusher Beams
+            message = f"{user.username} criou um novo post."
+            
+            # Enviar a notificação para o Pusher
+            pusher_client.trigger('my-channel', 'my-event', {'message': message})
+
+            # Opcional: Armazenar a notificação na tabela Notification (se você quiser manter um histórico)
             all_users = User.query.all()
             for recipient in all_users:
                 if recipient.id != user.id:
-                    notification = Notification(user_id=recipient.id, post_id=new_post.id, message=f"{user.username} criou um novo post.")
+                    notification = Notification(user_id=recipient.id, post_id=new_post.id, message=message)
                     db.session.add(notification)
-
-                    # Envia o evento para o Pusher
-                    pusher_client.trigger('my-channel', 'my-event', {'message': f"{user.username} criou um novo post."})
 
             db.session.commit()  # Salvar todas as notificações
             flash('Post criado com sucesso!', 'success')

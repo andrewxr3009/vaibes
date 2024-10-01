@@ -1,11 +1,81 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaibes - Home</title>
-    
-    <!-- Meta tags para web app -->
+    <title>Home - Vaibes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='script.css') }}">
+
+    <!-- Pusher Beams SDK -->
+    <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
+    <script>
+        const beamsClient = new PusherPushNotifications.Client({
+            instanceId: 'f2a1468e-40d9-4beb-a382-52525b38948b',
+            cluster: 'sa1',
+            encrypted: true
+        });
+
+        // Função para solicitar permissão e inscrever o dispositivo
+
+
+        // Ação ao carregar a página
+        window.onload = function() {
+            requestNotifications();  // Solicitar notificações ao carregar
+            loadMorePosts();  // Carregar os primeiros posts
+        };
+
+        let offset = 0;
+        const limit = 10;  // Número de posts por vez
+        let loading = false;  // Evitar múltiplas requisições ao mesmo tempo
+
+        // Função para carregar mais posts
+        function loadMorePosts() {
+            if (loading) return;  // Se já está carregando, não fazer outra requisição
+
+            loading = true;
+            fetch(`/load_posts?offset=${offset}&limit=${limit}`)
+                .then(response => response.json())
+                .then(posts => {
+                    if (posts.length > 0) {
+                        // Incrementar o offset para a próxima requisição
+                        offset += posts.length;
+
+                        // Inserir os novos posts na página
+                        posts.forEach(post => {
+                            const postElement = document.createElement('div');
+                            postElement.classList.add('post');
+                            postElement.innerHTML = `
+                                <p><strong>${post.username}</strong></p>
+                                <p>${post.content}</p>
+                                <img src="${post.gif_url}" alt="GIF">
+                                <p>${new Date(post.created_at).toLocaleString()}</p>
+                            `;
+                            document.getElementById('post-container').appendChild(postElement);
+                        });
+                    } else {
+                        console.log('Sem mais posts.');
+                    }
+                    loading = false;
+                })
+                .catch(err => {
+                    console.error('Erro ao carregar posts:', err);
+                    loading = false;
+                });
+        }
+
+        // Função que detecta quando o usuário rola até o final da página
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+                loadMorePosts();
+            }
+
+            // Se o usuário rolar até o topo da página, recarregar
+            if (window.scrollY === 0) {
+                window.location.reload();  // Recarrega a página
+            }
+        });
+    </script>
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="mobile-web-app-capable" content="yes">
@@ -35,7 +105,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3814244836764328" crossorigin="anonymous"></script>
 
     <style>
-body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; padding: 0; }
+.body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; padding: 0; }
         .app-container { display: flex; flex-direction: column; height: 100vh; }
         .posts-container { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; } /* Alterado de column-reverse para column */
         .post { background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); margin-bottom: 10px; padding: 10px; cursor: pointer; position: relative; }               .profile-pic { border-radius: 50%; width: 36px; height: 36px; margin-right: 8px; }
@@ -301,7 +371,23 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                 const hashtags = content.match(/#\w+/g) || []; // Captura hashtags ou um array vazio
                 document.getElementById('hashtag-input').value = hashtags.join(','); // Armazena hashtags no campo oculto
             });
+        async function requestNotifications() {
+            try {
+                const token = await beamsClient.start();
+                console.log("Token de dispositivo encontrado:", token);
+                document.getElementById('device-token').value = token;
+                await beamsClient.addDeviceInterest('hello');
+                console.log('Dispositivo inscrito com sucesso!');
+            } catch (err) {
+                console.error("Erro ao ativar notificações:", err);
+            }
+        }
+
+
+        
         </script>
     </div>
+
+    
 </body>
 </html>

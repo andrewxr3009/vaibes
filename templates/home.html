@@ -6,41 +6,17 @@
     <title>Home - Vaibes</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='script.css') }}">
 
-    <!-- Pusher Beams -->
+    <!-- Pusher Beams SDK -->
     <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
-    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
     <script>
-        // Inicializa o Pusher
-        const pusher = new Pusher('125aed71fd441d77aae7', {
+        const beamsClient = new PusherPushNotifications.Client({
+            instanceId: 'f2a1468e-40d9-4beb-a382-52525b38948b',
             cluster: 'sa1',
             encrypted: true
         });
 
-        // Inscreve-se no canal específico
-        const channel = pusher.subscribe('my-channel');
+        // Função para solicitar permissão e inscrever o dispositivo
 
-        // Escuta o evento 'my-event'
-        channel.bind('my-event', function(data) {
-            alert('Nova notificação: ' + data.message);
-            console.log('Notificação recebida:', data);
-        });
-
-        // Solicita a ativação de notificações
-        const beamsClient = new PusherPushNotifications.Client({
-            instanceId: 'f2a1468e-40d9-4beb-a382-52525b38948b'
-        });
-
-        async function requestNotifications() {
-            try {
-                const token = await beamsClient.start();
-                console.log("Token de dispositivo encontrado:", token);
-                document.getElementById('device-token').value = token;
-                await beamsClient.addDeviceInterest('hello');
-                console.log('Dispositivo inscrito com sucesso!');
-            } catch (err) {
-                console.error("Erro ao ativar notificações:", err);
-            }
-        }
 
         // Ação ao carregar a página
         window.onload = function() {
@@ -100,11 +76,6 @@
         });
     </script>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaibes - Home</title>
-    
-    <!-- Meta tags para web app -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="mobile-web-app-capable" content="yes">
@@ -400,7 +371,23 @@
                 const hashtags = content.match(/#\w+/g) || []; // Captura hashtags ou um array vazio
                 document.getElementById('hashtag-input').value = hashtags.join(','); // Armazena hashtags no campo oculto
             });
+        async function requestNotifications() {
+            try {
+                const token = await beamsClient.start();
+                console.log("Token de dispositivo encontrado:", token);
+                document.getElementById('device-token').value = token;
+                await beamsClient.addDeviceInterest('hello');
+                console.log('Dispositivo inscrito com sucesso!');
+            } catch (err) {
+                console.error("Erro ao ativar notificações:", err);
+            }
+        }
+
+
+        
         </script>
     </div>
+
+    
 </body>
 </html>
