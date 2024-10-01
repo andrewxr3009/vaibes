@@ -83,6 +83,11 @@ class User(db.Model):
     followers = db.relationship('Follower', foreign_keys='Follower.follower_id', back_populates='follower', lazy='dynamic')
     following = db.relationship('Follower', foreign_keys='Follower.user_id', back_populates='user', lazy='dynamic')
 
+    def is_following(self, user):
+        """Verifica se o usuário atual está seguindo o usuário passado."""
+        return Follower.query.filter_by(user_id=user.id, follower_id=self.id).count() > 0
+
+
 
 class Follower(db.Model):
     __tablename__ = 'follower'  
@@ -611,17 +616,13 @@ def toggle_follow(username):
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    # Corrija a maneira de obter 'user_to_follow'
-    user_to_follow = User.query.get(post.user_id)
+    # Obtém o usuário que deseja seguir usando o username
+    user_to_follow = User.query.filter_by(username=username).first()
+    current_user = User.query.get(session['user_id'])
 
-# Verifica se o usuário atual está seguindo 'user_to_follow'
-    is_following = User.following.filter(Follower.user_id == user_to_follow.id).count() > 0
-
-    current_user_instance = User.query.get(session['user_id'])
-
-    if user_to_follow and user_to_follow.id != current_user_instance.id:
-        # Verificar se já está seguindo
-        existing_follow = Follower.query.filter_by(user_id=user_to_follow.id, follower_id=current_user_instance.id).first()
+    if user_to_follow and user_to_follow.id != current_user.id:
+        # Verifica se já está seguindo
+        existing_follow = Follower.query.filter_by(user_id=user_to_follow.id, follower_id=current_user.id).first()
         
         if existing_follow:
             # Deixar de seguir
@@ -631,7 +632,7 @@ def toggle_follow(username):
             following_status = False
         else:
             # Seguir
-            new_follow = Follower(user_id=user_to_follow.id, follower_id=current_user_instance.id)
+            new_follow = Follower(user_id=user_to_follow.id, follower_id=current_user.id)
             db.session.add(new_follow)
             db.session.commit()
             message = 'Você começou a seguir este usuário!'
@@ -665,13 +666,44 @@ def unfollow_user(username):
 
 @app.route('/search', methods=['GET'])
 def search():
+    user = User.query.get(session['user_id'])
+
+    return render_template('search.html', user=user)
+
+@app.route('/search/results', methods=['GET'])
+def search_results():
     query = request.args.get('query')
+    filter_option = request.args.get('filter', 'all')  # Filtrar por padrão para 'todos'
+    user = User.query.get(session['user_id'])
+    current_user = User.query.get(session['user_id'])
+    
+    
+    users, posts, hashtags = [], [], []
+    
     if query:
-        users = User.query.filter(User.username.ilike(f'%{query}%')).all()
-        posts = Post.query.filter(Post.content.ilike(f'%{query}%')).all()
-        return render_template('search_results.html', users=users, posts=posts)
+        # Lógica de filtragem com base na seleção do filtro
+        if filter_option == 'people' or filter_option == 'all':
+            users = User.query.filter(User.username.ilike(f'%{query}%')).all()
+        
+        if filter_option == 'posts' or filter_option == 'all':
+            posts = Post.query.filter(Post.content.ilike(f'%{query}%')).all()
+        
+        if filter_option == 'hashtags' or filter_option == 'all':
+            posts_with_hashtags = Post.query.filter(Post.content.ilike(f'%#{query}%')).all()
+            hashtags = [f'#{query}'] if posts_with_hashtags else []
+        
+        # Caso o filtro seja 'locations', ainda não implementado
+        if filter_option == 'locations':
+            # Exemplo: lógicas futuras para busca por locais
+            pass
+        
+        return render_template('search_results.html', users=users, user=user, current_user=current_user, posts=posts, hashtags=hashtags, query=query)
+    
     flash('Por favor, insira um termo de pesquisa válido.', 'warning')
-    return redirect(url_for('home'))
+    return redirect(url_for('show_search_page'))
+
+
+
 
 @app.route('/post/<int:post_id>', methods=['GET'])
 def post_detail(post_id):

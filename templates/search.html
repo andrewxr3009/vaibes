@@ -75,7 +75,7 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        .bottom-nav {
+        .bottom-bar {
             background-color: #fff;
             display: flex;
             justify-content: space-around;
@@ -84,7 +84,7 @@
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .bottom-nav img {
+        .bottom-bar img {
             width: 40px;
             height: 40px;
         }
@@ -107,12 +107,12 @@
 <body>
 
     <!-- Container de pesquisa -->
-    <div class="search-container">
-        <input type="text" placeholder="Pesquise por Pessoas, Posts ou Hashtags" oninput="showSuggestions()">
+    <form action="{{ url_for('search_results') }}" method="GET">
+        <input type="text" name="query" placeholder="Pesquise por Pessoas, Posts ou Hashtags" required>
         
         <!-- Filtros de pesquisa -->
         <div class="filters">
-            <select id="filter-options">
+            <select id="filter-options" name="filter">
                 <option value="all">Todos</option>
                 <option value="people">Pessoas</option>
                 <option value="posts">Posts</option>
@@ -120,34 +120,32 @@
                 <option value="locations">Locais</option>
             </select>
         </div>
-    </div>
-
-    <!-- Seção de tendências -->
-    <div class="trend-section">
-        <h3>Tendências</h3>
-        <p>#VaibesEmAlta</p>
-        <p>@UsuarioPopular</p>
-        <p>#FestaDoAno</p>
-    </div>
-
-    <!-- Resultados de pesquisa -->
-    <div class="results">
-        <div>
-            <p>Resultado 1</p>
-        </div>
-        <div>
-            <p>Resultado 2</p>
-        </div>
-        <div>
-            <p>Resultado 3</p>
-        </div>
-    </div>
-
+        
+        <button type="submit">Pesquisar</button>
+    </form>
+    
     <!-- Barra de navegação inferior -->
-    <div class="bottom-nav">
-        <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
-        <img src="{{ url_for('static', filename='logo-icon.png') }}" alt="Vaibes">
-        <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisa">
+    <div class="bottom-bar">
+        <a href="{{ url_for('home') }}">
+            <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+            <span>Início</span>
+        </a>
+        <a href="{{ url_for('notifications') }}">
+            <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+            <span>Notificações</span>
+        </a>
+        <div class="create-post-button" onclick="openModal()">
+            <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar Post">
+            <span>Criar</span>
+        </div>
+        <a href="{{ url_for('profile', username=user.username) }}">
+            <img src="{{ user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+            <span>Perfil</span>
+        </a>
+        <a href="{{ url_for('search') }}">
+            <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
+            <span>Buscar</span>
+        </a>
     </div>
 
     <script>

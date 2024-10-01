@@ -107,13 +107,15 @@
     <div class="profile-container">
         <div class="profile-header">
             {% if user.profile_picture %}
-            <img src="{{ user.profile_picture }}" alt="Foto de perfil" class="profile-pic">
+                <img src="{{ user.profile_picture }}" alt="Foto de perfil" class="profile-pic">
             {% else %}
-            <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
             {% endif %}
             <div class="profile-info">
                 <h1>{{ user.username }} 
-                    <a href="{{ url_for('profile_settings') }}" class="edit-button">Editar</a>
+                    {% if session['user_id'] == user.id %}
+                        <a href="{{ url_for('profile_settings') }}" class="edit-button">Editar</a>
+                    {% endif %}
                 </h1>
                 {% if user.bio %}
                 <p class="bio">{{ user.bio }}</p>

@@ -37,10 +37,12 @@
                 {% if post.gif_url %}
                     <img src="{{ post.gif_url }}" alt="GIF">
                 {% endif %}
-                <form id="follow-form" action="{{ url_for('toggle_follow', username=user_to_follow.username) }}" method="POST">
-                    <button type="submit" class="btn {{ 'btn-danger' if is_following else 'btn-primary' }}">
-                        {{ 'Deixar de Seguir' if is_following else 'Seguir' }}
-                    </button>
+                <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST">
+                    {% if user.is_following(post.user) %}
+                        <button type="submit" class="btn btn-danger">Deixar de Seguir</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary">Seguir</button>
+                    {% endif %}
                 </form>
                 <button class="like-button" id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})">
                     Curtir (<span id="like-count-{{ post.id }}">{{ post.likes|length }}</span>)

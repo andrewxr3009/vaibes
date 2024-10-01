@@ -84,10 +84,7 @@
         {% if notifications %}
             {% for notification in notifications %}
                 <div class="notification">
-                    <div class="notification-header">
-                        <img src="{{ notification.user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="notification-profile-pic">
-                        <strong>{{ notification.user.username }}</strong>
-                    </div>
+
                     <div class="notification-body">
                         <a href="{{ url_for('post_detail', post_id=notification.post_id) }}">
                             {{ notification.message }} - {{ notification.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
@@ -100,26 +97,27 @@
         {% endif %}
     </div>
 
-    <div id="bottom-bar" class="bottom-bar">
-        <a href="{{ url_for('home') }}" class="bottom-bar-icon">
-            <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
-        </a>
-        <a href="#" class="bottom-bar-icon" onclick="openModal()">
-            <img src="{{ url_for('static', filename='vibe-icon.png') }}" alt="Criar Post">
-        </a>
-        <a href="{{ url_for('notifications') }}" class="bottom-bar-icon">
-            <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
-        </a>
-        <a href="{{ url_for('profile', username=session['username']) }}" class="bottom-bar-icon">
-            {% if user.profile_picture %}
-                <img src="{{ url_for('static', filename='uploads/' ~ user.profile_picture) }}" alt="Foto de perfil">
-            {% else %}
-                <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
-            {% endif %}
-        </a>
-        <a href="{{ url_for('search') }}" class="bottom-bar-icon">
-            <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
-        </a>
+    <div class="bottom-bar">
+        <a href="{{ url_for('home') }}">
+        <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+        <span>Início</span>
+    </a>
+    <a href="{{ url_for('notifications') }}">
+        <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+        <span>Notificações</span>
+    </a>
+    <div class="create-post-button" onclick="openModal()">
+        <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar Post">
+        <span>Criar</span>
     </div>
+    <a href="{{ url_for('profile', username=user.username) }}">
+        <img src="{{ user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+        <span>Perfil</span>
+    </a>
+    <a href="{{ url_for('search') }}">
+        <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
+        <span>Buscar</span>
+        </a>
+</div>
 </body>
 </html>
