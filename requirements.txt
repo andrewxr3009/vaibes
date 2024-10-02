@@ -15,3 +15,5 @@ flask-cors
 cryptography
 pywebpush
 pusher
+flask_sitemap
+datetime

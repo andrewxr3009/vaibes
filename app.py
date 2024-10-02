@@ -12,6 +12,7 @@ import bcrypt
 from google.cloud import storage
 import json
 from flask_cors import CORS
+from flask_sitemap import Sitemap
 
 # Inicializar o Firebase Admin SDK
 cred = credentials.Certificate("serviceAccountKey.json")
@@ -36,6 +37,7 @@ app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png'}
 
 # Instância do SQLAlchemy
 db = SQLAlchemy(app)
+sitemap = Sitemap(app=app)
 
 CORS(app)
 
@@ -161,6 +163,7 @@ class Notification(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     message = db.Column(db.String(255), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    global_notification = db.Column(db.Boolean, default=False) 
 
     # Relacionamentos
     user = db.relationship('User', backref='notifications')
@@ -260,6 +263,7 @@ def comment_post_action(post_id, user, content):
 
 
 @app.route('/')
+@sitemap.register_generator
 def home():
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -289,6 +293,8 @@ def home():
     
 
 @app.route('/profile/<username>')
+@sitemap.register_generator
+
 def profile(username):
     print(f"Username recebido: {username}")  # Debug
     user = get_user_by_username(username)
@@ -305,6 +311,7 @@ def profile(username):
 
 
 @app.route('/signup', methods=['POST', 'GET'])
+@sitemap.register_generator
 def signup():
     if request.method == 'POST':
         # Captura os dados do formulário
@@ -393,7 +400,11 @@ pusher_client = pusher.Pusher(
     ssl=True
 )
 
+from datetime import datetime, timedelta
+
+
 @app.route('/post', methods=['GET', 'POST'])
+@sitemap.register_generator
 def create_post():
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -406,8 +417,16 @@ def create_post():
         hashtags_input = request.form.get('hashtags', '')
         hashtags = [h.strip() for h in hashtags_input.split(',') if h.strip()]  # Captura hashtags do formulário
 
+        # Verificar o último post do usuário
+        last_post = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).first()
+        
+        # Bloquear o envio de posts repetidos em menos de 30 segundos
+        if last_post and datetime.utcnow() - last_post.timestamp < timedelta(seconds=30):
+            flash('Você deve esperar 30 segundos antes de postar novamente.', 'danger')
+            return redirect(url_for('home'))
+
         if content:
-            new_post = Post(content=content, gif_url=gif_url, user_id=user.id)
+            new_post = Post(content=content, gif_url=gif_url, user_id=user.id, timestamp=datetime.utcnow())
             db.session.add(new_post)
 
             for hashtag_name in hashtags:
@@ -427,28 +446,23 @@ def create_post():
                 post_hashtag = PostHashtag(post_id=new_post.id, hashtag_id=hashtag.id)
                 db.session.add(post_hashtag)
 
-            # Criar uma única notificação para o Pusher Beams
+            # Criar uma única notificação global (sem user_id específico)
             message = f"{user.username} criou um novo post."
             
+            # Armazenar a notificação globalmente
+            global_notification = Notification(post_id=new_post.id, message=message, global_notification=True)
+            db.session.add(global_notification)
+
             # Enviar a notificação para o Pusher
             pusher_client.trigger('my-channel', 'my-event', {'message': message})
 
-            # Opcional: Armazenar a notificação na tabela Notification (se você quiser manter um histórico)
-            all_users = User.query.all()
-            for recipient in all_users:
-                if recipient.id != user.id:
-                    notification = Notification(user_id=recipient.id, post_id=new_post.id, message=message)
-                    db.session.add(notification)
-
-            db.session.commit()  # Salvar todas as notificações
+            db.session.commit()  # Salvar o post, hashtags e notificação
             flash('Post criado com sucesso!', 'success')
             return redirect(url_for('home'))
         else:
             flash('Conteúdo do post não pode estar vazio.', 'danger')
 
     return render_template('create_post.html', user=user)
-
-
 
 
 
@@ -467,6 +481,8 @@ def user_posts(username):
 FIREBASE_API_KEY = "AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc"  # Substitua com a sua API Key do Firebase
 
 @app.route('/login', methods=['GET', 'POST'])
+@sitemap.register_generator
+
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -719,12 +735,16 @@ def unfollow_user(username):
     return redirect(url_for('profile', username=username))
 
 @app.route('/search', methods=['GET'])
+@sitemap.register_generator
+
 def search():
     user = User.query.get(session['user_id'])
 
     return render_template('search.html', user=user)
 
 @app.route('/search/results', methods=['GET'])
+@sitemap.register_generator
+
 def search_results():
     query = request.args.get('query')
     filter_option = request.args.get('filter', 'all')  # Filtrar por padrão para 'todos'
@@ -788,15 +808,14 @@ def post_detail(post_id):
     return render_template('post_detail.html', post=post, comments=comments, user=user, user_to_follow=user_to_follow, is_following=is_following)
 
 @app.route('/notifications')
+@sitemap.register_generator
+
 def notifications():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
     user = User.query.get(session['user_id'])
     notifications = Notification.query.filter_by(user_id=user.id).order_by(Notification.timestamp.desc()).all()
-
-    # Debug: Imprimir as notificações para verificar se estão sendo carregadas
-    print(notifications)
 
     return render_template('notifications.html', user=user, notifications=notifications)
 
@@ -821,6 +840,7 @@ def hashtag_suggestions():
     return jsonify(hashtags=[{'name': h.name, 'post_count': h.post_count} for h in hashtags])
 
 @app.route('/hashtag/<string:hashtag_name>')
+@sitemap.register_generator
 def view_hashtag_posts(hashtag_name):
     # Remover o '#' se necessário
     if hashtag_name.startswith('#'):
@@ -844,7 +864,7 @@ def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
 
     # Verifica se o usuário tem permissão para excluir o post
-    if post.author.id != session['user_id']:
+    if post.user.id != session['user_id']:
         return jsonify(success=False, message="Você não tem permissão para excluir este post."), 403
 
     # Exclui todas as notificações associadas ao post
@@ -858,6 +878,7 @@ def delete_post(post_id):
 
 
 @app.route('/insights/<int:post_id>')
+@sitemap.register_generator
 def insights(post_id):
     # Verifica se o usuário está autenticado
     if 'user_id' not in session:
@@ -902,6 +923,9 @@ def fiv():
 def fiv():
     return send_from_directory('static', 'service-worker.js')
 
+@app.route('/google6242ed33947064b2.html', endpoint='google6242ed33947064b2.html')
+def fiv():
+    return send_from_directory('static', 'google6242ed33947064b2.html')
 
 
 @app.route('/increment_impression/<int:post_id>', methods=['POST'])
@@ -912,6 +936,7 @@ def increment_impression(post_id):
     return jsonify(success=True)
 
 @app.route('/profile_settings', methods=['POST', 'GET'])
+@sitemap.register_generator
 def profile_settings():
     user = User.query.get(session['user_id'])
 
@@ -951,11 +976,27 @@ def save_token():
     user_id = session['user_id']  # Supondo que o usuário esteja autenticado
     print(f'Token recebido: {token}')
 
+
     user = User.query.get(user_id)
     user.device_token = token  # Armazena o token
     db.session.commit()
     return jsonify({'success': True}), 200
 
+@app.route('/sitemap.xml')
+@sitemap.register_generator
+def sitemap_generator():
+    # Rota para a página inicial
+    yield 'home', {}
+
+    # Rota para o perfil de cada usuário
+    users = User.query.all()
+    for user in users:
+        yield 'profile', {'username': user.username}  # Certifique-se de passar o username corretamente
+
+    # Rota para cada post
+    posts = Post.query.all()
+    for post in posts:
+        yield 'post_detail', {'post_id': post.id}
 
 
 
