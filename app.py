@@ -37,7 +37,6 @@ app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png'}
 
 # Instância do SQLAlchemy
 db = SQLAlchemy(app)
-sitemap = Sitemap(app=app)
 
 CORS(app)
 
@@ -263,7 +262,6 @@ def comment_post_action(post_id, user, content):
 
 
 @app.route('/')
-@sitemap.register_generator
 def home():
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -309,17 +307,10 @@ def profile(username):
 
     return render_template('profile.html', user=user, posts=posts)
 
-def generate_profile_urls():
-    users = User.query.all()  # Supondo que você tenha um modelo User
-    for user in users:
-        yield 'profile', {'username': user.username}  # Chave correta para o perfil
 
-# Registra o gerador no sitemap
-sitemap.register_generator(generate_profile_urls)
 
 
 @app.route('/signup', methods=['POST', 'GET'])
-@sitemap.register_generator
 def signup():
     if request.method == 'POST':
         # Captura os dados do formulário
@@ -410,7 +401,6 @@ pusher_client = pusher.Pusher(
 
 from datetime import datetime, timedelta
 
-
 @app.route('/post', methods=['GET', 'POST'])
 def create_post():
     if 'user_id' not in session:
@@ -422,11 +412,11 @@ def create_post():
         content = request.form['content']
         gif_url = request.form['gif_url']
         hashtags_input = request.form.get('hashtags', '')
-        hashtags = [h.strip() for h in hashtags_input.split(',') if h.strip()]  # Captura hashtags do formulário
+        hashtags = [h.strip() for h in hashtags_input.split(',') if h.strip()]
 
         # Verificar o último post do usuário
         last_post = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).first()
-        
+
         # Bloquear o envio de posts repetidos em menos de 30 segundos
         if last_post and datetime.utcnow() - last_post.timestamp < timedelta(seconds=30):
             flash('Você deve esperar 30 segundos antes de postar novamente.', 'danger')
@@ -435,35 +425,32 @@ def create_post():
         if content:
             new_post = Post(content=content, gif_url=gif_url, user_id=user.id, timestamp=datetime.utcnow())
             db.session.add(new_post)
+            db.session.commit()  # Salvar o post primeiro
 
             for hashtag_name in hashtags:
-                # Remover o '#' do nome da hashtag, se presente
                 if hashtag_name.startswith('#'):
                     hashtag_name = hashtag_name[1:]
 
                 hashtag = Hashtag.query.filter_by(name=hashtag_name).first()
                 if not hashtag:
-                    hashtag = Hashtag(name=hashtag_name, post_count=1)  # Criar nova hashtag
+                    hashtag = Hashtag(name=hashtag_name, post_count=1)
                     db.session.add(hashtag)
                 else:
-                    hashtag.post_count += 1  # Incrementar contador de posts
-                db.session.flush()  # Permitir que o ID da hashtag esteja disponível
+                    hashtag.post_count += 1
+                db.session.flush()
 
-                # Vincular post e hashtag
                 post_hashtag = PostHashtag(post_id=new_post.id, hashtag_id=hashtag.id)
                 db.session.add(post_hashtag)
 
-            # Criar uma única notificação global (sem user_id específico)
+            # Criar uma notificação global após o post ter sido commitado
             message = f"{user.username} criou um novo post."
-            
-            # Armazenar a notificação globalmente
             global_notification = Notification(post_id=new_post.id, message=message, global_notification=True)
             db.session.add(global_notification)
 
             # Enviar a notificação para o Pusher
             pusher_client.trigger('my-channel', 'my-event', {'message': message})
 
-            db.session.commit()  # Salvar o post, hashtags e notificação
+            db.session.commit()  # Salvar as hashtags e a notificação
             flash('Post criado com sucesso!', 'success')
             return redirect(url_for('home'))
         else:
@@ -488,7 +475,6 @@ def user_posts(username):
 FIREBASE_API_KEY = "AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc"  # Substitua com a sua API Key do Firebase
 
 @app.route('/login', methods=['GET', 'POST'])
-@sitemap.register_generator
 
 def login():
     if request.method == 'POST':
@@ -742,7 +728,6 @@ def unfollow_user(username):
     return redirect(url_for('profile', username=username))
 
 @app.route('/search', methods=['GET'])
-@sitemap.register_generator
 
 def search():
     user = User.query.get(session['user_id'])
@@ -750,7 +735,6 @@ def search():
     return render_template('search.html', user=user)
 
 @app.route('/search/results', methods=['GET'])
-@sitemap.register_generator
 
 def search_results():
     query = request.args.get('query')
@@ -781,7 +765,7 @@ def search_results():
         return render_template('search_results.html', users=users, user=user, current_user=current_user, posts=posts, hashtags=hashtags, query=query)
     
     flash('Por favor, insira um termo de pesquisa válido.', 'warning')
-    return redirect(url_for('show_search_page'))
+    return redirect(url_for('search'))
 
 
 
@@ -815,17 +799,18 @@ def post_detail(post_id):
     return render_template('post_detail.html', post=post, comments=comments, user=user, user_to_follow=user_to_follow, is_following=is_following)
 
 @app.route('/notifications')
-@sitemap.register_generator
-
 def notifications():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
     user = User.query.get(session['user_id'])
-    notifications = Notification.query.filter_by(user_id=user.id).order_by(Notification.timestamp.desc()).all()
+
+    # Buscar notificações do usuário e globais
+    notifications = Notification.query.filter(
+        (Notification.user_id == user.id) | (Notification.global_notification.is_(True))
+    ).order_by(Notification.timestamp.desc()).all()
 
     return render_template('notifications.html', user=user, notifications=notifications)
-
 
 @app.route('/mark_notification_read/<int:notification_id>', methods=['POST'])
 def mark_notification_read(notification_id):
@@ -847,7 +832,6 @@ def hashtag_suggestions():
     return jsonify(hashtags=[{'name': h.name, 'post_count': h.post_count} for h in hashtags])
 
 @app.route('/hashtag/<string:hashtag_name>')
-@sitemap.register_generator
 def view_hashtag_posts(hashtag_name):
     # Remover o '#' se necessário
     if hashtag_name.startswith('#'):
@@ -885,7 +869,6 @@ def delete_post(post_id):
 
 
 @app.route('/insights/<int:post_id>')
-@sitemap.register_generator
 def insights(post_id):
     # Verifica se o usuário está autenticado
     if 'user_id' not in session:
@@ -943,7 +926,6 @@ def increment_impression(post_id):
     return jsonify(success=True)
 
 @app.route('/profile_settings', methods=['POST', 'GET'])
-@sitemap.register_generator
 def profile_settings():
     user = User.query.get(session['user_id'])
 
@@ -989,21 +971,55 @@ def save_token():
     db.session.commit()
     return jsonify({'success': True}), 200
 
-@app.route('/sitemap.xml')
+
+
+
+
+from flask import Response
+
+@app.route('/sitemap.xml', methods=['GET'])
 def sitemap_generator():
-    # Gera URLs para a página inicial
-    return sitemap.generate()
+    # Define a lista de URLs do sitemap
+    urls = []
 
+    # Adiciona URLs fixas (páginas principais)
+    static_urls = [
+        ("http://localhost:5000/login", None),
+        ("http://localhost:5000/signup", None),
+        ("http://localhost:5000/", None),  # Página inicial (home)
+    ]
+    urls.extend(static_urls)
 
+    # Adiciona URLs de perfis de usuários
+    profiles = User.query.all()
+    for profile in profiles:
+        url = f"http://localhost:5000/profile/{profile.username}"
+        urls.append((url, None))  # Nenhuma data de modificação para perfis
 
-def generate_post_urls():
+    # Adiciona URLs de posts
     posts = Post.query.all()
     for post in posts:
-        yield 'post_detail', {'post_id': post.id}
+        url = f"http://localhost:5000/post/{post.id}"
+        lastmod = post.timestamp.strftime("%Y-%m-%d")  # Formata o timestamp como string
+        urls.append((url, lastmod))
 
-# Registra os geradores no sitemap
-sitemap.register_generator(generate_profile_urls)
-sitemap.register_generator(generate_post_urls)
+
+    # Monta o conteúdo XML
+    xml_content = """<?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    """
+    for url, lastmod in urls:
+        xml_content += f"<url><loc>{url}</loc>"
+        if lastmod:
+            xml_content += f"<lastmod>{lastmod}</lastmod>"
+        xml_content += "</url>"
+
+    xml_content += "</urlset>"
+
+    # Retorna o sitemap como XML
+    response = Response(xml_content, mimetype='application/xml')
+    return response
+
 
 
 # Inicialização da aplicação
