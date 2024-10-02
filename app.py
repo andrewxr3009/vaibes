@@ -293,11 +293,10 @@ def home():
     
 
 @app.route('/profile/<username>')
-@sitemap.register_generator
-
 def profile(username):
     print(f"Username recebido: {username}")  # Debug
     user = get_user_by_username(username)
+    
     if user is None:
         flash('Usuário não encontrado.')
         return redirect(url_for('home'))
@@ -306,8 +305,17 @@ def profile(username):
         posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
     except Exception as e:
         print(f"Erro ao buscar posts: {e}")
-    posts = []  # Ou redirecionar para uma página de erro
+        posts = []  # Pode redirecionar para uma página de erro ou exibir uma mensagem
+
     return render_template('profile.html', user=user, posts=posts)
+
+def generate_profile_urls():
+    users = User.query.all()  # Supondo que você tenha um modelo User
+    for user in users:
+        yield 'profile', {'username': user.username}  # Chave correta para o perfil
+
+# Registra o gerador no sitemap
+sitemap.register_generator(generate_profile_urls)
 
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -404,7 +412,6 @@ from datetime import datetime, timedelta
 
 
 @app.route('/post', methods=['GET', 'POST'])
-@sitemap.register_generator
 def create_post():
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -919,7 +926,7 @@ def fbm():
 def fiv():
     return send_from_directory('static', 'favicon.ico')
 
-@app.route('/service-worker.js', endpoint='service_worker')
+@app.route('/service-worker.js', endpoint='unique_service_worker_name')
 def fiv():
     return send_from_directory('static', 'service-worker.js')
 
@@ -983,21 +990,20 @@ def save_token():
     return jsonify({'success': True}), 200
 
 @app.route('/sitemap.xml')
-@sitemap.register_generator
 def sitemap_generator():
-    # Rota para a página inicial
-    yield 'home', {}
+    # Gera URLs para a página inicial
+    return sitemap.generate()
 
-    # Rota para o perfil de cada usuário
-    users = User.query.all()
-    for user in users:
-        yield 'profile', {'username': user.username}  # Certifique-se de passar o username corretamente
 
-    # Rota para cada post
+
+def generate_post_urls():
     posts = Post.query.all()
     for post in posts:
         yield 'post_detail', {'post_id': post.id}
 
+# Registra os geradores no sitemap
+sitemap.register_generator(generate_profile_urls)
+sitemap.register_generator(generate_post_urls)
 
 
 # Inicialização da aplicação
