@@ -15,9 +15,9 @@
                 {% for post in posts %}
                 <div class="post" id="post-{{ post.id }}">
                     <div class="post-header">
-                        <img src="{{ post.author.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                        <img src="{{ post.user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
                         <div class="post-info">
-                            <strong>{{ post.author.username }}</strong>
+                            <strong>{{ post.user.username }}</strong>
                             <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
                         </div>
                     </div>
