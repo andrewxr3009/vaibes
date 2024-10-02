@@ -979,32 +979,26 @@ from flask import Response
 
 @app.route('/sitemap.xml', methods=['GET'])
 def sitemap_generator():
-    # Define a lista de URLs do sitemap
     urls = []
 
-    # Adiciona URLs fixas (páginas principais)
     static_urls = [
-        ("http://localhost:5000/login", None),
-        ("http://localhost:5000/signup", None),
-        ("http://localhost:5000/", None),  # Página inicial (home)
+        ("http://vaibes.onrender.com/login", None),
+        ("http://vaibes.onrender.com/signup", None),
+        ("http://vaibes.onrender.com/", None),
     ]
     urls.extend(static_urls)
 
-    # Adiciona URLs de perfis de usuários
     profiles = User.query.all()
     for profile in profiles:
-        url = f"http://localhost:5000/profile/{profile.username}"
-        urls.append((url, None))  # Nenhuma data de modificação para perfis
+        url = f"http://vaibes.onrender.com/profile/{profile.username}"
+        urls.append((url, None))
 
-    # Adiciona URLs de posts
     posts = Post.query.all()
     for post in posts:
-        url = f"http://localhost:5000/post/{post.id}"
-        lastmod = post.timestamp.strftime("%Y-%m-%d")  # Formata o timestamp como string
+        url = f"http://vaibes.onrender.com/post/{post.id}"
+        lastmod = post.timestamp.strftime("%Y-%m-%d")
         urls.append((url, lastmod))
 
-
-    # Monta o conteúdo XML
     xml_content = """<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     """
@@ -1012,15 +1006,19 @@ def sitemap_generator():
         xml_content += f"<url><loc>{url}</loc>"
         if lastmod:
             xml_content += f"<lastmod>{lastmod}</lastmod>"
+        xml_content += "<changefreq>weekly</changefreq><priority>0.5</priority>"
         xml_content += "</url>"
 
     xml_content += "</urlset>"
 
-    # Retorna o sitemap como XML
     response = Response(xml_content, mimetype='application/xml')
     return response
 
-
+@app.route('/robots.txt', methods=['GET'])
+def robots():
+    with open('robots.txt', 'r') as file:
+        content = file.read()
+    return Response(content, mimetype='text/plain')
 
 # Inicialização da aplicação
 if __name__ == '__main__':
