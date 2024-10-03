@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 import os
 import requests
@@ -13,6 +13,10 @@ from google.cloud import storage
 import json
 from flask_cors import CORS
 from flask_sitemap import Sitemap
+import spacy
+from spacy_langdetect import LanguageDetector
+from spacy.language import Language
+
 
 # Inicializar o Firebase Admin SDK
 cred = credentials.Certificate("serviceAccountKey.json")
@@ -107,6 +111,8 @@ class Post(db.Model):
     content = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    tags = db.Column(db.String(500), nullable=True)  # Coluna de tags como lista de strings
+    assunto = db.Column(db.String(255), nullable=True)  # Nova coluna para armazenar o assunto
 
     # Relacionamentos
     likes = db.relationship('Like', back_populates='post', lazy=True, cascade="all, delete-orphan")
@@ -117,7 +123,45 @@ class Post(db.Model):
     gif_url = db.Column(db.String, nullable=True)  
     hashtags = db.relationship('PostHashtag', backref='post', lazy=True)  
     views = db.Column(db.Integer, default=0)
+    def generate_tags(self):
+        # Detect language
+        doc = nlp_en(self.content)
+        lang = doc._.language['language']
+        
+        if lang == 'pt':
+            doc = nlp_pt(self.content)
 
+        # Generate tags from the post content
+        tags = [token.lemma_.lower() for token in doc if token.is_alpha and not token.is_stop]
+        return tags
+    
+    def determine_assunto(self, tags):
+        # Carregar palavras-chave dos tópicos em documentos NLP
+        topic_docs = {topic: nlp_en(' '.join(keywords)) for topic, keywords in TOPIC_TAGS.items()}
+        post_doc = nlp_en(' '.join(tags))
+
+        best_topic = 'outros'
+        best_similarity = 0.0
+
+        # Comparar a similaridade entre as tags e os tópicos
+        for topic, doc in topic_docs.items():
+            similarity = post_doc.similarity(doc)
+            if similarity > best_similarity:
+                best_similarity = similarity
+                best_topic = topic
+
+        return best_topic
+@Language.factory('language_detector')
+def create_language_detector(nlp, name):
+    return LanguageDetector()
+
+# Carregar o modelo NLP para inglês e português
+nlp_en = spacy.load("en_core_web_sm")
+nlp_pt = spacy.load("pt_core_news_sm")
+
+# Adicionar o detector de idioma ao pipeline de NLP
+nlp_en.add_pipe('language_detector', last=True)
+nlp_pt.add_pipe('language_detector', last=True)
 
 class Comment(db.Model):
     __tablename__ = 'comment'  
@@ -191,6 +235,15 @@ class Relevance(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     relevance_score = db.Column(db.Float, nullable=False)
 
+TOPIC_TAGS = {
+    'esportes': ['jogo', 'futebol', 'basquete', 'esportes', 'campeonato', 'brasileirão', 'fla'],
+    'notícias': ['notícia', 'política', 'economia', 'brasil', 'mundo', 'governo', 'eleições'],
+    'música': ['música', 'cantor', 'banda', 'álbum', 'show', 'festival'],
+    'entretenimento': ['filme', 'cinema', 'série', 'ator', 'atriz', 'celebridade', 'tv'],
+    'tecnologia': ['tecnologia', 'inovação', 'startup', 'software', 'hardware', 'ciência', 'teste', 'tags','algorítimo' ,'vaibes', 'disponível', 'próximo', 'atualização' ],
+    'geek': ['geek', 'jogos', 'videogame', 'anime', 'hq', 'quadrinhos', 'mangá'],
+    'cultura': ['cultura', 'arte', 'livro', 'dança', 'teatro', 'literatura', 'museu']
+}
 
 
 # Cria os bancos de dados
@@ -268,15 +321,13 @@ def comment_post_action(post_id, user, content):
     return {'status': 'error', 'message': 'Erro ao adicionar comentário.'}
 
 
-
 @app.route('/')
 def home():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
-    # Se o usuário estiver autenticado, busque as informações necessárias
+
     user = User.query.get(session.get('user_id'))
-    
+
     if user is None:
         flash('Usuário não encontrado.')
         return redirect(url_for('logout'))
@@ -285,24 +336,34 @@ def home():
 
     # Verifica se o usuário já possui interesses
     if user.interests is None or 'null' in user.interests:
-       return redirect(url_for('select_interests'))
+        return redirect(url_for('select_interests'))
 
-    # Busca posts com relevância para o usuário
-    relevant_posts = Relevance.query.filter_by(user_id=user_id).order_by(Relevance.relevance_score.desc()).all()
-    posts = [Post.query.get(relevance.post_id) for relevance in relevant_posts]
-    
+    # Obtenção do tipo de filtro
+    filter_type = request.args.get('filter', 'relevance')
+
+    if filter_type == 'relevance':
+        # Relevância: busca os posts relevantes ao usuário
+        relevant_posts = Relevance.query.filter_by(user_id=user_id).order_by(Relevance.relevance_score.desc()).all()
+        posts = [Post.query.get(relevance.post_id) for relevance in relevant_posts]
+    else:
+        # Cronologia: busca todos os posts em ordem cronológica (do mais novo para o mais velho)
+        posts = Post.query.order_by(Post.timestamp.desc()).all()
+
+    # Carrega os comentários para cada post
     for post in posts:
         post.comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()
 
+    # Usuários recentes para exibição (opcional)
     recent_users = User.query.order_by(User.id.desc()).limit(5).all()
 
-    user_agent = request.headers.get('User-Agent')
-    
     # Verifica o User-Agent para renderizar o template correto
+    user_agent = request.headers.get('User-Agent')
+
     if 'Mobile' in user_agent:
         return render_template('ios_home.html', posts=posts, recent_users=recent_users, user=user)
     else:
         return render_template('home.html', posts=posts, recent_users=recent_users, user=user)
+
 
 @app.route('/select_interests', methods=['GET', 'POST'])
 def select_interests():
@@ -419,11 +480,6 @@ pusher_client = pusher.Pusher(
     ssl=True
 )
 
-from datetime import datetime, timedelta
-
-from sqlalchemy import func
-from datetime import datetime, timedelta
-
 @app.route('/post', methods=['GET', 'POST'])
 def create_post():
     if 'user_id' not in session:
@@ -446,22 +502,23 @@ def create_post():
             return redirect(url_for('home'))
 
         if content:
-            # Extrai tags automaticamente do conteúdo, adicionando as hashtags digitadas
-            content_tags = [word for word in content.split() if word.startswith('#')]
-            all_tags = list(set(content_tags + hashtags))  # Remove duplicatas
-
-            new_post = Post(content=content, gif_url=gif_url, user_id=user.id, timestamp=datetime.utcnow(), tags=all_tags)
+            new_post = Post(content=content, gif_url=gif_url, user_id=user.id, timestamp=datetime.utcnow())
             db.session.add(new_post)
             db.session.commit()  # Salvar o post primeiro
 
-            # Atualiza ou cria as hashtags associadas
-            for tag in all_tags:
-                if tag.startswith('#'):
-                    tag = tag[1:]
+            # Gerar tags e determinar assunto
+            new_post.tags = ','.join(new_post.generate_tags())
+            new_post.assunto = new_post.determine_assunto(new_post.tags.split(','))  # Passar as tags como lista
+            
+            db.session.commit()  # Salvar as tags e assunto
 
-                hashtag = Hashtag.query.filter_by(name=tag).first()
+            for hashtag_name in hashtags:
+                if hashtag_name.startswith('#'):
+                    hashtag_name = hashtag_name[1:]
+
+                hashtag = Hashtag.query.filter_by(name=hashtag_name).first()
                 if not hashtag:
-                    hashtag = Hashtag(name=tag, post_count=1)
+                    hashtag = Hashtag(name=hashtag_name, post_count=1)
                     db.session.add(hashtag)
                 else:
                     hashtag.post_count += 1
@@ -470,7 +527,7 @@ def create_post():
                 post_hashtag = PostHashtag(post_id=new_post.id, hashtag_id=hashtag.id)
                 db.session.add(post_hashtag)
 
-            # Cria uma notificação global após o post ter sido commitado
+            # Criar uma notificação global após o post ter sido commitado
             message = f"{user.username} criou um novo post."
             global_notification = Notification(post_id=new_post.id, message=message, global_notification=True)
             db.session.add(global_notification)
@@ -485,6 +542,8 @@ def create_post():
             flash('Conteúdo do post não pode estar vazio.', 'danger')
 
     return render_template('create_post.html', user=user)
+
+
 
 # Adicione essa rota para ver os posts de um usuário
 @app.route('/user/<username>/posts')
@@ -823,6 +882,25 @@ def post_detail(post_id):
     is_following = user.following.filter(Follower.user_id == user_to_follow.id).count() > 0 if user_to_follow else False
 
     return render_template('post_detail.html', post=post, comments=comments, user=user, user_to_follow=user_to_follow, is_following=is_following)
+
+@app.route('/profile/<username>')
+def profile(username):
+    print(f"Username recebido: {username}")  # Debug
+    user = get_user_by_username(username)
+
+    if user is None:
+        flash('Usuário não encontrado.')
+        return redirect(url_for('home'))
+
+    try:
+        posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
+    except Exception as e:
+        print(f"Erro ao buscar posts: {e}")
+        posts = []  # Pode redirecionar para uma página de erro ou exibir uma mensagem
+
+    return render_template('profile.html', user=user, posts=posts)
+
+
 
 @app.route('/notifications')
 def notifications():

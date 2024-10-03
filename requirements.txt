@@ -17,3 +17,7 @@ pywebpush
 pusher
 flask_sitemap
 datetime
+spacy
+spacy==3.x.x
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+https://github.com/explosion/spacy-models/releases/download/pt_core_news_sm-3.8.0/pt_core_news_sm-3.8.0-py3-none-any.whl

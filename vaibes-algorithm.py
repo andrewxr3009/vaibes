@@ -1,119 +1,115 @@
-from sqlalchemy import create_engine, Column, Integer, ForeignKey, Float, String, ARRAY
-from sqlalchemy.orm import sessionmaker, declarative_base
+from datetime import datetime
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, create_engine
 from sqlalchemy.orm import relationship
+from flask_sqlalchemy import SQLAlchemy
+import spacy
+from sqlalchemy.orm import sessionmaker
 import psycopg2
-import time
 
 # Configuração da conexão com o banco de dados Supabase
-DATABASE_URI = 'postgresql+psycopg2://postgres.txyhqnbmlpcywyapxypm:5edqw3n4lhxCacLm@aws-0-us-west-1.pooler.supabase.com:6543/postgres'
+DATABASE_URI =  'postgresql+psycopg2://postgres.txyhqnbmlpcywyapxypm:5edqw3n4lhxCacLm@aws-0-us-west-1.pooler.supabase.com:6543/postgres'
 engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 session = Session()
+db = SQLAlchemy()
 
-# Base declarativa
-Base = declarative_base()
+# Carrega os modelos de linguagem
+nlp_en = spacy.load('en_core_web_sm')
+nlp_pt = spacy.load('pt_core_news_sm')
 
-# Definição das classes com base nas estruturas do banco de dados
-class User(Base):
-    __tablename__ = 'user'
-    id = Column(Integer, primary_key=True)
-    interests = Column(ARRAY(String), nullable=True)  # Coluna de interesses como lista de strings
+class User(db.Model):
+    __tablename__ = 'user'  
+    id = db.Column(db.Integer, primary_key=True)
+    firebase_id = db.Column(db.String(255), unique=True, nullable=False)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+    bio = db.Column(db.String(255))
+    interests = db.Column(db.String(255), nullable=True)
+    profile_picture = db.Column(db.String(255))
+    likes = db.relationship('Like', back_populates='user', lazy=True, cascade="all, delete-orphan")
+    posts = db.relationship('Post', back_populates='user', lazy=True)
+    relevance = db.relationship('Relevance', back_populates='user', lazy=True)
+    comments = db.relationship('Comment', back_populates='user', lazy=True)
 
-class Post(Base):
+class Post(db.Model):
     __tablename__ = 'post'
-    id = Column(Integer, primary_key=True)
-    tags = Column(ARRAY(String), nullable=True)  # Coluna de tags como lista de strings
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', back_populates='posts')
+    tags = db.Column(db.String(500), nullable=True)
+    assunto = db.Column(db.String(255), nullable=True)
+    impressions = db.Column(db.Integer, default=0)
+    gif_url = db.Column(db.String, nullable=True)
+    views = db.Column(db.Integer, default=0)
+    likes = db.relationship('Like', back_populates='post', lazy=True, cascade="all, delete-orphan")
+    comments = db.relationship('Comment', back_populates='post', lazy=True, cascade="all, delete-orphan")
 
-class Like(Base):
-    __tablename__ = 'like'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    post_id = Column(Integer, ForeignKey('post.id'), nullable=False)
+class Comment(db.Model):
+    __tablename__ = 'comment'  
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-class Comment(Base):
-    __tablename__ = 'comment'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    post_id = Column(Integer, ForeignKey('post.id'), nullable=False)
+    user = db.relationship('User', back_populates='comments')
+    post = db.relationship('Post', back_populates='comments')
 
-class Relevance(Base):
+class Like(db.Model):
+    __tablename__ = 'like'  
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    post = db.relationship('Post', back_populates='likes')
+    user = db.relationship('User', back_populates='likes')
+
+class Relevance(db.Model):
     __tablename__ = 'relevance'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     post_id = Column(Integer, ForeignKey('post.id'), nullable=False)
     relevance_score = Column(Float, nullable=False)
 
-# Função para calcular a relevância dos posts para um único usuário
-def calculate_relevance_for_user(session, user_id):
-    user = session.query(User).filter(User.id == user_id).first()
+    user = relationship('User', back_populates='relevance')
+    post = relationship('Post')
 
-    # Recupera os posts que o usuário curtiu
-    liked_posts = session.query(Like).filter(Like.user_id == user_id).all()
-    liked_post_ids = {like.post_id for like in liked_posts}
-
-    # Recupera os posts que o usuário comentou
-    commented_posts = session.query(Comment).filter(Comment.user_id == user_id).all()
-    commented_post_ids = {comment.post_id for comment in commented_posts}
-
-    # Recupera todos os posts
-    all_posts = session.query(Post).all()
-
-    # Dicionário para armazenar a relevância dos posts
-    relevance_dict = {}
-
-    for post in all_posts:
-        relevance_score = 0
-        
-        # Aumenta a relevância se o post foi curtido
-        if post.id in liked_post_ids:
-            relevance_score += 1.0
-
-        # Aumenta a relevância se o post foi comentado
-        if post.id in commented_post_ids:
-            relevance_score += 1.0
-
-        # Verifica se o post possui tags relacionadas aos interesses do usuário
-        if user.interests:
-            for interest in user.interests:
-                if post.tags and interest in post.tags:
-                    relevance_score += 0.5
-
-        relevance_dict[post.id] = relevance_score
-
-    for post_id, score in relevance_dict.items():
-        relevance_entry = session.query(Relevance).filter_by(user_id=user_id, post_id=post_id).first()
-        if relevance_entry:
-            relevance_entry.relevance_score = score
-        else:
-            relevance_entry = Relevance(user_id=user_id, post_id=post_id, relevance_score=score)
-            session.add(relevance_entry)
-
-    session.commit()
-
-# Função para calcular a relevância dos posts para todos os usuários com progresso
 def calculate_relevance_for_all_users(session):
-    start_time = time.time()
+    users = session.query(User).all()
+    posts = session.query(Post).all()
 
-    # Recupera todos os usuários
-    all_users = session.query(User).all()
-    total_users = len(all_users)
+    for user in users:
+        print(f'Calculando relevância para o usuário: {user.username} (ID: {user.id})')
 
-    for i, user in enumerate(all_users, 1):
-        calculate_relevance_for_user(session, user.id)
+        # Tratar caso os interesses sejam uma lista vazia
+        if user.interests is None or (isinstance(user.interests, list) and not user.interests):
+            print(f'Interesses do usuário {user.username} estão vazios. Pulando...')
+            continue
         
-        # Calcula o progresso
-        progress = (i / total_users) * 100
-        elapsed_time = time.time() - start_time
-        remaining_time = (elapsed_time / i) * (total_users - i)
+        # Limpar relevâncias anteriores
+        session.query(Relevance).filter(Relevance.user_id == user.id).delete()
+        
+        for post in posts:
+            relevance_score = 0
+            
+            if post.user_id == user.id:
+                continue
+            
+            # Calcular a relevância com base em likes e comentários
+            relevance_score += 0.5 * len(post.likes) if post.likes else 0
+            relevance_score += 0.5 * len(post.comments) if post.comments else 0
+            
+            new_relevance = Relevance(user_id=user.id, post_id=post.id, relevance_score=relevance_score)
+            session.add(new_relevance)
 
-        print(f"Processando usuário {i}/{total_users} ({progress:.2f}% concluído).")
-        print(f"Tempo estimado restante: {remaining_time:.2f} segundos.")
+        print(f'Relevância calculada para o usuário {user.username}: {len(posts)} posts processados.')
+    
+    session.commit()
+    print('Cálculo de relevância concluído!')
 
-    total_time = time.time() - start_time
-    print(f"Processo concluído em {total_time:.2f} segundos.")
-
-# Exemplo de uso para calcular a relevância para todos os usuários
+# Exemplo de uso
 calculate_relevance_for_all_users(session)
-
-# Cria as tabelas no banco de dados, se necessário
-Base.metadata.create_all(engine)
