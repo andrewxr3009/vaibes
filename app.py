@@ -884,7 +884,7 @@ def post_detail(post_id):
     return render_template('post_detail.html', post=post, comments=comments, user=user, user_to_follow=user_to_follow, is_following=is_following)
 
 
-import subprocess Rota para rodar o algoritmo, apenas para o usuário com ID 18
+import subprocess 
 @app.route('/run-algorithm')
 def run_algorithm():
     if 'user_id' in session and session['user_id'] == 18:  # Verifica se o usuário é o admin
