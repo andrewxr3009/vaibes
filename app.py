@@ -883,6 +883,25 @@ def post_detail(post_id):
 
     return render_template('post_detail.html', post=post, comments=comments, user=user, user_to_follow=user_to_follow, is_following=is_following)
 
+
+import subprocess Rota para rodar o algoritmo, apenas para o usuário com ID 18
+@app.route('/run-algorithm')
+def run_algorithm():
+    if 'user_id' in session and session['user_id'] == 18:  # Verifica se o usuário é o admin
+        try:
+            # Executa o arquivo Python
+            subprocess.run(["python3", "vibes-algorithm.py"], check=True)
+            flash('Algoritmo executado com sucesso!', 'success')
+        except subprocess.CalledProcessError as e:
+            flash(f"Erro ao executar o algoritmo: {str(e)}", 'danger')
+    else:
+        flash('Acesso negado. Apenas o admin pode executar esta ação.', 'danger')
+        return redirect(url_for('home'))
+
+    return redirect(url_for('home'))
+
+
+
 @app.route('/profile/<username>')
 def profile(username):
     print(f"Username recebido: {username}")  # Debug
