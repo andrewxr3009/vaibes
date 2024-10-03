@@ -72,6 +72,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     bio = db.Column(db.String(255))
+    interests = db.Column(db.String(255), nullable=True)  # Coluna de interesses como lista de strings
     profile_picture = db.Column(db.String(255))
     
     # Relacionamentos
@@ -183,6 +184,13 @@ class PostHashtag(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     hashtag_id = db.Column(db.Integer, db.ForeignKey('hashtag.id'), nullable=False)
 
+class Relevance(db.Model):
+    __tablename__ = 'relevance'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    relevance_score = db.Column(db.Float, nullable=False)
+
 
 
 # Cria os bancos de dados
@@ -274,12 +282,20 @@ def home():
         return redirect(url_for('logout'))
 
     user_id = user.id
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
+
+    # Verifica se o usuário já possui interesses
+    if user.interests is None or 'null' in user.interests:
+       return redirect(url_for('select_interests'))
+
+    # Busca posts com relevância para o usuário
+    relevant_posts = Relevance.query.filter_by(user_id=user_id).order_by(Relevance.relevance_score.desc()).all()
+    posts = [Post.query.get(relevance.post_id) for relevance in relevant_posts]
+    
     for post in posts:
         post.comments = Comment.query.filter_by(post_id=post.id).order_by(Comment.timestamp.asc()).all()
 
     recent_users = User.query.order_by(User.id.desc()).limit(5).all()
-    
+
     user_agent = request.headers.get('User-Agent')
     
     # Verifica o User-Agent para renderizar o template correto
@@ -287,25 +303,29 @@ def home():
         return render_template('ios_home.html', posts=posts, recent_users=recent_users, user=user)
     else:
         return render_template('home.html', posts=posts, recent_users=recent_users, user=user)
-    
-    
 
-@app.route('/profile/<username>')
-def profile(username):
-    print(f"Username recebido: {username}")  # Debug
-    user = get_user_by_username(username)
-    
-    if user is None:
-        flash('Usuário não encontrado.')
+@app.route('/select_interests', methods=['GET', 'POST'])
+def select_interests():
+    if request.method == 'POST':
+        # Recupera os interesses enviados no formulário
+        selected_interests = request.form.getlist('interests')
+
+        # Atualiza os interesses do usuário no banco de dados
+        user = User.query.get(session.get('user_id'))
+
+        # Formata os interesses como um array do PostgreSQL
+        if selected_interests:  # Verifica se há interesses selecionados
+            user.interests = '{' + ','.join(selected_interests) + '}'
+        else:
+            user.interests = '{}'  # Se nenhum interesse for selecionado, armazena um array vazio
+
+        db.session.commit()
+
+        flash('Interesses salvos com sucesso!')
         return redirect(url_for('home'))
 
-    try:
-        posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
-    except Exception as e:
-        print(f"Erro ao buscar posts: {e}")
-        posts = []  # Pode redirecionar para uma página de erro ou exibir uma mensagem
+    return render_template('interest.html')
 
-    return render_template('profile.html', user=user, posts=posts)
 
 
 
@@ -401,6 +421,9 @@ pusher_client = pusher.Pusher(
 
 from datetime import datetime, timedelta
 
+from sqlalchemy import func
+from datetime import datetime, timedelta
+
 @app.route('/post', methods=['GET', 'POST'])
 def create_post():
     if 'user_id' not in session:
@@ -423,17 +446,22 @@ def create_post():
             return redirect(url_for('home'))
 
         if content:
-            new_post = Post(content=content, gif_url=gif_url, user_id=user.id, timestamp=datetime.utcnow())
+            # Extrai tags automaticamente do conteúdo, adicionando as hashtags digitadas
+            content_tags = [word for word in content.split() if word.startswith('#')]
+            all_tags = list(set(content_tags + hashtags))  # Remove duplicatas
+
+            new_post = Post(content=content, gif_url=gif_url, user_id=user.id, timestamp=datetime.utcnow(), tags=all_tags)
             db.session.add(new_post)
             db.session.commit()  # Salvar o post primeiro
 
-            for hashtag_name in hashtags:
-                if hashtag_name.startswith('#'):
-                    hashtag_name = hashtag_name[1:]
+            # Atualiza ou cria as hashtags associadas
+            for tag in all_tags:
+                if tag.startswith('#'):
+                    tag = tag[1:]
 
-                hashtag = Hashtag.query.filter_by(name=hashtag_name).first()
+                hashtag = Hashtag.query.filter_by(name=tag).first()
                 if not hashtag:
-                    hashtag = Hashtag(name=hashtag_name, post_count=1)
+                    hashtag = Hashtag(name=tag, post_count=1)
                     db.session.add(hashtag)
                 else:
                     hashtag.post_count += 1
@@ -442,7 +470,7 @@ def create_post():
                 post_hashtag = PostHashtag(post_id=new_post.id, hashtag_id=hashtag.id)
                 db.session.add(post_hashtag)
 
-            # Criar uma notificação global após o post ter sido commitado
+            # Cria uma notificação global após o post ter sido commitado
             message = f"{user.username} criou um novo post."
             global_notification = Notification(post_id=new_post.id, message=message, global_notification=True)
             db.session.add(global_notification)
@@ -457,8 +485,6 @@ def create_post():
             flash('Conteúdo do post não pode estar vazio.', 'danger')
 
     return render_template('create_post.html', user=user)
-
-
 
 # Adicione essa rota para ver os posts de um usuário
 @app.route('/user/<username>/posts')

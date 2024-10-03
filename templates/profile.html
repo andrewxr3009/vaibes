@@ -14,7 +14,7 @@
         }
         .profile-container {
             max-width: 800px;
-            margin: 0 auto;
+            margin: 20px auto;
             padding: 20px;
             background: #fff;
             border-radius: 8px;
@@ -25,7 +25,6 @@
             align-items: center;
             border-bottom: 1px solid #ddd;
             padding-bottom: 20px;
-            position: relative;
         }
         .profile-pic {
             border-radius: 50%;
@@ -35,6 +34,11 @@
         }
         .profile-info {
             flex: 1;
+        }
+        .followers-count {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #555;
         }
         .edit-button {
             margin-left: 10px;
@@ -57,7 +61,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 15px;
             padding: 10px;
-            position: relative;
         }
         .post-header {
             display: flex;
@@ -118,8 +121,11 @@
                     {% endif %}
                 </h1>
                 {% if user.bio %}
-                <p class="bio">{{ user.bio }}</p>
+                    <p class="bio">{{ user.bio }}</p>
                 {% endif %}
+                <div class="followers-count">
+                    {{ follower_count }} seguidores
+                </div>
             </div>
         </div>
 
@@ -127,7 +133,7 @@
             {% for post in posts %}
             <div class="post" id="post-{{ post.id }}">
                 <div class="post-header">
-                    <img src="{{ post.user_id.profile_picture }}" alt="Foto de perfil" class="profile-pic">
+                    <img src="{{ post.user_id.profile_picture }}" alt="Foto de perfil" class="profile-pic"> <!-- Use a URL completa -->
                     <div class="post-info">
                         <strong>{{ post.user_id.username }}</strong>
                         <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
@@ -167,7 +173,7 @@
         </a>
         <div class="create-post-button">
             <a href="#" onclick="openModal()">
-                <img src="{{ url_for('static', filename='vibe-icon.png') }}" alt="Criar Post">
+                <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar Post">
             </a>
             <span>Criar</span>
         </div>

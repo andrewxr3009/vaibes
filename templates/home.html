@@ -121,11 +121,16 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                 <div class="post" id="post-{{ post.id }}">
                     <div class="post-header">
                         <img src="{{ post.user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
-                        <div class="post-info" style="flex-grow: 1;">
-                            <a href="{{ url_for('profile', username=post.user.username) }}">
-                                <strong>{{ post.user.username }}</strong>
-                            </a>
-                            <span style="float: right;">{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
+                        <div class="post-info">
+                            <span class="username">{{ post.user_id.username }}</span>
+                            
+                            <!-- Botão de seguir -->
+                            <button id="follow-btn-{{ post.user.username }}" class="follow-btn" onclick="toggleFollow('{{ post.user.username }}')" 
+                            style="background-color: {{ 'transparent' if is_following else '#022247' }}; border-color: #022247;">
+                        {{ 'Seguindo' if is_following else 'Seguir' }}
+                           </button>
+                        
+                            <span class="post-date">{{ post.timestamp.strftime('%d/%m/%Y %H:%M') }}</span>
                         </div>
                     </div>
                     <div class="post-body" onclick="redirectToPost({{ post.id }})">
@@ -181,6 +186,29 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                 });
             }
         
+function toggleFollow(username) {
+    fetch(`/follow_user/${username}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+              // Se estiver usando CSRF
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.following) {
+            document.getElementById('follow-btn').innerText = 'Seguindo';
+            document.getElementById('follow-btn').style.backgroundColor = 'transparent';
+            document.getElementById('follow-btn').style.borderColor = '#022247';
+        } else {
+            document.getElementById('follow-btn').innerText = 'Seguir';
+            document.getElementById('follow-btn').style.backgroundColor = '#022247';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
             // Função para seguir/deixar de seguir
             document.querySelectorAll('form[id^="follow-form-"]').forEach(form => {
                 form.onsubmit = function(event) {

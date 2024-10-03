@@ -99,6 +99,18 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
     justify-content: space-between; /* Para que a data fique à direita */
 }
 
+        /* Adicione um estilo para exibir os GIFs */
+        .gif-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .gif-item {
+            width: 100px;
+            height: auto;
+            margin-right: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -113,24 +125,7 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                             <a href="{{ url_for('profile', username=post.user.username) }}">
                                 <strong>{{ post.user.username }}</strong>
                             </a>
-                            <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST" style="display: inline;">
-                                {% if user.is_following(post.user) %}
-                                    <button type="submit" class="follow-button" style="margin-left: 10px;">Deixar de Seguir</button>
-                                {% else %}
-                                    <button type="submit" class="follow-button" style="margin-left: 10px;">Seguir</button>
-                                {% endif %}
-                            </form>
                             <span style="float: right;">{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
-                        </div>
-                        <div class="post-options" onclick="toggleOptions({{ post.id }})">•••</div>
-                        <div class="post-options-menu" id="options-menu-{{ post.id }}">
-                            {% if session['user_id'] == post.user.id %}
-                                <button onclick="deletePost({{ post.id }})">Excluir</button>
-                                <button onclick="viewInsights({{ post.id }})">Ver Insights</button>
-                            {% else %}
-                                <button>Denunciar</button>
-                                <button>Silenciar</button>
-                            {% endif %}
                         </div>
                     </div>
                     <div class="post-body" onclick="redirectToPost({{ post.id }})">
@@ -142,6 +137,11 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                                 {{ word }}
                             {% endif %}
                         {% endfor %}
+                        {% if post.gif_url %}
+                            <div class="gif-container">
+                                <img src="{{ post.gif_url }}" alt="GIF" class="gif-item">
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="post-actions">
                         <div class="like-container">
@@ -149,14 +149,6 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                                 Curtir (<span id="like-count-{{ post.id }}">{{ post.likes|length }}</span>)
                             </button>
                         </div>
-                        <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST">
-                            {% if user.is_following(post.user) %}
-                                <button type="submit" class="btn btn-danger">Deixar de Seguir</button>
-                            {% else %}
-                                <button type="submit" class="btn btn-primary">Seguir</button>
-                            {% endif %}
-                        </form>
-                        <img src="{{ url_for('static', filename='send-icon.png') }}" alt="Compartilhar" class="action-icon" onclick="sharePost({{ post.id }})">
                     </div>
                 </div>
                 {% endfor %}
@@ -261,14 +253,43 @@ body { font-family: Arial, sans-serif; background-color: #bfbfbf; margin: 0; pad
                 <button type="button" onclick="closeModal()">Fechar</button>
                 <form id="postForm" action="{{ url_for('create_post') }}" method="POST">
                     <textarea name="content" placeholder="O que você está pensando?" required></textarea>
-                    <input type="text" id="gif-url" name="gif_url" placeholder="Cole o link do GIF (opcional)">
-                    <input type="hidden" id="hashtag-input" name="hashtags">
+                    <input type="text" id="gif-search" placeholder="Buscar GIFs" oninput="searchGifs()">
+                    <div id="gif-results" class="gif-container"></div>
+                    <input type="hidden" id="gif-url" name="gif_url">
                     <button type="submit">Postar</button>
                 </form>
             </div>
         </div>
 
         <script>
+
+const giphyApiKey = 'URqPC2QH6fsA2xCx7ySJTbholry57xjy'; // Substitua pela sua chave da API Giphy
+
+function searchGifs() {
+    const query = document.getElementById('gif-search').value;
+    const gifResults = document.getElementById('gif-results');
+    gifResults.innerHTML = ''; // Limpa resultados anteriores
+
+    if (query.length > 0) {
+        fetch(`https://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${query}&limit=5`)
+            .then(response => response.json())
+            .then(data => {
+                data.data.forEach(gif => {
+                    const img = document.createElement('img');
+                    img.src = gif.images.fixed_height_small.url;
+                    img.classList.add('gif-item');
+                    img.onclick = () => selectGif(gif.images.fixed_height_small.url); // Altera a URL do GIF ao clicar
+                    gifResults.appendChild(img);
+                });
+            })
+            .catch(error => console.error('Erro ao buscar GIFs:', error));
+    }
+}
+
+function selectGif(gifUrl) {
+    document.getElementById('gif-url').value = gifUrl; // Armazena a URL do GIF selecionado
+    closeModal(); // Fecha o modal
+}
 
             function deletePost(postId) {
                 if (confirm('Tem certeza que deseja excluir este post?')) {
