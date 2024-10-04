@@ -911,13 +911,18 @@ def profile(username):
         flash('Usuário não encontrado.')
         return redirect(url_for('home'))
 
+    # Obtém a contagem de seguidores
+    follower_count = user.followers.count()
+    session['user_id'] = user.id  # Atribui o ID do usuário logado à sessão
+
+
     try:
         posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
     except Exception as e:
         print(f"Erro ao buscar posts: {e}")
         posts = []  # Pode redirecionar para uma página de erro ou exibir uma mensagem
 
-    return render_template('profile.html', user=user, posts=posts)
+    return render_template('profile.html', user=user, posts=posts, follower_count=follower_count, )
 
 
 
