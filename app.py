@@ -1124,6 +1124,40 @@ def robots():
         content = file.read()
     return Response(content, mimetype='text/plain')
 
+@app.route('/admin', methods=['GET', 'POST'])
+def admin_panel():
+    # Verifica se o usuário está logado
+    if 'user_id' not in session:
+        flash("Você precisa estar logado para acessar a página de administração.", "danger")
+        return redirect(url_for('login'))
+    
+    # Verifica se o usuário tem ID 18
+    user_id = session['user_id']
+    admin_user = User.query.filter_by(id=user_id).first()
+
+    if not admin_user or admin_user.id != 18:
+        flash("Acesso negado. Você não tem permissão para acessar esta página.", "danger")
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        # Aqui você pode adicionar a lógica para criar, modificar ou excluir entradas no banco de dados
+        # Exemplo de lógica de exclusão:
+        post_id = request.form.get('post_id')
+        if post_id:
+            post = Post.query.get(post_id)
+            if post:
+                db.session.delete(post)
+                db.session.commit()
+                flash(f"Post {post_id} excluído com sucesso!", "success")
+            else:
+                flash("Post não encontrado.", "danger")
+    
+    # Obter dados para exibir na página de administração
+    all_posts = Post.query.all()
+    all_users = User.query.all()
+    
+    return render_template('admin.html', posts=all_posts, users=all_users)
+
 # Inicialização da aplicação
 if __name__ == '__main__':
     app.run(debug=True)

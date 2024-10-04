@@ -1,22 +1,27 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, create_engine
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 import spacy
-from sqlalchemy.orm import sessionmaker
 import psycopg2
+from apscheduler.schedulers.background import BackgroundScheduler
+import time
 
 # Configuração da conexão com o banco de dados Supabase
-DATABASE_URI =  'postgresql+psycopg2://postgres.txyhqnbmlpcywyapxypm:5edqw3n4lhxCacLm@aws-0-us-west-1.pooler.supabase.com:6543/postgres'
+DATABASE_URI = 'postgresql+psycopg2://postgres.txyhqnbmlpcywyapxypm:5edqw3n4lhxCacLm@aws-0-us-west-1.pooler.supabase.com:6543/postgres'
 engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 session = Session()
 db = SQLAlchemy()
 
-# Carrega os modelos de linguagem
-nlp_en = spacy.load('en_core_web_sm')
-nlp_pt = spacy.load('pt_core_news_sm')
+# Tentativa de carregar os modelos de linguagem
+try:
+    nlp_en = spacy.load('en_core_web_sm')
+    nlp_pt = spacy.load('pt_core_news_sm')
+except Exception as e:
+    print(f'Erro ao carregar os modelos de linguagem: {e}')
 
+# Definição das tabelas no SQLAlchemy
 class User(db.Model):
     __tablename__ = 'user'  
     id = db.Column(db.Integer, primary_key=True)
@@ -25,7 +30,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     bio = db.Column(db.String(255))
-    interests = db.Column(db.String(255), nullable=True)
+    interests = db.Column(db.String(255), nullable=True)  # Interesses do usuário
     profile_picture = db.Column(db.String(255))
     likes = db.relationship('Like', back_populates='user', lazy=True, cascade="all, delete-orphan")
     posts = db.relationship('Post', back_populates='user', lazy=True)
@@ -78,38 +83,74 @@ class Relevance(db.Model):
     user = relationship('User', back_populates='relevance')
     post = relationship('Post')
 
+# Função para calcular a relevância para todos os usuários
 def calculate_relevance_for_all_users(session):
-    users = session.query(User).all()
+    print("Iniciando cálculo de relevância...")
+    users = session.query(User).all()  # Agora a classe User está definida corretamente
     posts = session.query(Post).all()
 
     for user in users:
         print(f'Calculando relevância para o usuário: {user.username} (ID: {user.id})')
 
-        # Tratar caso os interesses sejam uma lista vazia
-        if user.interests is None or (isinstance(user.interests, list) and not user.interests):
+        if not user.interests:
             print(f'Interesses do usuário {user.username} estão vazios. Pulando...')
             continue
-        
+
+        # Garantir que `user.interests` seja uma lista ou uma string
+        if isinstance(user.interests, str):
+            user_interests = set(user.interests.split(','))
+        elif isinstance(user.interests, list):
+            user_interests = set(user.interests)
+        else:
+            print(f'Tipo inesperado para interesses do usuário {user.username}: {type(user.interests)}')
+            continue
+
         # Limpar relevâncias anteriores
         session.query(Relevance).filter(Relevance.user_id == user.id).delete()
-        
+
         for post in posts:
             relevance_score = 0
-            
+
             if post.user_id == user.id:
                 continue
-            
-            # Calcular a relevância com base em likes e comentários
-            relevance_score += 0.5 * len(post.likes) if post.likes else 0
-            relevance_score += 0.5 * len(post.comments) if post.comments else 0
-            
+
+            # Calcular relevância com base em likes e comentários
+            relevance_score += 0.5 * len(post.likes or [])
+            relevance_score += 0.5 * len(post.comments or [])
+
+            # Relevância baseada em interesses
+            post_tags = set(post.tags.split(',')) if post.tags else set()
+            common_interests = user_interests.intersection(post_tags)
+            if common_interests:
+                relevance_score += 1.0 * len(common_interests)
+
+            # Salvar relevância calculada
             new_relevance = Relevance(user_id=user.id, post_id=post.id, relevance_score=relevance_score)
             session.add(new_relevance)
 
         print(f'Relevância calculada para o usuário {user.username}: {len(posts)} posts processados.')
-    
+
     session.commit()
     print('Cálculo de relevância concluído!')
 
-# Exemplo de uso
-calculate_relevance_for_all_users(session)
+
+# Agendando a execução imediata e depois a cada 5 minutos
+def schedule_relevance_calculation():
+    scheduler = BackgroundScheduler(daemon=False)
+
+    # Executa imediatamente na inicialização e depois a cada 5 minutos
+    print("Executando o job imediatamente e depois a cada 5 minutos...")  
+    scheduler.add_job(lambda: calculate_relevance_for_all_users(session), 'interval', minutes=5, next_run_time=datetime.now())
+    scheduler.start()
+    print("Scheduler iniciado com sucesso")
+
+# Iniciar a execução agendada
+if __name__ == '__main__':
+    calculate_relevance_for_all_users(session)  # Executar imediatamente na inicialização
+    schedule_relevance_calculation()  # Agendar para cada 5 minutos
+
+    try:
+        while True:
+            time.sleep(60)  # Manter o processo ativo
+    except (KeyboardInterrupt, SystemExit):
+        print("Scheduler encerrado.")

@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "waiVSCode",
+			"args": [
+				"--verbose"
+			],
+			"problemMatcher": [],
+			"label": "waiVSCode: Run Server --verbose"
+		}
+	]
+}
