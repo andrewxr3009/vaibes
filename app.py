@@ -904,25 +904,19 @@ def run_algorithm():
 
 @app.route('/profile/<username>')
 def profile(username):
-    print(f"Username recebido: {username}")  # Debug
-    user = get_user_by_username(username)
+    logged_in_user_id = session.get('user_id')  # Obtém o ID do usuário logado
+    logged_in_user = User.query.get(logged_in_user_id)  # Obtém a instância do usuário logado
+    profile = get_user_by_username(username)  # Obtém o perfil do usuário visitado
 
-    if user is None:
+    if profile is None:
         flash('Usuário não encontrado.')
         return redirect(url_for('home'))
 
-    # Obtém a contagem de seguidores
-    follower_count = user.followers.count()
-    session['user_id'] = user.id  # Atribui o ID do usuário logado à sessão
+    # Carregar posts do usuário visitado
+    posts = Post.query.filter_by(user_id=profile.id).order_by(Post.timestamp.desc()).all()
+    follower_count = profile.followers.count()
 
-
-    try:
-        posts = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).all()
-    except Exception as e:
-        print(f"Erro ao buscar posts: {e}")
-        posts = []  # Pode redirecionar para uma página de erro ou exibir uma mensagem
-
-    return render_template('profile.html', user=user, posts=posts, follower_count=follower_count, )
+    return render_template('profile.html', user=logged_in_user, profile=profile, posts=posts, follower_count=follower_count)
 
 
 
