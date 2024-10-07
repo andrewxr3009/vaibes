@@ -366,7 +366,7 @@
     <div class="profile-container">
         <div class="profile-header">
             {% if profile.profile_picture %}
-                <img src="{{ user.profile_picture }}" alt="Foto de perfil" class="profile-pic">
+                <img src="{{ profile.profile_picture }}" alt="Foto de perfil" class="profile-pic">
             {% else %}
                 <img src="{{ url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
             {% endif %}
@@ -374,7 +374,7 @@
             <div class="profile-info">
                 <h1>{{ profile.username }}</h1>
                 {% if user.bio %}
-                    <p class="bio">{{ user.bio }}</p>
+                    <p class="bio">{{ profile.bio }}</p>
                 {% endif %}
                 <div class="followers-count">
                     {{ follower_count }} seguidores
