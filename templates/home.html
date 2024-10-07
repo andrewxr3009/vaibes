@@ -98,7 +98,14 @@
     }
 
     .gif-item {
-        width: 100px;                   /* Largura padrão para os GIFs */
+        width: 250px;                   /* Largura padrão para os GIFs */
+        height: auto;                   /* Altura proporcional */
+        border-radius: 10px;            /* Bordas arredondadas nos GIFs */
+        cursor: pointer;                /* Muda o cursor ao passar sobre o GIF */
+        transition: transform 0.2s ease; /* Transição suave de efeito */
+    }
+    .photo-item {
+        width: 250px;                   /* Largura padrão para os GIFs */
         height: auto;                   /* Altura proporcional */
         border-radius: 10px;            /* Bordas arredondadas nos GIFs */
         cursor: pointer;                /* Muda o cursor ao passar sobre o GIF */
@@ -443,34 +450,33 @@
             <button class="filter-button active" id="for-you" onclick="setPostFilter('relevance')">For You</button>
             <button class="filter-button" id="legacy" onclick="setPostFilter('chronological')">Legacy</button>
         </div>
+    
         <div class="posts-container">
             {% if posts %}
                 {% for post in posts %}
                 <div class="post" id="post-{{ post.id }}">
                     <div class="post-header">
                         <div class="post-info-left">
-                            <!-- Alinhamento da foto, nome e botão de seguir -->
                             <img src="{{ post.user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
                             <div class="post-info">
                                 <a href="{{ url_for('profile', username=post.user.username) }}">
                                     <strong>{{ post.user.username }}</strong>
                                 </a>
-                                <!-- Formulário do botão de seguir -->
                                 <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST" class="follow-form">
                                     {% if user.is_following(post.user) %}
-                                        <button type="s" class="follow-button following">Deixar de Seguir</button>
+                                        <button type="submit" class="follow-button following">Deixar de Seguir</button>
                                     {% else %}
-                                        <button type="s" class="follow-button">Seguir</button>
+                                        <button type="submit" class="follow-button">Seguir</button>
                                     {% endif %}
                                 </form>
                             </div>
                         </div>
-        
+    
                         <div class="post-info-right">
                             <span class="post-date">{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
                         </div>
                     </div>
-        
+    
                     <div class="post-body" onclick="redirectToPost({{ post.id }})">
                         {% set content = post.content %}
                         {% for word in content.split() %}
@@ -485,8 +491,13 @@
                                 <img src="{{ post.gif_url }}" alt="GIF" class="gif-item">
                             </div>
                         {% endif %}
+                        {% if post.img_url %}
+                            <div class="photo-container">
+                                <img src="{{ post.img_url }}" alt="Foto" class="photo-item">
+                            </div>
+                        {% endif %}
                     </div>
-        
+    
                     <div class="post-footer">
                         <div class="like-container">
                             <button class="like-button" id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})">
@@ -500,7 +511,7 @@
                         </div>
                         <div class="post-options" onclick="toggleOptions({{ post.id }})">•••</div>
                     </div>
-        
+    
                     <div class="post-options-menu" id="options-menu-{{ post.id }}">
                         {% if session['user_id'] == post.user.id %}
                             <button onclick="deletePost({{ post.id }})">Excluir</button>
@@ -516,12 +527,7 @@
                 <p>Nenhum post encontrado.</p>
             {% endif %}
         </div>
-        
-        
-        
-
-        </div>
-
+    
         <div class="bottom-bar">
             <a href="{{ url_for('home') }}" class="bottom-bar-link">
                 <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
@@ -544,22 +550,23 @@
                 <span>Buscar</span>
             </a>
         </div>
-        
-
+    
         <div id="bottom-bar-modal" class="bottom-bar-modal">
             <div class="bottom-bar-modal-content">
                 <button type="button" class="modal-button" onclick="closeModal()">Fechar</button>
-                <form id="postForm" action="{{ url_for('create_post') }}" method="POST">
+                <form id="postForm" action="{{ url_for('create_post') }}" method="POST" enctype="multipart/form-data">
                     <textarea name="content" placeholder="O que você está pensando?" required></textarea>
                     <input type="text" id="gif-search" placeholder="Buscar GIFs" oninput="searchGifs()">
                     <div id="gif-results" class="gif-container"></div>
                     <input type="hidden" id="gif-url" name="gif_url">
+                    <input type="file" name="image" id="photo-upload" accept="image/*">
+                    <label for="photo-upload" class="modal-button">Selecionar Foto</label>
                     <button type="submit" class="modal-button">Postar</button>
                 </form>
             </div>
         </div>
-
     </div>
+    
 
     <script>
         // Função para alternar o menu de opções do post

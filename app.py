@@ -16,6 +16,7 @@ from flask_sitemap import Sitemap
 import spacy
 from spacy_langdetect import LanguageDetector
 from spacy.language import Language
+import logging
 
 
 # Inicializar o Firebase Admin SDK
@@ -66,6 +67,27 @@ def save_profile_picture(picture):
             return None
     return None
 
+logging.basicConfig(filename='upload_debug.log', level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s: %(message)s')
+
+def save_image_to_firebase(picture):
+    if picture and allowed_file(picture.filename):
+        ext = picture.filename.rsplit('.', 1)[1].lower()
+        new_filename = f"{uuid.uuid4().hex}.{ext}"
+
+        try:
+            logging.debug(f"Iniciando o upload do arquivo: {picture.filename}")
+            blob = bucket.blob(new_filename)
+            blob.upload_from_file(picture, content_type=picture.content_type)
+            logging.debug(f"Arquivo {new_filename} enviado com sucesso para o Firebase.")
+            blob.make_public()  # Tornar a imagem pública
+            return blob.public_url
+        except Exception as e:
+            logging.error(f"Erro ao salvar imagem no Firebase: {e}")
+            return None
+    else:
+        logging.warning("Arquivo não é válido ou não foi enviado.")
+        return None
 
 # Modelos do banco de dados
 class User(db.Model):
@@ -113,7 +135,8 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     tags = db.Column(db.String(500), nullable=True)  # Coluna de tags como lista de strings
     assunto = db.Column(db.String(255), nullable=True)  # Nova coluna para armazenar o assunto
-
+    img_url = db.Column(db.String, nullable=True)  # Novo campo para armazenar URL da imagem
+    
     # Relacionamentos
     likes = db.relationship('Like', back_populates='post', lazy=True, cascade="all, delete-orphan")
     comments = db.relationship('Comment', back_populates='post', lazy=True, cascade="all, delete-orphan")
@@ -493,29 +516,43 @@ def create_post():
         hashtags_input = request.form.get('hashtags', '')
         hashtags = [h.strip() for h in hashtags_input.split(',') if h.strip()]
 
+        # Upload da imagem para o Firebase
+        picture = request.files.get('image')
+        img_url = None
+
+    if picture and allowed_file(picture.filename):
+        logging.info("Imagem válida. Iniciando o upload.")
+        img_url = save_image_to_firebase(picture)
+        if img_url:
+            logging.info("Imagem carregada com sucesso. URL: %s", img_url)
+        else:
+            logging.error("Erro ao carregar a imagem.")
+
+
         # Verificar o último post do usuário
         last_post = Post.query.filter_by(user_id=user.id).order_by(Post.timestamp.desc()).first()
 
-        # Bloquear o envio de posts repetidos em menos de 30 segundos
+        # Bloquear posts repetidos
         if last_post and datetime.utcnow() - last_post.timestamp < timedelta(seconds=30):
-            flash('Você deve esperar 30 segundos antes de postar novamente.', 'danger')
+            flash('Espere 30 segundos antes de postar novamente.', 'danger')
             return redirect(url_for('home'))
 
-        if content:
-            new_post = Post(content=content, gif_url=gif_url, user_id=user.id, timestamp=datetime.utcnow())
+        # Criar novo post
+        if content or img_url:
+            new_post = Post(
+                content=content, 
+                gif_url=gif_url, 
+                img_url=img_url,  
+                user_id=user.id, 
+                timestamp=datetime.utcnow()
+            )
             db.session.add(new_post)
-            db.session.commit()  # Salvar o post primeiro
+            db.session.commit()
+            print('Post criado com sucesso:', new_post.id)
 
-            # Gerar tags e determinar assunto
-            new_post.tags = ','.join(new_post.generate_tags())
-            new_post.assunto = new_post.determine_assunto(new_post.tags.split(','))  # Passar as tags como lista
-            
-            db.session.commit()  # Salvar as tags e assunto
-
+            # Processamento de hashtags
             for hashtag_name in hashtags:
-                if hashtag_name.startswith('#'):
-                    hashtag_name = hashtag_name[1:]
-
+                hashtag_name = hashtag_name.lstrip('#')
                 hashtag = Hashtag.query.filter_by(name=hashtag_name).first()
                 if not hashtag:
                     hashtag = Hashtag(name=hashtag_name, post_count=1)
@@ -527,21 +564,20 @@ def create_post():
                 post_hashtag = PostHashtag(post_id=new_post.id, hashtag_id=hashtag.id)
                 db.session.add(post_hashtag)
 
-            # Criar uma notificação global após o post ter sido commitado
+            # Notificação global
             message = f"{user.username} criou um novo post."
             global_notification = Notification(post_id=new_post.id, message=message, global_notification=True)
             db.session.add(global_notification)
-
-            # Enviar a notificação para o Pusher
             pusher_client.trigger('my-channel', 'my-event', {'message': message})
 
-            db.session.commit()  # Salvar as hashtags e a notificação
+            db.session.commit()
             flash('Post criado com sucesso!', 'success')
             return redirect(url_for('home'))
         else:
-            flash('Conteúdo do post não pode estar vazio.', 'danger')
+            flash('Conteúdo ou imagem não pode estar vazio.', 'danger')
 
     return render_template('create_post.html', user=user)
+
 
 
 
