@@ -99,7 +99,7 @@ body {
 }
 
 .container {
-    width: 90%;
+    width: 70%;
     max-width: 800px;
     margin: 20px auto;
     padding: 20px;
@@ -237,4 +237,12 @@ body {
 .bottom-bar-icon img {
     width: 24px;
     height: 24px;
+}
+
+.photo-item {
+    width: 250px;                   /* Largura padrão para os GIFs */
+    height: auto;                   /* Altura proporcional */
+    border-radius: 10px;            /* Bordas arredondadas nos GIFs */
+    cursor: pointer;                /* Muda o cursor ao passar sobre o GIF */
+    transition: transform 0.2s ease; /* Transição suave de efeito */
 }

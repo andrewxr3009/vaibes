@@ -37,6 +37,11 @@
                 {% if post.gif_url %}
                     <img src="{{ post.gif_url }}" alt="GIF">
                 {% endif %}
+                {% if post.img_url %}
+                            <div class="photo-container">
+                                <img src="{{ post.img_url }}" alt="Foto" class="photo-item">
+                            </div>
+                        {% endif %}
                 <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST">
                     {% if user.is_following(post.user) %}
                         <button type="submit" class="btn btn-danger">Deixar de Seguir</button>

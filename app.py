@@ -17,6 +17,9 @@ import spacy
 from spacy_langdetect import LanguageDetector
 from spacy.language import Language
 import logging
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.backends import default_backend
 
 
 # Inicializar o Firebase Admin SDK
@@ -46,6 +49,35 @@ db = SQLAlchemy(app)
 CORS(app)
 
 # Funções auxiliares
+
+def generate_keypair():
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    public_key = private_key.public_key()
+    return private_key, public_key
+
+def encrypt_message(message, public_key):
+    ciphertext = public_key.encrypt(
+        message.encode(),
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
+    )
+    return ciphertext
+
+def decrypt_message(ciphertext, private_key):
+    plaintext = private_key.decrypt(
+        ciphertext,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
+    )
+    return plaintext.decode()
+
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
@@ -109,11 +141,33 @@ class User(db.Model):
     device_token = db.Column(db.Text)  
     subscription_info = db.Column(db.Text)  # Para armazenar a inscrição do usuário 
     followers = db.relationship('Follower', foreign_keys='Follower.follower_id', back_populates='follower', lazy='dynamic')
+    
+    # Relacionamentos de mensagens
+    messages_sent = db.relationship(
+        "Message", back_populates="sender", foreign_keys='Message.sender_id'
+    )
+    messages_received = db.relationship(
+        'Message', back_populates='receiver', lazy='dynamic', foreign_keys='Message.receiver_id'
+    )
+    
+    # Relacionamento de quem o usuário está seguindo
     following = db.relationship('Follower', foreign_keys='Follower.user_id', back_populates='user', lazy='dynamic')
 
     def is_following(self, user):
         """Verifica se o usuário atual está seguindo o usuário passado."""
         return Follower.query.filter_by(user_id=user.id, follower_id=self.id).count() > 0
+
+class Message(db.Model):
+    __tablename__ = 'message'  
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    # Relacionamentos
+    sender = db.relationship('User', foreign_keys=[sender_id], back_populates='messages_sent')
+    receiver = db.relationship('User', foreign_keys=[receiver_id], back_populates='messages_received')
 
 
 
@@ -1211,6 +1265,67 @@ def admin_panel():
     all_users = User.query.all()
     
     return render_template('admin.html', posts=all_posts, users=all_users)
+
+@app.route('/dm')
+def dm():
+    # Verifica se o usuário está logado
+    if 'user_id' not in session:
+        flash("Você precisa estar logado para acessar as conversas.", "danger")
+        return redirect(url_for('login'))
+
+    # Captura o user_id diretamente da sessão
+    user_id = session['user_id']
+
+    # Busca todas as conversas (seguindo os IDs que o usuário logado está seguindo)
+    conversas = db.session.query(Follower).filter(Follower.follower_id == user_id).all()
+
+    # Pega os usuários que o usuário atual está seguindo
+    conversas_usuarios = [User.query.get(conversa.follower_id) for conversa in conversas]
+
+    # Renderiza o template 'dm.html' passando as conversas
+    return render_template('dm.html', conversas=conversas_usuarios)
+
+
+@app.route('/nova_conversa')
+def nova_conversa():
+    return render_template('nova_conversa.html')
+
+@app.route('/enviar_mensagem/<int:user_id>', methods=['POST'])
+def enviar_mensagem(user_id):
+    # Obter o conteúdo da mensagem do formulário
+    content = request.form['content']
+
+        # Recuperar o destinatário com base no user_id
+    recipient = User.query.get(user_id)
+
+    if recipient is None:
+        # Caso o destinatário não seja encontrado
+        flash('Usuário não encontrado.', 'error')
+        return redirect(url_for('index'))  # Ou outra página de erro
+
+    recipient_username = recipient.username 
+
+    # Criar um novo objeto Message e salvar no banco de dados
+    message = Message(content=content, sender_id=session['user_id'], receiver_id=user_id)
+    db.session.add(message)
+    db.session.commit()
+
+    # Redirecionar para a conversa ou exibir uma mensagem de sucesso
+    return redirect(url_for('conversa', username=recipient_username))
+
+@app.route('/conversa/<username>')
+def conversa(username):
+    recipient = User.query.filter_by(username=username).first()
+    if not recipient:
+        flash('Usuário não encontrado.')
+        return redirect(url_for('home'))
+
+    messages = Message.query.filter(
+        (Message.sender_id == session['user_id']) & (Message.receiver_id == recipient.id) |
+        (Message.sender_id == recipient.id) & (Message.receiver_id == session['user_id'])
+    ).order_by(Message.timestamp.asc()).all()
+
+    return render_template('conversa.html', recipient=recipient, messages=messages)
 
 # Inicialização da aplicação
 if __name__ == '__main__':

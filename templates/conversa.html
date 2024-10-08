@@ -1,0 +1,15 @@
+<h1>Conversa com {{ recipient.username }}</h1>
+
+<div class="messages">
+    {% for message in messages %}
+        <div class="message {{ 'sent' if message.sender_id == session.user_id else 'received' }}">
+            {{ message.content }}
+            <span class="timestamp">{{ message.timestamp.strftime('%H:%M %d/%m/%Y') }}</span>
+        </div>
+    {% endfor %}
+</div>
+
+<form method="POST" action="{{ url_for('enviar_mensagem', user_id=recipient.id) }}">
+    <textarea name="content" placeholder="Digite sua mensagem"></textarea>
+    <button type="submit">Enviar</button>
+</form>
