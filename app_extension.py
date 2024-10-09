@@ -1,8 +1,12 @@
+from flask import Flask, request, jsonify, redirect, url_for, session, flash, render_template
+from flask_socketio import SocketIO, emit
 from app import app, db, User, Post, Follower
-from flask import request, jsonify, redirect, url_for, session, flash, render_template
-import socketio
+from vaibes_algorithm import calculate_relevance_for_all_users, schedule_relevance_calculation, session
 
-# Impementação de nova funcionalidade: Seguir usuários
+# Inicialização do SocketIO
+socketio = SocketIO(app)
+
+# Implementação de nova funcionalidade: Seguir usuários
 @app.route('/follow/<int:user_id>', methods=['POST'])
 def follow(user_id):
     if 'username' in session:
@@ -64,7 +68,27 @@ def followers(user_id):
     followers = Follower.query.filter_by(user_id=user.id).all()
     return render_template('followers.html', user=user, followers=followers)
 
-# Inicializando o aplicativo
+# Rota para executar o algoritmo de relevância
+@app.route('/algorithm', methods=['GET'])
+def algorithm():
+    try:
+        calculate_relevance_for_all_users(session)
+        return "Algoritmo de relevância executado com sucesso!", 200
+    except Exception as e:
+        return f"Ocorreu um erro: {e}", 500
+from apscheduler.schedulers.background import BackgroundScheduler
+
+def run_algorithm():
+    try:
+        calculate_relevance_for_all_users(session)
+    except Exception as e:
+        print(f"Ocorreu um erro ao executar o algoritmo: {e}")
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    # Cria e inicia o scheduler
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(run_algorithm, 'interval', seconds=240)  # Executa a cada 60 segundos
+    scheduler.start()
+
+    # Inicia o servidor Flask
     socketio.run(app, debug=True)

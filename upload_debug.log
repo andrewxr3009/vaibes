@@ -1,404 +1,974 @@
-2024-10-07 21:27:02,895 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
+2024-10-08 19:34:09,575 ERROR: 127.0.0.1 - - [08/Oct/2024 19:34:09] code 400, message Bad HTTP/0.9 request type ('\x16\x03\x01\x02\x00\x01\x00\x01ü\x03\x03v\x8b\x83b´')
+2024-10-08 19:34:09,575 INFO: 127.0.0.1 - - [08/Oct/2024 19:34:09] "[31m[1m\x16\x03\x01\x02\x00\x01\x00\x01ü\x03\x03v\x8b\x83b´\x85\x80[0m" 400 -
+2024-10-08 19:34:24,557 INFO: 127.0.0.1 - - [08/Oct/2024 19:34:24] "[35m[1mGET /conversa/Vaibes%20🔵 HTTP/1.1[0m" 500 -
+2024-10-08 19:34:25,097 INFO: 127.0.0.1 - - [08/Oct/2024 19:34:25] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 19:34:25,121 INFO: 127.0.0.1 - - [08/Oct/2024 19:34:25] "GET /conversa/Vaibes%20🔵?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2024-10-08 19:34:25,154 INFO: 127.0.0.1 - - [08/Oct/2024 19:34:25] "GET /conversa/Vaibes%20🔵?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2024-10-08 19:34:25,366 INFO: 127.0.0.1 - - [08/Oct/2024 19:34:25] "GET /conversa/Vaibes%20🔵?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2024-10-08 19:34:25,367 INFO: 127.0.0.1 - - [08/Oct/2024 19:34:25] "GET /conversa/Vaibes%20🔵?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2024-10-08 19:34:25,759 INFO: 127.0.0.1 - - [08/Oct/2024 19:34:25] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:36:49,010 INFO:  * Detected change in '/home/andrew/projectX/app.py', reloading
+2024-10-08 19:36:49,500 INFO:  * Restarting with stat
+2024-10-08 19:37:07,801 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
- * Running on http://192.168.1.48:5000
-2024-10-07 21:27:02,896 INFO: [33mPress CTRL+C to quit[0m
-2024-10-07 21:27:09,173 ERROR: Exception on /conversa/Asafe [GET]
-Traceback (most recent call last):
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 2190, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1486, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask_cors/extension.py", line 194, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-                                                ^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1484, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1469, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/andrew/projectX/app.py", line 1311, in conversa
-    (Message.sender_id == session['user_id'] & Message.receiver_id == recipient.id) |
-                          ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
-TypeError: unsupported operand type(s) for &: 'int' and 'InstrumentedAttribute'
-2024-10-07 21:27:09,379 INFO: 127.0.0.1 - - [07/Oct/2024 21:27:09] "[35m[1mGET /conversa/Asafe HTTP/1.1[0m" 500 -
-2024-10-07 21:27:09,686 INFO: 127.0.0.1 - - [07/Oct/2024 21:27:09] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:29:50,080 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
+2024-10-08 19:37:07,801 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 19:37:07,801 INFO:  * Restarting with stat
+2024-10-08 19:37:20,921 WARNING:  * Debugger is active!
+2024-10-08 19:37:20,922 INFO:  * Debugger PIN: 366-738-737
+2024-10-08 19:37:24,666 INFO: 127.0.0.1 - - [08/Oct/2024 19:37:24] "[35m[1mGET /conversa/Vaibes%20🔵 HTTP/1.1[0m" 500 -
+2024-10-08 19:37:24,722 INFO: 127.0.0.1 - - [08/Oct/2024 19:37:24] "[36mGET /conversa/Vaibes%20🔵?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2024-10-08 19:37:24,724 INFO: 127.0.0.1 - - [08/Oct/2024 19:37:24] "[36mGET /conversa/Vaibes%20🔵?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2024-10-08 19:37:24,750 INFO: 127.0.0.1 - - [08/Oct/2024 19:37:24] "[36mGET /conversa/Vaibes%20🔵?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2024-10-08 19:37:25,033 INFO: 127.0.0.1 - - [08/Oct/2024 19:37:25] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:39:41,109 INFO:  * Detected change in '/home/andrew/projectX/app.py', reloading
+2024-10-08 19:39:41,604 INFO:  * Restarting with stat
+2024-10-08 19:40:02,478 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
- * Running on http://192.168.1.48:5000
-2024-10-07 21:29:50,081 INFO: [33mPress CTRL+C to quit[0m
-2024-10-07 21:30:00,158 INFO: 127.0.0.1 - - [07/Oct/2024 21:30:00] "GET /conversa/Asafe HTTP/1.1" 200 -
-2024-10-07 21:30:00,289 INFO: 127.0.0.1 - - [07/Oct/2024 21:30:00] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:30:06,050 ERROR: Exception on /enviar_mensagem/23 [POST]
-Traceback (most recent call last):
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 2190, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1486, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask_cors/extension.py", line 194, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-                                                ^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1484, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1469, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/andrew/projectX/app.py", line 1301, in enviar_mensagem
-    return redirect(url_for('conversa', username=recipient_username))
-                                                 ^^^^^^^^^^^^^^^^^^
-NameError: name 'recipient_username' is not defined
-2024-10-07 21:30:06,076 INFO: 127.0.0.1 - - [07/Oct/2024 21:30:06] "[35m[1mPOST /enviar_mensagem/23 HTTP/1.1[0m" 500 -
-2024-10-07 21:30:06,224 INFO: 127.0.0.1 - - [07/Oct/2024 21:30:06] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:34:00,175 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
+2024-10-08 19:40:02,478 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 19:40:02,479 INFO:  * Restarting with stat
+2024-10-08 19:40:15,241 WARNING:  * Debugger is active!
+2024-10-08 19:40:15,242 INFO:  * Debugger PIN: 516-145-294
+2024-10-08 19:40:15,387 INFO: 127.0.0.1 - - [08/Oct/2024 19:40:15] "[32mGET /conversa/Vaibes%20🔵 HTTP/1.1[0m" 302 -
+2024-10-08 19:40:15,393 INFO: 127.0.0.1 - - [08/Oct/2024 19:40:15] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:40:15,417 INFO: 127.0.0.1 - - [08/Oct/2024 19:40:15] "GET /login HTTP/1.1" 200 -
+2024-10-08 19:40:15,489 INFO: 127.0.0.1 - - [08/Oct/2024 19:40:15] "GET /static/script.css HTTP/1.1" 200 -
+2024-10-08 19:40:15,510 INFO: 127.0.0.1 - - [08/Oct/2024 19:40:15] "GET /static/vaibes-logo.webp HTTP/1.1" 200 -
+2024-10-08 19:40:15,717 INFO: 127.0.0.1 - - [08/Oct/2024 19:40:15] "GET /favicon.ico HTTP/1.1" 200 -
+2024-10-08 19:40:15,897 INFO: 127.0.0.1 - - [08/Oct/2024 19:40:15] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:40:16,405 INFO: 127.0.0.1 - - [08/Oct/2024 19:40:16] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:40:30,388 DEBUG: Starting new HTTPS connection (1): identitytoolkit.googleapis.com:443
+2024-10-08 19:40:30,879 DEBUG: https://identitytoolkit.googleapis.com:443 "POST /v1/accounts:signInWithPassword?key=AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc HTTP/11" 200 None
+2024-10-08 19:40:31,381 INFO: 127.0.0.1 - - [08/Oct/2024 19:40:31] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:40:32,643 DEBUG: Making request: POST https://oauth2.googleapis.com/token
+2024-10-08 19:40:32,645 DEBUG: Starting new HTTPS connection (1): oauth2.googleapis.com:443
+2024-10-08 19:40:32,983 DEBUG: https://oauth2.googleapis.com:443 "POST /token HTTP/11" 200 None
+2024-10-08 19:40:33,248 INFO: 127.0.0.1 - - [08/Oct/2024 19:40:33] "[32mPOST /login HTTP/1.1[0m" 302 -
+2024-10-08 19:40:34,269 INFO: 127.0.0.1 - - [08/Oct/2024 19:40:34] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:41:27,441 INFO: 127.0.0.1 - - [08/Oct/2024 19:41:27] "GET / HTTP/1.1" 200 -
+2024-10-08 19:41:27,654 INFO: 127.0.0.1 - - [08/Oct/2024 19:41:27] "GET /static/uploads/default-profile-pic.png HTTP/1.1" 200 -
+2024-10-08 19:41:27,669 INFO: 127.0.0.1 - - [08/Oct/2024 19:41:27] "GET /static/notifications-icon.png HTTP/1.1" 200 -
+2024-10-08 19:41:27,673 INFO: 127.0.0.1 - - [08/Oct/2024 19:41:27] "GET /static/home-icon.png HTTP/1.1" 200 -
+2024-10-08 19:41:27,684 INFO: 127.0.0.1 - - [08/Oct/2024 19:41:27] "GET /static/search-icon.png HTTP/1.1" 200 -
+2024-10-08 19:41:27,704 INFO: 127.0.0.1 - - [08/Oct/2024 19:41:27] "GET /static/post-icon.png HTTP/1.1" 200 -
+2024-10-08 19:41:29,241 INFO: 127.0.0.1 - - [08/Oct/2024 19:41:29] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 19:41:29,410 INFO: 127.0.0.1 - - [08/Oct/2024 19:41:29] "GET /static/vibe-icon.png HTTP/1.1" 200 -
+2024-10-08 19:41:29,410 INFO: 127.0.0.1 - - [08/Oct/2024 19:41:29] "GET /static/vibe-icon.png HTTP/1.1" 200 -
+2024-10-08 19:42:48,007 INFO: 127.0.0.1 - - [08/Oct/2024 19:42:48] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
+2024-10-08 19:42:48,367 INFO: 127.0.0.1 - - [08/Oct/2024 19:42:48] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:42:49,229 INFO: 127.0.0.1 - - [08/Oct/2024 19:42:49] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:43:16,406 INFO: 127.0.0.1 - - [08/Oct/2024 19:43:16] "GET /conversa/Vaibes%20🔵?content=também+acho HTTP/1.1" 200 -
+2024-10-08 19:43:16,733 INFO: 127.0.0.1 - - [08/Oct/2024 19:43:16] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:43:22,446 INFO: 127.0.0.1 - - [08/Oct/2024 19:43:22] "GET /conversa/andrew HTTP/1.1" 200 -
+2024-10-08 19:43:22,809 INFO: 127.0.0.1 - - [08/Oct/2024 19:43:22] "[36mGET /favicon.ico HTTP/1.1[0m" 304 -
+2024-10-08 19:43:24,829 INFO: 127.0.0.1 - - [08/Oct/2024 19:43:24] "GET /conversa/andrew HTTP/1.1" 200 -
+2024-10-08 19:43:25,056 INFO: 127.0.0.1 - - [08/Oct/2024 19:43:25] "[36mGET /favicon.ico HTTP/1.1[0m" 304 -
+2024-10-08 19:43:25,140 INFO: 127.0.0.1 - - [08/Oct/2024 19:43:25] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:43:27,165 INFO: 127.0.0.1 - - [08/Oct/2024 19:43:27] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:43:29,379 INFO: 127.0.0.1 - - [08/Oct/2024 19:43:29] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:43:29,399 INFO: 127.0.0.1 - - [08/Oct/2024 19:43:29] "GET /conversa/Vaibes%20🔵?content=também+acho HTTP/1.1" 200 -
+2024-10-08 19:43:30,440 INFO: 127.0.0.1 - - [08/Oct/2024 19:43:30] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:50:40,369 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
- * Running on http://192.168.1.48:5000
-2024-10-07 21:34:00,175 INFO: [33mPress CTRL+C to quit[0m
-2024-10-07 21:34:20,849 ERROR: Exception on /enviar_mensagem/23 [POST]
-Traceback (most recent call last):
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 2190, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1486, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask_cors/extension.py", line 194, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-                                                ^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1484, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1469, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/andrew/projectX/app.py", line 1294, in enviar_mensagem
-    recipient = User.query.get(user_id)
-                               ^^^^^^^
-NameError: name 'user_id' is not defined
-2024-10-07 21:34:20,860 INFO: 127.0.0.1 - - [07/Oct/2024 21:34:20] "[35m[1mPOST /enviar_mensagem/23 HTTP/1.1[0m" 500 -
-2024-10-07 21:34:21,772 INFO: 127.0.0.1 - - [07/Oct/2024 21:34:21] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:35:56,727 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
+2024-10-08 19:50:40,387 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 19:50:40,387 INFO:  * Restarting with stat
+2024-10-08 19:51:09,421 WARNING:  * Debugger is active!
+2024-10-08 19:51:09,465 INFO:  * Debugger PIN: 483-240-272
+2024-10-08 19:51:09,650 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:09] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 19:51:10,740 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:10] "GET /conversa/Vaibes%20🔵?content=também+acho HTTP/1.1" 200 -
+2024-10-08 19:51:10,905 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:10] "GET /socket.io/?EIO=4&transport=polling&t=P9kL4gp HTTP/1.1" 200 -
+2024-10-08 19:51:10,930 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:10] "POST /socket.io/?EIO=4&transport=polling&t=P9kL4g-&sid=DhzGpcMY0AQWN6PUAAAA HTTP/1.1" 200 -
+2024-10-08 19:51:11,038 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:11] "GET /socket.io/?EIO=4&transport=polling&t=P9kL4hw&sid=DhzGpcMY0AQWN6PUAAAA HTTP/1.1" 200 -
+2024-10-08 19:51:11,048 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:11] "GET /socket.io/?EIO=4&transport=polling&t=P9kL4j4&sid=DhzGpcMY0AQWN6PUAAAA HTTP/1.1" 200 -
+2024-10-08 19:51:11,822 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:11] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 19:51:26,916 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:26] "GET /conversa/andrew HTTP/1.1" 200 -
+2024-10-08 19:51:27,346 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:27] "GET /socket.io/?EIO=4&transport=polling&t=P9kL8hg HTTP/1.1" 200 -
+2024-10-08 19:51:27,392 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:27] "[36mGET /favicon.ico HTTP/1.1[0m" 304 -
+2024-10-08 19:51:27,415 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:27] "POST /socket.io/?EIO=4&transport=polling&t=P9kL8iK&sid=3kEUyr4MAPseoMkqAAAC HTTP/1.1" 200 -
+2024-10-08 19:51:27,528 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:27] "GET /socket.io/?EIO=4&transport=polling&t=P9kL8k6&sid=3kEUyr4MAPseoMkqAAAC HTTP/1.1" 200 -
+2024-10-08 19:51:29,224 INFO: 127.0.0.1 - - [08/Oct/2024 19:51:29] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:54:11,464 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
- * Running on http://192.168.1.48:5000
-2024-10-07 21:35:56,727 INFO: [33mPress CTRL+C to quit[0m
-2024-10-07 21:36:19,261 INFO: 127.0.0.1 - - [07/Oct/2024 21:36:19] "[32mPOST /enviar_mensagem/23 HTTP/1.1[0m" 302 -
-2024-10-07 21:36:19,379 INFO: 127.0.0.1 - - [07/Oct/2024 21:36:19] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
-2024-10-07 21:36:19,922 ERROR: Exception on /conversa/Asafe [GET]
-Traceback (most recent call last):
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 2190, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1486, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask_cors/extension.py", line 194, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-                                                ^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1484, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1469, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/andrew/projectX/app.py", line 1323, in conversa
-    return render_template('conversa.html', recipient=recipient, messages=messages)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/templating.py", line 151, in render_template
-    return _render(app, template, context)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/templating.py", line 132, in _render
-    rv = template.render(context)
-         ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/jinja2/environment.py", line 1301, in render
-    self.environment.handle_exception()
-  File "/var/data/python/lib/python3.12/site-packages/jinja2/environment.py", line 936, in handle_exception
-    raise rewrite_traceback_stack(source=source)
-  File "/home/andrew/projectX/templates/conversa.html", line 12, in top-level template code
-    <form method="POST" action="{{ url_for('enviar_mensagem', recipient_id=recipient.id) }}">
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1697, in url_for
-    return self.handle_url_build_error(error, endpoint, values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1686, in url_for
-    rv = url_adapter.build(  # type: ignore[union-attr]
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/werkzeug/routing/map.py", line 950, in build
-    raise BuildError(endpoint, values, method, self)
-werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'enviar_mensagem' with values ['recipient_id']. Did you forget to specify values ['user_id']?
-2024-10-07 21:36:20,163 INFO: 127.0.0.1 - - [07/Oct/2024 21:36:20] "[35m[1mGET /conversa/Asafe HTTP/1.1[0m" 500 -
-2024-10-07 21:36:21,210 INFO: 127.0.0.1 - - [07/Oct/2024 21:36:21] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:37:27,618 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
+2024-10-08 19:54:11,464 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 19:54:11,464 INFO:  * Restarting with stat
+2024-10-08 19:54:24,107 WARNING:  * Debugger is active!
+2024-10-08 19:54:24,109 INFO:  * Debugger PIN: 942-722-994
+2024-10-08 19:54:24,276 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:24] "GET /socket.io/?EIO=4&transport=polling&t=P9kLmn9 HTTP/1.1" 200 -
+2024-10-08 19:54:24,310 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:24] "GET /socket.io/?EIO=4&transport=polling&t=P9kLnc8 HTTP/1.1" 200 -
+2024-10-08 19:54:24,349 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:24] "POST /socket.io/?EIO=4&transport=polling&t=P9kLpv2&sid=lQDlIazVGYrgXFklAAAB HTTP/1.1" 200 -
+2024-10-08 19:54:24,360 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:24] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 19:54:24,363 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:24] "GET /socket.io/?EIO=4&transport=polling&t=P9kLpv5&sid=lQDlIazVGYrgXFklAAAB HTTP/1.1" 200 -
+2024-10-08 19:54:25,529 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:25] "GET /conversa/Vaibes%20🔵?content=também+acho HTTP/1.1" 200 -
+2024-10-08 19:54:25,622 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:25] "GET /socket.io/?EIO=4&transport=polling&t=P9kLqDA HTTP/1.1" 200 -
+2024-10-08 19:54:25,684 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:25] "POST /socket.io/?EIO=4&transport=polling&t=P9kLqED&sid=I2fdA8_AYa0jjxZjAAAD HTTP/1.1" 200 -
+2024-10-08 19:54:25,693 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:25] "GET /socket.io/?EIO=4&transport=polling&t=P9kLqEH&sid=I2fdA8_AYa0jjxZjAAAD HTTP/1.1" 200 -
+2024-10-08 19:54:25,722 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:25] "GET /socket.io/?EIO=4&transport=polling&t=P9kLqEl&sid=I2fdA8_AYa0jjxZjAAAD HTTP/1.1" 200 -
+2024-10-08 19:54:26,571 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:26] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 19:54:42,262 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:42] "GET /socket.io/?EIO=4&transport=websocket&sid=lQDlIazVGYrgXFklAAAB HTTP/1.1" 200 -
+2024-10-08 19:54:43,260 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:43] "GET /conversa/andrew HTTP/1.1" 200 -
+2024-10-08 19:54:43,503 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:43] "GET /socket.io/?EIO=4&transport=polling&t=P9kLuaX HTTP/1.1" 200 -
+2024-10-08 19:54:43,562 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:43] "[36mGET /favicon.ico HTTP/1.1[0m" 304 -
+2024-10-08 19:54:43,615 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:43] "POST /socket.io/?EIO=4&transport=polling&t=P9kLubc&sid=LVUO7H2rROPvWf35AAAF HTTP/1.1" 200 -
+2024-10-08 19:54:43,638 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:43] "GET /socket.io/?EIO=4&transport=polling&t=P9kLubf&sid=LVUO7H2rROPvWf35AAAF HTTP/1.1" 200 -
+2024-10-08 19:54:45,737 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:45] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:54:53,386 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:53] "GET /socket.io/?EIO=4&transport=websocket&sid=I2fdA8_AYa0jjxZjAAAD HTTP/1.1" 200 -
+2024-10-08 19:54:54,385 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:54] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
+2024-10-08 19:54:54,463 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:54] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:54:54,500 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:54] "GET /socket.io/?EIO=4&transport=polling&t=P9kLxGU HTTP/1.1" 200 -
+2024-10-08 19:54:54,543 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:54] "POST /socket.io/?EIO=4&transport=polling&t=P9kLxGt&sid=gYy2LdcAzrP8bOmnAAAH HTTP/1.1" 200 -
+2024-10-08 19:54:54,544 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:54] "GET /socket.io/?EIO=4&transport=polling&t=P9kLxGv&sid=gYy2LdcAzrP8bOmnAAAH HTTP/1.1" 200 -
+2024-10-08 19:54:54,612 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:54] "GET /socket.io/?EIO=4&transport=polling&t=P9kLxIF&sid=gYy2LdcAzrP8bOmnAAAH HTTP/1.1" 200 -
+2024-10-08 19:54:55,462 INFO: 127.0.0.1 - - [08/Oct/2024 19:54:55] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:55:06,066 INFO: 127.0.0.1 - - [08/Oct/2024 19:55:06] "GET /socket.io/?EIO=4&transport=websocket&sid=LVUO7H2rROPvWf35AAAF HTTP/1.1" 200 -
+2024-10-08 19:55:07,068 INFO: 127.0.0.1 - - [08/Oct/2024 19:55:07] "GET /conversa/andrew HTTP/1.1" 200 -
+2024-10-08 19:55:07,271 INFO: 127.0.0.1 - - [08/Oct/2024 19:55:07] "GET /socket.io/?EIO=4&transport=polling&t=P9kL-Ng HTTP/1.1" 200 -
+2024-10-08 19:55:07,318 INFO: 127.0.0.1 - - [08/Oct/2024 19:55:07] "[36mGET /favicon.ico HTTP/1.1[0m" 304 -
+2024-10-08 19:55:07,367 INFO: 127.0.0.1 - - [08/Oct/2024 19:55:07] "POST /socket.io/?EIO=4&transport=polling&t=P9kL-Om&sid=K2CWbpToTeT9B8oUAAAJ HTTP/1.1" 200 -
+2024-10-08 19:55:07,388 INFO: 127.0.0.1 - - [08/Oct/2024 19:55:07] "GET /socket.io/?EIO=4&transport=polling&t=P9kL-Ou&sid=K2CWbpToTeT9B8oUAAAJ HTTP/1.1" 200 -
+2024-10-08 19:55:07,435 INFO: 127.0.0.1 - - [08/Oct/2024 19:55:07] "GET /socket.io/?EIO=4&transport=polling&t=P9kL-QW&sid=K2CWbpToTeT9B8oUAAAJ HTTP/1.1" 200 -
+2024-10-08 19:55:10,126 INFO: 127.0.0.1 - - [08/Oct/2024 19:55:10] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 19:57:51,051 INFO:  * Detected change in '/home/andrew/projectX/app.py', reloading
+2024-10-08 19:57:51,573 INFO:  * Restarting with stat
+2024-10-08 19:58:04,796 WARNING:  * Debugger is active!
+2024-10-08 19:58:04,797 INFO:  * Debugger PIN: 129-115-434
+2024-10-08 19:58:04,957 INFO: 127.0.0.1 - - [08/Oct/2024 19:58:04] "GET /socket.io/?EIO=4&transport=polling&t=P9kMc-A HTTP/1.1" 200 -
+2024-10-08 19:58:04,957 INFO: 127.0.0.1 - - [08/Oct/2024 19:58:04] "GET /socket.io/?EIO=4&transport=polling&t=P9kMcly HTTP/1.1" 200 -
+2024-10-08 19:58:04,984 INFO: 127.0.0.1 - - [08/Oct/2024 19:58:04] "POST /socket.io/?EIO=4&transport=polling&t=P9kMfmg&sid=GVyZohqS3Epc5SWTAAAA HTTP/1.1" 200 -
+2024-10-08 19:58:04,989 INFO: 127.0.0.1 - - [08/Oct/2024 19:58:04] "GET /socket.io/?EIO=4&transport=polling&t=P9kMfmi&sid=GVyZohqS3Epc5SWTAAAA HTTP/1.1" 200 -
+2024-10-08 19:58:05,000 INFO: 127.0.0.1 - - [08/Oct/2024 19:58:05] "POST /socket.io/?EIO=4&transport=polling&t=P9kMfmg&sid=aqhLZBS1K5awmwQHAAAB HTTP/1.1" 200 -
+2024-10-08 19:58:05,005 INFO: 127.0.0.1 - - [08/Oct/2024 19:58:05] "GET /socket.io/?EIO=4&transport=polling&t=P9kMfmo&sid=aqhLZBS1K5awmwQHAAAB HTTP/1.1" 200 -
+2024-10-08 19:58:53,589 INFO:  * Detected change in '/home/andrew/projectX/app.py', reloading
+2024-10-08 19:58:54,057 INFO:  * Restarting with stat
+2024-10-08 19:59:07,448 WARNING:  * Debugger is active!
+2024-10-08 19:59:07,449 INFO:  * Debugger PIN: 118-311-788
+2024-10-08 19:59:07,621 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:07] "GET /socket.io/?EIO=4&transport=polling&t=P9kMs72 HTTP/1.1" 200 -
+2024-10-08 19:59:07,621 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:07] "GET /socket.io/?EIO=4&transport=polling&t=P9kMs6v HTTP/1.1" 200 -
+2024-10-08 19:59:07,637 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:07] "POST /socket.io/?EIO=4&transport=polling&t=P9kMv3g&sid=Da8eMeewvFhjyFFsAAAB HTTP/1.1" 200 -
+2024-10-08 19:59:07,644 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:07] "GET /socket.io/?EIO=4&transport=polling&t=P9kMv3j&sid=Da8eMeewvFhjyFFsAAAB HTTP/1.1" 200 -
+2024-10-08 19:59:07,665 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:07] "POST /socket.io/?EIO=4&transport=polling&t=P9kMv3n&sid=2KvHhilNL9v8TMDLAAAA HTTP/1.1" 200 -
+2024-10-08 19:59:07,671 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:07] "GET /socket.io/?EIO=4&transport=polling&t=P9kMv3q&sid=2KvHhilNL9v8TMDLAAAA HTTP/1.1" 200 -
+2024-10-08 19:59:07,674 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:07] "GET /socket.io/?EIO=4&transport=polling&t=P9kMv41&sid=Da8eMeewvFhjyFFsAAAB HTTP/1.1" 200 -
+2024-10-08 19:59:28,684 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
- * Running on http://192.168.1.48:5000
-2024-10-07 21:37:27,618 INFO: [33mPress CTRL+C to quit[0m
-2024-10-07 21:37:41,708 INFO: 127.0.0.1 - - [07/Oct/2024 21:37:41] "GET /conversa/Asafe HTTP/1.1" 200 -
-2024-10-07 21:37:41,934 INFO: 127.0.0.1 - - [07/Oct/2024 21:37:41] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:38:11,554 INFO: 127.0.0.1 - - [07/Oct/2024 21:38:11] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
-2024-10-07 21:38:11,781 INFO: 127.0.0.1 - - [07/Oct/2024 21:38:11] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:38:17,779 INFO: 127.0.0.1 - - [07/Oct/2024 21:38:17] "[32mPOST /enviar_mensagem/21 HTTP/1.1[0m" 302 -
-2024-10-07 21:38:17,990 INFO: 127.0.0.1 - - [07/Oct/2024 21:38:17] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:38:18,572 INFO: 127.0.0.1 - - [07/Oct/2024 21:38:18] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
-2024-10-07 21:38:19,612 INFO: 127.0.0.1 - - [07/Oct/2024 21:38:19] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:38:26,683 INFO: 192.168.1.37 - - [07/Oct/2024 21:38:26] "[32mGET / HTTP/1.1[0m" 302 -
-2024-10-07 21:38:26,765 INFO: 192.168.1.37 - - [07/Oct/2024 21:38:26] "GET /login HTTP/1.1" 200 -
-2024-10-07 21:38:26,840 INFO: 192.168.1.37 - - [07/Oct/2024 21:38:26] "[36mGET /static/script.css HTTP/1.1[0m" 304 -
-2024-10-07 21:38:26,849 INFO: 192.168.1.37 - - [07/Oct/2024 21:38:26] "GET /static/vaibes-logo.webp HTTP/1.1" 200 -
-2024-10-07 21:39:01,648 INFO: 127.0.0.1 - - [07/Oct/2024 21:39:01] "GET /login HTTP/1.1" 200 -
-2024-10-07 21:39:02,093 INFO: 127.0.0.1 - - [07/Oct/2024 21:39:02] "[36mGET /static/vaibes-logo.webp HTTP/1.1[0m" 304 -
-2024-10-07 21:39:02,136 INFO: 127.0.0.1 - - [07/Oct/2024 21:39:02] "[36mGET /static/script.css HTTP/1.1[0m" 304 -
-2024-10-07 21:39:03,577 INFO: 127.0.0.1 - - [07/Oct/2024 21:39:03] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:39:06,080 INFO: 127.0.0.1 - - [07/Oct/2024 21:39:06] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:39:10,919 DEBUG: Starting new HTTPS connection (1): identitytoolkit.googleapis.com:443
-2024-10-07 21:39:11,388 DEBUG: https://identitytoolkit.googleapis.com:443 "POST /v1/accounts:signInWithPassword?key=AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc HTTP/11" 400 None
-2024-10-07 21:39:11,394 INFO: 127.0.0.1 - - [07/Oct/2024 21:39:11] "[32mPOST /login HTTP/1.1[0m" 302 -
-2024-10-07 21:39:11,428 INFO: 127.0.0.1 - - [07/Oct/2024 21:39:11] "GET /login HTTP/1.1" 200 -
-2024-10-07 21:39:11,557 INFO: 127.0.0.1 - - [07/Oct/2024 21:39:11] "[36mGET /static/script.css HTTP/1.1[0m" 304 -
-2024-10-07 21:39:11,564 INFO: 127.0.0.1 - - [07/Oct/2024 21:39:11] "[36mGET /static/vaibes-logo.webp HTTP/1.1[0m" 304 -
-2024-10-07 21:39:11,710 INFO: 127.0.0.1 - - [07/Oct/2024 21:39:11] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:39:14,182 INFO: 127.0.0.1 - - [07/Oct/2024 21:39:14] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:39:19,342 DEBUG: Starting new HTTPS connection (1): identitytoolkit.googleapis.com:443
-2024-10-07 21:39:19,709 DEBUG: https://identitytoolkit.googleapis.com:443 "POST /v1/accounts:signInWithPassword?key=AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc HTTP/11" 200 None
-2024-10-07 21:39:21,442 DEBUG: Making request: POST https://oauth2.googleapis.com/token
-2024-10-07 21:39:21,445 DEBUG: Starting new HTTPS connection (1): oauth2.googleapis.com:443
-2024-10-07 21:39:21,669 DEBUG: https://oauth2.googleapis.com:443 "POST /token HTTP/11" 200 None
-2024-10-07 21:39:21,916 INFO: 127.0.0.1 - - [07/Oct/2024 21:39:21] "[32mPOST /login HTTP/1.1[0m" 302 -
-2024-10-07 21:40:31,879 INFO: 127.0.0.1 - - [07/Oct/2024 21:40:31] "GET / HTTP/1.1" 200 -
-2024-10-07 21:40:32,147 INFO: 127.0.0.1 - - [07/Oct/2024 21:40:32] "[36mGET /static/uploads/default-profile-pic.png HTTP/1.1[0m" 304 -
-2024-10-07 21:40:32,241 INFO: 127.0.0.1 - - [07/Oct/2024 21:40:32] "[36mGET /static/home-icon.png HTTP/1.1[0m" 304 -
-2024-10-07 21:40:32,247 INFO: 127.0.0.1 - - [07/Oct/2024 21:40:32] "[36mGET /static/search-icon.png HTTP/1.1[0m" 304 -
-2024-10-07 21:40:32,252 INFO: 127.0.0.1 - - [07/Oct/2024 21:40:32] "[36mGET /static/post-icon.png HTTP/1.1[0m" 304 -
-2024-10-07 21:40:32,262 INFO: 127.0.0.1 - - [07/Oct/2024 21:40:32] "[36mGET /static/notifications-icon.png HTTP/1.1[0m" 304 -
-2024-10-07 21:40:32,590 INFO: 127.0.0.1 - - [07/Oct/2024 21:40:32] "[36mGET /static/uploads/default-profile-pic.png HTTP/1.1[0m" 304 -
-2024-10-07 21:40:34,126 INFO: 127.0.0.1 - - [07/Oct/2024 21:40:34] "[36mGET /manifest.json HTTP/1.1[0m" 304 -
-2024-10-07 21:40:34,566 INFO: 127.0.0.1 - - [07/Oct/2024 21:40:34] "[36mGET /static/icon-180x180.png HTTP/1.1[0m" 304 -
-2024-10-07 21:40:36,202 INFO: 127.0.0.1 - - [07/Oct/2024 21:40:36] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:40:55,836 INFO: 127.0.0.1 - - [07/Oct/2024 21:40:55] "GET /conversa/andrew HTTP/1.1" 200 -
-2024-10-07 21:40:58,900 INFO: 127.0.0.1 - - [07/Oct/2024 21:40:58] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:41:03,966 INFO: 127.0.0.1 - - [07/Oct/2024 21:41:03] "[32mPOST /enviar_mensagem/18 HTTP/1.1[0m" 302 -
-2024-10-07 21:41:04,789 INFO: 127.0.0.1 - - [07/Oct/2024 21:41:04] "GET /conversa/andrew HTTP/1.1" 200 -
-2024-10-07 21:41:06,952 INFO: 127.0.0.1 - - [07/Oct/2024 21:41:06] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:41:09,374 INFO: 127.0.0.1 - - [07/Oct/2024 21:41:09] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
-2024-10-07 21:41:09,594 INFO: 127.0.0.1 - - [07/Oct/2024 21:41:09] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:42:20,616 ERROR: Exception on /dm [GET]
-Traceback (most recent call last):
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 804, in _literal_coercion
-    return expr._bind_param(operator, element, type_=bindparam_type)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 4594, in _bind_param
-    return BindParameter(
-           ^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 2031, in __init__
-    self.type = _compared_to_type.coerce_compared_value(
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/type_api.py", line 1039, in coerce_compared_value
-    _coerced_type = _resolve_value_to_type(value)
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/sqltypes.py", line 3802, in _resolve_value_to_type
-    raise exc.ArgumentError(
-sqlalchemy.exc.ArgumentError: Object <User 18> is not legal as a SQL literal value
+2024-10-08 19:59:28,684 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 19:59:28,684 INFO:  * Restarting with stat
+2024-10-08 19:59:41,315 WARNING:  * Debugger is active!
+2024-10-08 19:59:41,316 INFO:  * Debugger PIN: 789-776-093
+2024-10-08 19:59:41,464 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:41] "GET /socket.io/?EIO=4&transport=polling&t=P9kM-Q9 HTTP/1.1" 200 -
+2024-10-08 19:59:41,465 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:41] "GET /socket.io/?EIO=4&transport=polling&t=P9kM_5Y HTTP/1.1" 200 -
+2024-10-08 19:59:41,484 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:41] "POST /socket.io/?EIO=4&transport=polling&t=P9kN1KW&sid=-KhTeGoHYwR1vw8VAAAB HTTP/1.1" 200 -
+2024-10-08 19:59:41,490 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:41] "GET /socket.io/?EIO=4&transport=polling&t=P9kN1KZ&sid=-KhTeGoHYwR1vw8VAAAB HTTP/1.1" 200 -
+2024-10-08 19:59:41,499 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:41] "POST /socket.io/?EIO=4&transport=polling&t=P9kN1KX&sid=bPX-SUmlWciC9HV7AAAA HTTP/1.1" 200 -
+2024-10-08 19:59:41,505 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:41] "GET /socket.io/?EIO=4&transport=polling&t=P9kN1KZ&sid=bPX-SUmlWciC9HV7AAAA HTTP/1.1" 200 -
+2024-10-08 19:59:41,507 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:41] "GET /socket.io/?EIO=4&transport=polling&t=P9kN1Kv&sid=-KhTeGoHYwR1vw8VAAAB HTTP/1.1" 200 -
+2024-10-08 19:59:41,520 INFO: 127.0.0.1 - - [08/Oct/2024 19:59:41] "GET /socket.io/?EIO=4&transport=polling&t=P9kN1LB&sid=-KhTeGoHYwR1vw8VAAAB HTTP/1.1" 200 -
+2024-10-08 20:01:11,918 INFO: 127.0.0.1 - - [08/Oct/2024 20:01:11] "GET /socket.io/?EIO=4&transport=websocket&sid=-KhTeGoHYwR1vw8VAAAB HTTP/1.1" 200 -
+2024-10-08 20:01:12,944 INFO: 127.0.0.1 - - [08/Oct/2024 20:01:12] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 20:01:13,190 INFO: 127.0.0.1 - - [08/Oct/2024 20:01:13] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
+2024-10-08 20:01:14,557 INFO: 127.0.0.1 - - [08/Oct/2024 20:01:14] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:01:24,181 INFO: 127.0.0.1 - - [08/Oct/2024 20:01:24] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 20:01:24,248 INFO: 127.0.0.1 - - [08/Oct/2024 20:01:24] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
+2024-10-08 20:01:25,340 INFO: 127.0.0.1 - - [08/Oct/2024 20:01:25] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:01:32,736 INFO: 127.0.0.1 - - [08/Oct/2024 20:01:32] "GET /socket.io/?EIO=4&transport=websocket&sid=bPX-SUmlWciC9HV7AAAA HTTP/1.1" 200 -
+2024-10-08 20:01:33,784 INFO: 127.0.0.1 - - [08/Oct/2024 20:01:33] "GET /conversa/andrew HTTP/1.1" 200 -
+2024-10-08 20:01:34,090 INFO: 127.0.0.1 - - [08/Oct/2024 20:01:34] "[36mGET /favicon.ico HTTP/1.1[0m" 304 -
+2024-10-08 20:01:36,269 INFO: 127.0.0.1 - - [08/Oct/2024 20:01:36] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:02:35,284 INFO: 127.0.0.1 - - [08/Oct/2024 20:02:35] "[32mGET /conversa/Vaibes%20🔵 HTTP/1.1[0m" 302 -
+2024-10-08 20:02:35,448 INFO: 127.0.0.1 - - [08/Oct/2024 20:02:35] "GET /login HTTP/1.1" 200 -
+2024-10-08 20:02:39,801 INFO: 127.0.0.1 - - [08/Oct/2024 20:02:39] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:02:40,402 INFO: 127.0.0.1 - - [08/Oct/2024 20:02:40] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
+2024-10-08 20:02:41,478 INFO: 127.0.0.1 - - [08/Oct/2024 20:02:41] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:03:20,431 INFO:  * Detected change in '/home/andrew/projectX/app.py', reloading
+2024-10-08 20:03:20,910 INFO:  * Restarting with stat
+2024-10-08 20:03:50,710 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-08 20:03:50,710 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 20:03:50,711 INFO:  * Restarting with stat
+2024-10-08 20:04:18,328 WARNING:  * Debugger is active!
+2024-10-08 20:04:18,329 INFO:  * Debugger PIN: 116-182-648
+2024-10-08 20:04:49,265 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-08 20:04:49,265 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 20:04:49,265 INFO:  * Restarting with stat
+2024-10-08 20:05:01,253 WARNING:  * Debugger is active!
+2024-10-08 20:05:01,254 INFO:  * Debugger PIN: 721-247-216
+2024-10-08 20:05:17,271 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:17] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 20:05:17,329 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:17] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
+2024-10-08 20:05:22,676 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:22] "GET /socket.io/?EIO=4&transport=polling&t=P9kOKdi HTTP/1.1" 200 -
+2024-10-08 20:05:22,736 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:22] "POST /socket.io/?EIO=4&transport=polling&t=P9kOKd_&sid=idam_uae_4icrYXVAAAA HTTP/1.1" 200 -
+2024-10-08 20:05:22,744 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:22] "GET /socket.io/?EIO=4&transport=polling&t=P9kOKe7&sid=idam_uae_4icrYXVAAAA HTTP/1.1" 200 -
+2024-10-08 20:05:22,827 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:22] "GET /socket.io/?EIO=4&transport=polling&t=P9kOKfB&sid=idam_uae_4icrYXVAAAA HTTP/1.1" 200 -
+2024-10-08 20:05:22,839 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:22] "GET /socket.io/?EIO=4&transport=polling&t=P9kOKgG&sid=idam_uae_4icrYXVAAAA HTTP/1.1" 200 -
+2024-10-08 20:05:23,689 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:23] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:05:27,095 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:27] "GET /conversa/andrew HTTP/1.1" 200 -
+2024-10-08 20:05:27,368 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:27] "GET /socket.io/?EIO=4&transport=polling&t=P9kOLmv HTTP/1.1" 200 -
+2024-10-08 20:05:27,450 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:27] "[36mGET /favicon.ico HTTP/1.1[0m" 304 -
+2024-10-08 20:05:27,487 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:27] "POST /socket.io/?EIO=4&transport=polling&t=P9kOLok&sid=gXsL9vLR-eAn7DuIAAAC HTTP/1.1" 200 -
+2024-10-08 20:05:27,494 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:27] "GET /socket.io/?EIO=4&transport=polling&t=P9kOLoo&sid=gXsL9vLR-eAn7DuIAAAC HTTP/1.1" 200 -
+2024-10-08 20:05:29,686 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:29] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:05:36,390 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:36] "GET /socket.io/?EIO=4&transport=websocket&sid=idam_uae_4icrYXVAAAA HTTP/1.1" 200 -
+2024-10-08 20:05:37,440 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:37] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
+2024-10-08 20:05:37,459 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:37] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:05:37,555 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:37] "GET /socket.io/?EIO=4&transport=polling&t=P9kOOG9 HTTP/1.1" 200 -
+2024-10-08 20:05:37,611 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:37] "POST /socket.io/?EIO=4&transport=polling&t=P9kOOGW&sid=WhsH1tJLVXKL3g7wAAAE HTTP/1.1" 200 -
+2024-10-08 20:05:37,615 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:37] "GET /socket.io/?EIO=4&transport=polling&t=P9kOOGf&sid=WhsH1tJLVXKL3g7wAAAE HTTP/1.1" 200 -
+2024-10-08 20:05:37,696 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:37] "GET /socket.io/?EIO=4&transport=polling&t=P9kOOHK&sid=WhsH1tJLVXKL3g7wAAAE HTTP/1.1" 200 -
+2024-10-08 20:05:37,708 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:37] "GET /socket.io/?EIO=4&transport=polling&t=P9kOOIc&sid=WhsH1tJLVXKL3g7wAAAE HTTP/1.1" 200 -
+2024-10-08 20:05:38,511 INFO: 127.0.0.1 - - [08/Oct/2024 20:05:38] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:06:49,245 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-08 20:06:49,245 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 20:06:49,245 INFO:  * Restarting with stat
+2024-10-08 20:07:01,155 WARNING:  * Debugger is active!
+2024-10-08 20:07:01,156 INFO:  * Debugger PIN: 136-781-509
+2024-10-08 20:07:01,299 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:01] "GET /socket.io/?EIO=4&transport=polling&t=P9kOg8H HTTP/1.1" 200 -
+2024-10-08 20:07:01,300 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:01] "GET /socket.io/?EIO=4&transport=polling&t=P9kOgdU HTTP/1.1" 200 -
+2024-10-08 20:07:01,340 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:01] "POST /socket.io/?EIO=4&transport=polling&t=P9kOij1&sid=bOjTWHLlrAcvYAv0AAAB HTTP/1.1" 200 -
+2024-10-08 20:07:01,341 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:01] "GET /socket.io/?EIO=4&transport=polling&t=P9kOij3&sid=bOjTWHLlrAcvYAv0AAAB HTTP/1.1" 200 -
+2024-10-08 20:07:01,345 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:01] "POST /socket.io/?EIO=4&transport=polling&t=P9kOiiz&sid=AvYDyRCu1I9HUnc0AAAA HTTP/1.1" 200 -
+2024-10-08 20:07:01,351 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:01] "GET /socket.io/?EIO=4&transport=polling&t=P9kOijA&sid=AvYDyRCu1I9HUnc0AAAA HTTP/1.1" 200 -
+2024-10-08 20:07:01,379 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:01] "GET /socket.io/?EIO=4&transport=polling&t=P9kOijw&sid=AvYDyRCu1I9HUnc0AAAA HTTP/1.1" 200 -
+2024-10-08 20:07:53,904 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:53] "GET /socket.io/?EIO=4&transport=websocket&sid=AvYDyRCu1I9HUnc0AAAA HTTP/1.1" 200 -
+2024-10-08 20:07:54,953 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:54] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 20:07:55,055 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:55] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
+2024-10-08 20:07:55,164 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:55] "GET /socket.io/?EIO=4&transport=polling&t=P9kOvsL HTTP/1.1" 200 -
+2024-10-08 20:07:55,224 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:55] "POST /socket.io/?EIO=4&transport=polling&t=P9kOvse&sid=HuToNgqWdFoQpbupAAAE HTTP/1.1" 200 -
+2024-10-08 20:07:55,226 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:55] "GET /socket.io/?EIO=4&transport=polling&t=P9kOvso&sid=HuToNgqWdFoQpbupAAAE HTTP/1.1" 200 -
+2024-10-08 20:07:55,346 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:55] "GET /socket.io/?EIO=4&transport=polling&t=P9kOvtf&sid=HuToNgqWdFoQpbupAAAE HTTP/1.1" 200 -
+2024-10-08 20:07:55,357 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:55] "GET /socket.io/?EIO=4&transport=polling&t=P9kOvvM&sid=HuToNgqWdFoQpbupAAAE HTTP/1.1" 200 -
+2024-10-08 20:07:56,132 INFO: 127.0.0.1 - - [08/Oct/2024 20:07:56] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:10:36,706 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-08 20:10:36,707 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 20:10:36,707 INFO:  * Restarting with stat
+2024-10-08 20:11:04,789 WARNING:  * Debugger is active!
+2024-10-08 20:11:04,790 INFO:  * Debugger PIN: 315-647-660
+2024-10-08 20:11:04,952 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:04] "GET /socket.io/?EIO=4&transport=polling&t=P9kPY22 HTTP/1.1" 200 -
+2024-10-08 20:11:04,960 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:04] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:11:05,002 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:05] "GET /socket.io/?EIO=4&transport=polling&t=P9kPYhf HTTP/1.1" 200 -
+2024-10-08 20:11:05,033 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:05] "GET /socket.io/?EIO=4&transport=polling&t=P9kPe8k HTTP/1.1" 200 -
+2024-10-08 20:11:05,093 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:05] "POST /socket.io/?EIO=4&transport=polling&t=P9kPeDT&sid=U9pSS25Dvp2qUd0jAAAC HTTP/1.1" 200 -
+2024-10-08 20:11:05,101 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:05] "GET /socket.io/?EIO=4&transport=polling&t=P9kPeDV&sid=U9pSS25Dvp2qUd0jAAAC HTTP/1.1" 200 -
+2024-10-08 20:11:06,222 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:06] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
+2024-10-08 20:11:06,340 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:06] "GET /socket.io/?EIO=4&transport=polling&t=P9kPeXT HTTP/1.1" 200 -
+2024-10-08 20:11:06,383 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:06] "GET /favicon.ico HTTP/1.1" 200 -
+2024-10-08 20:11:06,389 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:06] "POST /socket.io/?EIO=4&transport=polling&t=P9kPeXm&sid=81gt23XhVu-ShiAIAAAE HTTP/1.1" 200 -
+2024-10-08 20:11:06,407 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:06] "GET /socket.io/?EIO=4&transport=polling&t=P9kPeXu&sid=81gt23XhVu-ShiAIAAAE HTTP/1.1" 200 -
+2024-10-08 20:11:06,540 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:06] "GET /socket.io/?EIO=4&transport=polling&t=P9kPeZL&sid=81gt23XhVu-ShiAIAAAE HTTP/1.1" 200 -
+2024-10-08 20:11:06,544 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:06] "POST /socket.io/?EIO=4&transport=polling&t=P9kPeZI&sid=81gt23XhVu-ShiAIAAAE HTTP/1.1" 200 -
+2024-10-08 20:11:07,300 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:07] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:11:19,428 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:19] "GET /socket.io/?EIO=4&transport=websocket&sid=U9pSS25Dvp2qUd0jAAAC HTTP/1.1" 200 -
+2024-10-08 20:11:20,630 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:20] "GET /conversa/andrew HTTP/1.1" 200 -
+2024-10-08 20:11:20,947 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:20] "GET /socket.io/?EIO=4&transport=polling&t=P9kPi5e HTTP/1.1" 200 -
+2024-10-08 20:11:21,004 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:21] "POST /socket.io/?EIO=4&transport=polling&t=P9kPi5_&sid=Kf0BwRNFv6PeMlYlAAAG HTTP/1.1" 200 -
+2024-10-08 20:11:21,066 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:21] "GET /socket.io/?EIO=4&transport=polling&t=P9kPi67&sid=Kf0BwRNFv6PeMlYlAAAG HTTP/1.1" 200 -
+2024-10-08 20:11:21,089 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:21] "[36mGET /favicon.ico HTTP/1.1[0m" 304 -
+2024-10-08 20:11:24,239 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:24] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:11:44,036 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:44] "GET /socket.io/?EIO=4&transport=websocket&sid=81gt23XhVu-ShiAIAAAE HTTP/1.1" 200 -
+2024-10-08 20:11:45,088 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:45] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:11:45,252 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:45] "GET /conversa/Vaibes%20🔵 HTTP/1.1" 200 -
+2024-10-08 20:11:45,343 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:45] "GET /socket.io/?EIO=4&transport=polling&t=P9kPo2t HTTP/1.1" 200 -
+2024-10-08 20:11:45,389 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:45] "POST /socket.io/?EIO=4&transport=polling&t=P9kPo38&sid=707VhHgCVVyQUenbAAAI HTTP/1.1" 200 -
+2024-10-08 20:11:45,391 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:45] "GET /socket.io/?EIO=4&transport=polling&t=P9kPo3C&sid=707VhHgCVVyQUenbAAAI HTTP/1.1" 200 -
+2024-10-08 20:11:45,473 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:45] "POST /socket.io/?EIO=4&transport=polling&t=P9kPo3x&sid=707VhHgCVVyQUenbAAAI HTTP/1.1" 200 -
+2024-10-08 20:11:45,479 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:45] "GET /socket.io/?EIO=4&transport=polling&t=P9kPo3-&sid=707VhHgCVVyQUenbAAAI HTTP/1.1" 200 -
+2024-10-08 20:11:45,493 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:45] "GET /socket.io/?EIO=4&transport=polling&t=P9kPo5F&sid=707VhHgCVVyQUenbAAAI HTTP/1.1" 200 -
+2024-10-08 20:11:46,314 INFO: 127.0.0.1 - - [08/Oct/2024 20:11:46] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:13:59,212 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-08 20:13:59,212 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 20:13:59,213 INFO:  * Restarting with stat
+2024-10-08 20:14:12,881 WARNING:  * Debugger is active!
+2024-10-08 20:14:12,882 INFO:  * Debugger PIN: 835-008-335
+2024-10-08 20:14:13,041 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:13] "GET /socket.io/?EIO=4&transport=polling&t=P9kQK1z HTTP/1.1" 200 -
+2024-10-08 20:14:13,043 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:13] "GET /socket.io/?EIO=4&transport=polling&t=P9kQJlZ HTTP/1.1" 200 -
+2024-10-08 20:14:13,071 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:13] "POST /socket.io/?EIO=4&transport=polling&t=P9kQM6x&sid=RKsV2pNenPAVlgqcAAAA HTTP/1.1" 200 -
+2024-10-08 20:14:13,082 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:13] "GET /socket.io/?EIO=4&transport=polling&t=P9kQM77&sid=RKsV2pNenPAVlgqcAAAA HTTP/1.1" 200 -
+2024-10-08 20:14:13,098 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:13] "POST /socket.io/?EIO=4&transport=polling&t=P9kQM70&sid=2xXdrkLYkAExIeKTAAAB HTTP/1.1" 200 -
+2024-10-08 20:14:13,100 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:13] "GET /socket.io/?EIO=4&transport=polling&t=P9kQM74&sid=2xXdrkLYkAExIeKTAAAB HTTP/1.1" 200 -
+2024-10-08 20:14:13,126 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:13] "GET /socket.io/?EIO=4&transport=polling&t=P9kQM7g&sid=RKsV2pNenPAVlgqcAAAA HTTP/1.1" 200 -
+2024-10-08 20:14:44,468 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:44] "GET /socket.io/?EIO=4&transport=websocket&sid=2xXdrkLYkAExIeKTAAAB HTTP/1.1" 200 -
+2024-10-08 20:14:45,725 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:45] "GET /conversa/andrew HTTP/1.1" 200 -
+2024-10-08 20:14:46,014 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:46] "GET /socket.io/?EIO=4&transport=polling&t=P9kQU9m HTTP/1.1" 200 -
+2024-10-08 20:14:46,215 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:46] "[36mGET /favicon.ico HTTP/1.1[0m" 304 -
+2024-10-08 20:14:46,246 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:46] "POST /socket.io/?EIO=4&transport=polling&t=P9kQUAh&sid=LoNy7wMTeXWtD19jAAAE HTTP/1.1" 200 -
+2024-10-08 20:14:46,255 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:46] "GET /socket.io/?EIO=4&transport=polling&t=P9kQUAl&sid=LoNy7wMTeXWtD19jAAAE HTTP/1.1" 200 -
+2024-10-08 20:14:46,459 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:46] "GET /socket.io/?EIO=4&transport=polling&t=P9kQUGl&sid=LoNy7wMTeXWtD19jAAAE HTTP/1.1" 200 -
+2024-10-08 20:14:49,303 INFO: 127.0.0.1 - - [08/Oct/2024 20:14:49] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 20:18:32,685 INFO:  * Detected change in '/home/andrew/projectX/app.py', reloading
+2024-10-08 20:18:33,214 INFO:  * Restarting with stat
+2024-10-08 20:27:42,789 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
 
-The above exception was the direct cause of the following exception:
+2024-10-08 20:27:42,789 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
 
-Traceback (most recent call last):
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 2190, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1486, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask_cors/extension.py", line 194, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-                                                ^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1484, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1469, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/andrew/projectX/app.py", line 1277, in dm
-    conversas = db.session.query(Follower).filter(Follower.follower_id == user_id).all()
-                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/operators.py", line 582, in __eq__
-    return self.operate(eq, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/orm/attributes.py", line 453, in operate
-    return op(self.comparator, *other, **kwargs)  # type: ignore[no-any-return]  # noqa: E501
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/operators.py", line 582, in __eq__
-    return self.operate(eq, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/orm/properties.py", line 479, in operate
-    return op(self.__clause_element__(), *other, **kwargs)  # type: ignore[no-any-return]  # noqa: E501
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/annotation.py", line 371, in __eq__
-    return self.__element.__class__.__eq__(self, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/operators.py", line 582, in __eq__
-    return self.operate(eq, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 1513, in operate
-    return op(self.comparator, *other, **kwargs)  # type: ignore[no-any-return]  # noqa: E501
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/operators.py", line 582, in __eq__
-    return self.operate(eq, other)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/type_api.py", line 194, in operate
-    return op_fn(self.expr, op, *other, **addtl_kw)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/default_comparator.py", line 121, in _boolean_compare
-    obj = coercions.expect(
-          ^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 396, in expect
-    resolved = impl._literal_coercion(
-               ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 806, in _literal_coercion
-    self._raise_for_expected(element, err=err)
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 785, in _raise_for_expected
-    return super()._raise_for_expected(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 519, in _raise_for_expected
-    raise exc.ArgumentError(msg, code=code) from err
-sqlalchemy.exc.ArgumentError: SQL expression element or literal value expected, got <User 18>.
-2024-10-07 21:42:20,949 INFO: 127.0.0.1 - - [07/Oct/2024 21:42:20] "[35m[1mGET /dm HTTP/1.1[0m" 500 -
-2024-10-07 21:42:21,234 INFO: 127.0.0.1 - - [07/Oct/2024 21:42:21] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:44:07,925 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
+2024-10-08 20:27:42,790 DEBUG: /etc/localtime found
+2024-10-08 20:27:42,803 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 20:27:42,848 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 20:27:42,932 INFO: Added job "schedule_relevance_calculation.<locals>.<lambda>" to job store "default"
+2024-10-08 20:27:42,932 INFO: Scheduler started
+2024-10-08 20:27:42,932 DEBUG: Looking for jobs to run
+2024-10-08 20:27:42,934 INFO: Running job "schedule_relevance_calculation.<locals>.<lambda> (trigger: interval[0:05:00], next run at: 2024-10-08 20:27:42 -03)" (scheduled at 2024-10-08 20:27:42.832576-03:00)
+2024-10-08 20:27:42,935 DEBUG: Next wakeup is due at 2024-10-08 20:32:42.832576-03:00 (in 299.897600 seconds)
+2024-10-08 20:27:42,936 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
- * Running on http://192.168.1.48:5000
-2024-10-07 21:44:07,925 INFO: [33mPress CTRL+C to quit[0m
-2024-10-07 21:44:25,918 ERROR: Exception on /dm [GET]
-Traceback (most recent call last):
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 2190, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1486, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask_cors/extension.py", line 194, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-                                                ^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1484, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1469, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/andrew/projectX/app.py", line 1283, in dm
-    conversas_usuarios = [User.query.get(conversa.followed_id) for conversa in conversas]
-                                         ^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'Follower' object has no attribute 'followed_id'. Did you mean: 'follower_id'?
-2024-10-07 21:44:26,124 INFO: 127.0.0.1 - - [07/Oct/2024 21:44:26] "[35m[1mGET /dm HTTP/1.1[0m" 500 -
-2024-10-07 21:44:26,456 INFO: 127.0.0.1 - - [07/Oct/2024 21:44:26] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:48:35,851 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
+2024-10-08 20:27:42,937 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 20:27:42,937 INFO:  * Restarting with stat
+2024-10-08 20:28:15,296 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:28:15,297 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:28:15,298 DEBUG: /etc/localtime found
+2024-10-08 20:28:15,300 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 20:28:15,301 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 20:28:15,302 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 20:28:15,302 INFO: Scheduler started
+2024-10-08 20:28:15,302 DEBUG: Looking for jobs to run
+2024-10-08 20:28:15,303 DEBUG: Next wakeup is due at 2024-10-08 20:29:15.301097-03:00 (in 59.997526 seconds)
+2024-10-08 20:28:15,304 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
- * Running on http://192.168.1.48:5000
-2024-10-07 21:48:35,851 INFO: [33mPress CTRL+C to quit[0m
-2024-10-07 21:49:47,618 ERROR: Exception on /dm [GET]
-Traceback (most recent call last):
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 2190, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1486, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask_cors/extension.py", line 194, in wrapped_function
-    return cors_after_request(app.make_response(f(*args, **kwargs)))
-                                                ^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1484, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/app.py", line 1469, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/andrew/projectX/app.py", line 1286, in dm
-    return render_template('dm.html', conversas=conversas_usuarios)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/templating.py", line 150, in render_template
-    template = app.jinja_env.get_or_select_template(template_name_or_list)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/jinja2/environment.py", line 1081, in get_or_select_template
-    return self.get_template(template_name_or_list, parent, globals)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/jinja2/environment.py", line 1010, in get_template
-    return self._load_template(name, globals)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/jinja2/environment.py", line 969, in _load_template
-    template = self.loader.load(self, name, self.make_globals(globals))
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/jinja2/loaders.py", line 126, in load
-    source, filename, uptodate = self.get_source(environment, name)
-                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/templating.py", line 64, in get_source
-    return self._get_source_fast(environment, template)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/var/data/python/lib/python3.12/site-packages/flask/templating.py", line 98, in _get_source_fast
-    raise TemplateNotFound(template)
-jinja2.exceptions.TemplateNotFound: dm.html
-2024-10-07 21:49:47,842 INFO: 127.0.0.1 - - [07/Oct/2024 21:49:47] "[35m[1mGET /dm HTTP/1.1[0m" 500 -
-2024-10-07 21:49:47,944 INFO: 127.0.0.1 - - [07/Oct/2024 21:49:47] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:54:35,945 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
+2024-10-08 20:28:15,305 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 20:28:15,305 INFO:  * Restarting with stat
+2024-10-08 20:28:31,042 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:28:31,042 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:28:31,043 DEBUG: /etc/localtime found
+2024-10-08 20:28:31,045 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 20:28:31,046 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 20:28:31,047 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 20:28:31,047 INFO: Scheduler started
+2024-10-08 20:28:31,048 DEBUG: Looking for jobs to run
+2024-10-08 20:28:31,048 DEBUG: Next wakeup is due at 2024-10-08 20:29:31.046016-03:00 (in 59.997269 seconds)
+2024-10-08 20:28:31,050 WARNING:  * Debugger is active!
+2024-10-08 20:28:31,083 INFO:  * Debugger PIN: 660-701-087
+2024-10-08 20:28:31,264 INFO: 127.0.0.1 - - [08/Oct/2024 20:28:31] "GET /socket.io/?EIO=4&transport=polling&t=P9kTaQR HTTP/1.1" 200 -
+2024-10-08 20:28:31,266 INFO: 127.0.0.1 - - [08/Oct/2024 20:28:31] "GET /socket.io/?EIO=4&transport=polling&t=P9kTaAf HTTP/1.1" 200 -
+2024-10-08 20:28:31,296 INFO: 127.0.0.1 - - [08/Oct/2024 20:28:31] "POST /socket.io/?EIO=4&transport=polling&t=P9kTdec&sid=FOh-Wkv5wQPqRmadAAAA HTTP/1.1" 200 -
+2024-10-08 20:28:31,298 INFO: 127.0.0.1 - - [08/Oct/2024 20:28:31] "GET /socket.io/?EIO=4&transport=polling&t=P9kTdeq&sid=FOh-Wkv5wQPqRmadAAAA HTTP/1.1" 200 -
+2024-10-08 20:28:31,338 INFO: 127.0.0.1 - - [08/Oct/2024 20:28:31] "POST /socket.io/?EIO=4&transport=polling&t=P9kTdfP&sid=HvhHabN6Y_1ldVJUAAAB HTTP/1.1" 200 -
+2024-10-08 20:28:31,345 INFO: 127.0.0.1 - - [08/Oct/2024 20:28:31] "GET /socket.io/?EIO=4&transport=polling&t=P9kTdfY&sid=FOh-Wkv5wQPqRmadAAAA HTTP/1.1" 200 -
+2024-10-08 20:28:31,390 INFO: 127.0.0.1 - - [08/Oct/2024 20:28:31] "GET /socket.io/?EIO=4&transport=polling&t=P9kTdg5&sid=HvhHabN6Y_1ldVJUAAAB HTTP/1.1" 200 -
+2024-10-08 20:29:15,301 DEBUG: Looking for jobs to run
+2024-10-08 20:29:15,303 INFO: Running job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:29:15 -03)" (scheduled at 2024-10-08 20:29:15.301097-03:00)
+2024-10-08 20:29:15,303 DEBUG: Next wakeup is due at 2024-10-08 20:30:15.301097-03:00 (in 59.997251 seconds)
+2024-10-08 20:29:31,046 DEBUG: Looking for jobs to run
+2024-10-08 20:29:31,049 INFO: Running job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:29:31 -03)" (scheduled at 2024-10-08 20:29:31.046016-03:00)
+2024-10-08 20:29:31,050 DEBUG: Next wakeup is due at 2024-10-08 20:30:31.046016-03:00 (in 59.995413 seconds)
+2024-10-08 20:29:39,876 INFO: 127.0.0.1 - - [08/Oct/2024 20:29:39] "GET /socket.io/?EIO=4&transport=websocket&sid=FOh-Wkv5wQPqRmadAAAA HTTP/1.1" 200 -
+2024-10-08 20:29:40,945 INFO: 127.0.0.1 - - [08/Oct/2024 20:29:40] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 20:29:48,203 INFO: 127.0.0.1 - - [08/Oct/2024 20:29:48] "GET /profile/Vaibes%20🔵 HTTP/1.1" 200 -
+2024-10-08 20:29:48,453 INFO: 127.0.0.1 - - [08/Oct/2024 20:29:48] "GET /static/notifications-icon.png HTTP/1.1" 200 -
+2024-10-08 20:29:48,457 INFO: 127.0.0.1 - - [08/Oct/2024 20:29:48] "GET /static/home-icon.png HTTP/1.1" 200 -
+2024-10-08 20:29:48,457 INFO: 127.0.0.1 - - [08/Oct/2024 20:29:48] "GET /static/search-icon.png HTTP/1.1" 200 -
+2024-10-08 20:29:48,509 INFO: 127.0.0.1 - - [08/Oct/2024 20:29:48] "GET /static/post-icon.png HTTP/1.1" 200 -
+2024-10-08 20:29:49,415 INFO: 127.0.0.1 - - [08/Oct/2024 20:29:49] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 20:30:15,301 DEBUG: Looking for jobs to run
+2024-10-08 20:30:15,308 WARNING: Execution of job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:30:15 -03)" skipped: maximum number of running instances reached (1)
+2024-10-08 20:30:15,313 DEBUG: Next wakeup is due at 2024-10-08 20:31:15.301097-03:00 (in 59.987852 seconds)
+2024-10-08 20:30:18,439 INFO: Job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:31:15 -03)" executed successfully
+2024-10-08 20:30:31,053 DEBUG: Looking for jobs to run
+2024-10-08 20:30:31,054 WARNING: Execution of job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:30:31 -03)" skipped: maximum number of running instances reached (1)
+2024-10-08 20:30:31,055 DEBUG: Next wakeup is due at 2024-10-08 20:31:31.046016-03:00 (in 59.990404 seconds)
+2024-10-08 20:31:15,301 DEBUG: Looking for jobs to run
+2024-10-08 20:31:15,302 DEBUG: Next wakeup is due at 2024-10-08 20:32:15.301097-03:00 (in 59.998426 seconds)
+2024-10-08 20:31:15,303 INFO: Running job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:32:15 -03)" (scheduled at 2024-10-08 20:31:15.301097-03:00)
+2024-10-08 20:31:19,344 INFO: Job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:31:31 -03)" executed successfully
+2024-10-08 20:31:31,046 DEBUG: Looking for jobs to run
+2024-10-08 20:31:31,047 DEBUG: Next wakeup is due at 2024-10-08 20:32:31.046016-03:00 (in 59.998568 seconds)
+2024-10-08 20:31:31,047 INFO: Running job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:32:31 -03)" (scheduled at 2024-10-08 20:31:31.046016-03:00)
+2024-10-08 20:32:15,302 DEBUG: Looking for jobs to run
+2024-10-08 20:32:15,303 WARNING: Execution of job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:32:15 -03)" skipped: maximum number of running instances reached (1)
+2024-10-08 20:32:15,304 DEBUG: Next wakeup is due at 2024-10-08 20:33:15.301097-03:00 (in 59.996570 seconds)
+2024-10-08 20:32:31,047 DEBUG: Looking for jobs to run
+2024-10-08 20:32:31,048 WARNING: Execution of job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:32:31 -03)" skipped: maximum number of running instances reached (1)
+2024-10-08 20:32:31,048 DEBUG: Next wakeup is due at 2024-10-08 20:33:31.046016-03:00 (in 59.997344 seconds)
+2024-10-08 20:32:43,666 INFO: Job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:33:15 -03)" executed successfully
+2024-10-08 20:32:48,922 INFO: Job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:33:31 -03)" executed successfully
+2024-10-08 20:33:15,302 DEBUG: Looking for jobs to run
+2024-10-08 20:33:15,303 DEBUG: Next wakeup is due at 2024-10-08 20:34:15.301097-03:00 (in 59.997592 seconds)
+2024-10-08 20:33:15,304 INFO: Running job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:34:15 -03)" (scheduled at 2024-10-08 20:33:15.301097-03:00)
+2024-10-08 20:33:31,047 DEBUG: Looking for jobs to run
+2024-10-08 20:33:31,048 DEBUG: Next wakeup is due at 2024-10-08 20:34:31.046016-03:00 (in 59.997541 seconds)
+2024-10-08 20:33:31,049 INFO: Running job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:34:31 -03)" (scheduled at 2024-10-08 20:33:31.046016-03:00)
+2024-10-08 20:34:15,291 INFO: Job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:34:15 -03)" executed successfully
+2024-10-08 20:34:15,302 DEBUG: Looking for jobs to run
+2024-10-08 20:34:15,303 DEBUG: Next wakeup is due at 2024-10-08 20:35:15.301097-03:00 (in 59.997477 seconds)
+2024-10-08 20:34:15,304 INFO: Running job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:35:15 -03)" (scheduled at 2024-10-08 20:34:15.301097-03:00)
+2024-10-08 20:34:31,047 DEBUG: Looking for jobs to run
+2024-10-08 20:34:31,048 WARNING: Execution of job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:34:31 -03)" skipped: maximum number of running instances reached (1)
+2024-10-08 20:34:31,049 DEBUG: Next wakeup is due at 2024-10-08 20:35:31.046016-03:00 (in 59.996689 seconds)
+2024-10-08 20:35:13,963 INFO: Job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:35:31 -03)" executed successfully
+2024-10-08 20:35:15,301 DEBUG: Looking for jobs to run
+2024-10-08 20:35:15,303 WARNING: Execution of job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:35:15 -03)" skipped: maximum number of running instances reached (1)
+2024-10-08 20:35:15,304 DEBUG: Next wakeup is due at 2024-10-08 20:36:15.301097-03:00 (in 59.997126 seconds)
+2024-10-08 20:35:19,550 INFO: Job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:36:15 -03)" executed successfully
+2024-10-08 20:35:31,047 DEBUG: Looking for jobs to run
+2024-10-08 20:35:31,048 DEBUG: Next wakeup is due at 2024-10-08 20:36:31.046016-03:00 (in 59.997417 seconds)
+2024-10-08 20:35:31,049 INFO: Running job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:36:31 -03)" (scheduled at 2024-10-08 20:35:31.046016-03:00)
+2024-10-08 20:36:19,180 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:36:19,181 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:36:19,182 DEBUG: /etc/localtime found
+2024-10-08 20:36:19,185 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 20:36:19,187 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 20:36:19,189 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 20:36:19,189 INFO: Scheduler started
+2024-10-08 20:36:19,189 DEBUG: Looking for jobs to run
+2024-10-08 20:36:19,190 DEBUG: Next wakeup is due at 2024-10-08 20:37:19.187162-03:00 (in 59.996553 seconds)
+2024-10-08 20:36:19,192 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
- * Running on http://192.168.1.48:5000
-2024-10-07 21:54:35,946 INFO: [33mPress CTRL+C to quit[0m
-2024-10-07 21:56:02,597 INFO: 127.0.0.1 - - [07/Oct/2024 21:56:02] "GET /dm HTTP/1.1" 200 -
-2024-10-07 21:56:02,657 INFO: 127.0.0.1 - - [07/Oct/2024 21:56:02] "[33mGET /styles.css HTTP/1.1[0m" 404 -
-2024-10-07 21:56:02,702 INFO: 127.0.0.1 - - [07/Oct/2024 21:56:02] "GET /favicon.ico HTTP/1.1" 200 -
-2024-10-07 21:56:02,712 INFO: 127.0.0.1 - - [07/Oct/2024 21:56:02] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
-2024-10-07 21:56:10,858 INFO: 127.0.0.1 - - [07/Oct/2024 21:56:10] "GET /conversa/andrew HTTP/1.1" 200 -
-2024-10-07 21:56:11,054 INFO: 127.0.0.1 - - [07/Oct/2024 21:56:11] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:56:14,954 INFO: 127.0.0.1 - - [07/Oct/2024 21:56:14] "GET /conversa/andrew HTTP/1.1" 200 -
-2024-10-07 21:56:15,163 INFO: 127.0.0.1 - - [07/Oct/2024 21:56:15] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:56:22,156 INFO: 127.0.0.1 - - [07/Oct/2024 21:56:22] "GET /nova_conversa HTTP/1.1" 200 -
-2024-10-07 21:56:22,239 INFO: 127.0.0.1 - - [07/Oct/2024 21:56:22] "[33mGET /styles.css HTTP/1.1[0m" 404 -
-2024-10-07 21:56:23,163 INFO: 127.0.0.1 - - [07/Oct/2024 21:56:23] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
-2024-10-07 21:58:38,178 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
+2024-10-08 20:36:19,192 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 20:36:19,192 INFO:  * Restarting with stat
+2024-10-08 20:36:51,245 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:36:51,245 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:36:51,246 DEBUG: /etc/localtime found
+2024-10-08 20:36:51,248 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 20:36:51,249 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 20:36:51,250 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 20:36:51,250 INFO: Scheduler started
+2024-10-08 20:36:51,251 DEBUG: Looking for jobs to run
+2024-10-08 20:36:51,251 DEBUG: Next wakeup is due at 2024-10-08 20:37:51.249636-03:00 (in 59.998031 seconds)
+2024-10-08 20:36:51,252 WARNING:  * Debugger is active!
+2024-10-08 20:36:51,253 INFO:  * Debugger PIN: 137-987-559
+2024-10-08 20:36:51,408 INFO: 127.0.0.1 - - [08/Oct/2024 20:36:51] "GET /socket.io/?EIO=4&transport=polling&t=P9kVQkc HTTP/1.1" 200 -
+2024-10-08 20:36:51,409 INFO: 127.0.0.1 - - [08/Oct/2024 20:36:51] "GET /socket.io/?EIO=4&transport=polling&t=P9kVXI9 HTTP/1.1" 200 -
+2024-10-08 20:36:51,442 INFO: 127.0.0.1 - - [08/Oct/2024 20:36:51] "POST /socket.io/?EIO=4&transport=polling&t=P9kVXlS&sid=Zk2n7FKsOWSOjlntAAAB HTTP/1.1" 200 -
+2024-10-08 20:36:51,443 INFO: 127.0.0.1 - - [08/Oct/2024 20:36:51] "GET /socket.io/?EIO=4&transport=polling&t=P9kVXlU&sid=Zk2n7FKsOWSOjlntAAAB HTTP/1.1" 200 -
+2024-10-08 20:37:19,187 DEBUG: Looking for jobs to run
+2024-10-08 20:37:19,188 INFO: Running job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:37:19 -03)" (scheduled at 2024-10-08 20:37:19.187162-03:00)
+2024-10-08 20:37:19,189 DEBUG: Next wakeup is due at 2024-10-08 20:38:19.187162-03:00 (in 59.997800 seconds)
+2024-10-08 20:37:51,250 DEBUG: Looking for jobs to run
+2024-10-08 20:37:51,252 INFO: Running job "run_algorithm (trigger: interval[0:01:00], next run at: 2024-10-08 20:37:51 -03)" (scheduled at 2024-10-08 20:37:51.249636-03:00)
+2024-10-08 20:37:51,253 DEBUG: Next wakeup is due at 2024-10-08 20:38:51.249636-03:00 (in 59.995976 seconds)
+2024-10-08 20:38:37,758 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:38:37,758 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:38:37,759 DEBUG: /etc/localtime found
+2024-10-08 20:38:37,761 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 20:38:37,763 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 20:38:37,764 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 20:38:37,764 INFO: Scheduler started
+2024-10-08 20:38:37,765 DEBUG: Looking for jobs to run
+2024-10-08 20:38:37,766 DEBUG: Next wakeup is due at 2024-10-08 20:42:37.763002-03:00 (in 239.997021 seconds)
+2024-10-08 20:38:37,767 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
- * Running on http://192.168.1.48:5000
-2024-10-07 21:58:38,178 INFO: [33mPress CTRL+C to quit[0m
-2024-10-07 21:58:46,812 INFO: 127.0.0.1 - - [07/Oct/2024 21:58:46] "GET /dm HTTP/1.1" 200 -
-2024-10-07 21:58:46,921 INFO: 127.0.0.1 - - [07/Oct/2024 21:58:46] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:59:24,720 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
+2024-10-08 20:38:37,767 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 20:38:37,767 INFO:  * Restarting with stat
+2024-10-08 20:38:55,646 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:38:55,646 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:38:55,647 DEBUG: /etc/localtime found
+2024-10-08 20:38:55,649 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 20:38:55,650 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 20:38:55,651 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 20:38:55,652 INFO: Scheduler started
+2024-10-08 20:38:55,652 DEBUG: Looking for jobs to run
+2024-10-08 20:38:55,653 DEBUG: Next wakeup is due at 2024-10-08 20:42:55.650748-03:00 (in 239.997575 seconds)
+2024-10-08 20:38:55,654 WARNING:  * Debugger is active!
+2024-10-08 20:38:55,656 INFO:  * Debugger PIN: 747-988-484
+2024-10-08 20:38:55,811 INFO: 127.0.0.1 - - [08/Oct/2024 20:38:55] "GET /socket.io/?EIO=4&transport=polling&t=P9kVyOY HTTP/1.1" 200 -
+2024-10-08 20:38:55,842 INFO: 127.0.0.1 - - [08/Oct/2024 20:38:55] "POST /socket.io/?EIO=4&transport=polling&t=P9kW07D&sid=I5cv1t1aVeuBqND8AAAA HTTP/1.1" 200 -
+2024-10-08 20:38:55,846 INFO: 127.0.0.1 - - [08/Oct/2024 20:38:55] "GET /socket.io/?EIO=4&transport=polling&t=P9kW07G&sid=I5cv1t1aVeuBqND8AAAA HTTP/1.1" 200 -
+2024-10-08 20:40:06,315 INFO:  * Detected change in '/home/andrew/projectX/vaibes_algorithm.py', reloading
+2024-10-08 20:40:06,793 INFO:  * Restarting with stat
+2024-10-08 20:40:22,324 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:40:22,324 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:40:22,325 DEBUG: /etc/localtime found
+2024-10-08 20:40:22,327 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 20:40:22,328 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 20:40:22,329 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 20:40:22,329 INFO: Scheduler started
+2024-10-08 20:40:22,330 DEBUG: Looking for jobs to run
+2024-10-08 20:40:22,331 DEBUG: Next wakeup is due at 2024-10-08 20:44:22.328236-03:00 (in 239.997014 seconds)
+2024-10-08 20:40:22,332 WARNING:  * Debugger is active!
+2024-10-08 20:40:22,333 INFO:  * Debugger PIN: 783-465-702
+2024-10-08 20:40:22,476 INFO: 127.0.0.1 - - [08/Oct/2024 20:40:22] "GET /socket.io/?EIO=4&transport=polling&t=P9kWHtX HTTP/1.1" 200 -
+2024-10-08 20:40:22,504 INFO: 127.0.0.1 - - [08/Oct/2024 20:40:22] "POST /socket.io/?EIO=4&transport=polling&t=P9kWLHJ&sid=J85pJI-MBIsOCWkYAAAA HTTP/1.1" 200 -
+2024-10-08 20:40:22,507 INFO: 127.0.0.1 - - [08/Oct/2024 20:40:22] "GET /socket.io/?EIO=4&transport=polling&t=P9kWLHM&sid=J85pJI-MBIsOCWkYAAAA HTTP/1.1" 200 -
+2024-10-08 20:42:37,764 DEBUG: Looking for jobs to run
+2024-10-08 20:42:37,766 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 20:42:37 -03)" (scheduled at 2024-10-08 20:42:37.763002-03:00)
+2024-10-08 20:42:37,767 DEBUG: Next wakeup is due at 2024-10-08 20:46:37.763002-03:00 (in 239.995333 seconds)
+2024-10-08 20:43:40,246 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 20:46:37 -03)" executed successfully
+2024-10-08 20:44:22,329 DEBUG: Looking for jobs to run
+2024-10-08 20:44:22,331 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 20:44:22 -03)" (scheduled at 2024-10-08 20:44:22.328236-03:00)
+2024-10-08 20:44:22,332 DEBUG: Next wakeup is due at 2024-10-08 20:48:22.328236-03:00 (in 239.995569 seconds)
+2024-10-08 20:45:24,766 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 20:48:22 -03)" executed successfully
+2024-10-08 20:46:40,342 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:46:40,342 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:46:40,344 DEBUG: /etc/localtime found
+2024-10-08 20:46:40,348 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 20:46:40,350 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 20:46:40,353 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 20:46:40,353 INFO: Scheduler started
+2024-10-08 20:46:40,354 DEBUG: Looking for jobs to run
+2024-10-08 20:46:40,356 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
- * Running on http://192.168.1.48:5000
-2024-10-07 21:59:24,721 INFO: [33mPress CTRL+C to quit[0m
-2024-10-07 21:59:27,346 INFO: 127.0.0.1 - - [07/Oct/2024 21:59:27] "GET /dm HTTP/1.1" 200 -
-2024-10-07 21:59:27,453 INFO: 127.0.0.1 - - [07/Oct/2024 21:59:27] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:59:43,523 INFO: 127.0.0.1 - - [07/Oct/2024 21:59:43] "GET /dm HTTP/1.1" 200 -
-2024-10-07 21:59:44,562 INFO: 127.0.0.1 - - [07/Oct/2024 21:59:44] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 21:59:49,857 INFO: 127.0.0.1 - - [07/Oct/2024 21:59:49] "GET /nova_conversa HTTP/1.1" 200 -
-2024-10-07 21:59:49,917 INFO: 127.0.0.1 - - [07/Oct/2024 21:59:49] "[33mGET /styles.css HTTP/1.1[0m" 404 -
-2024-10-07 21:59:50,863 INFO: 127.0.0.1 - - [07/Oct/2024 21:59:50] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 22:01:51,372 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
+2024-10-08 20:46:40,357 DEBUG: Next wakeup is due at 2024-10-08 20:50:40.350026-03:00 (in 239.993075 seconds)
+2024-10-08 20:46:40,357 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 20:46:40,358 INFO:  * Restarting with stat
+2024-10-08 20:46:56,261 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:46:56,261 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:46:56,262 DEBUG: /etc/localtime found
+2024-10-08 20:46:56,264 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 20:46:56,265 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 20:46:56,266 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 20:46:56,266 INFO: Scheduler started
+2024-10-08 20:46:56,267 DEBUG: Looking for jobs to run
+2024-10-08 20:46:56,268 DEBUG: Next wakeup is due at 2024-10-08 20:50:56.265645-03:00 (in 239.997141 seconds)
+2024-10-08 20:46:56,270 WARNING:  * Debugger is active!
+2024-10-08 20:46:56,271 INFO:  * Debugger PIN: 833-244-465
+2024-10-08 20:46:56,421 INFO: 127.0.0.1 - - [08/Oct/2024 20:46:56] "GET /socket.io/?EIO=4&transport=polling&t=P9kXnqA HTTP/1.1" 200 -
+2024-10-08 20:46:56,455 INFO: 127.0.0.1 - - [08/Oct/2024 20:46:56] "POST /socket.io/?EIO=4&transport=polling&t=P9kXrSj&sid=zwOtzhSM8iQ_9WEtAAAA HTTP/1.1" 200 -
+2024-10-08 20:46:56,457 INFO: 127.0.0.1 - - [08/Oct/2024 20:46:56] "GET /socket.io/?EIO=4&transport=polling&t=P9kXrSo&sid=zwOtzhSM8iQ_9WEtAAAA HTTP/1.1" 200 -
+2024-10-08 20:48:17,615 INFO: 127.0.0.1 - - [08/Oct/2024 20:48:17] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 20:48:34,288 INFO: 127.0.0.1 - - [08/Oct/2024 20:48:34] "GET /profile/andrew HTTP/1.1" 200 -
+2024-10-08 20:48:34,446 INFO: 127.0.0.1 - - [08/Oct/2024 20:48:34] "[36mGET /static/home-icon.png HTTP/1.1[0m" 304 -
+2024-10-08 20:48:34,448 INFO: 127.0.0.1 - - [08/Oct/2024 20:48:34] "[36mGET /static/notifications-icon.png HTTP/1.1[0m" 304 -
+2024-10-08 20:48:34,458 INFO: 127.0.0.1 - - [08/Oct/2024 20:48:34] "[36mGET /static/post-icon.png HTTP/1.1[0m" 304 -
+2024-10-08 20:48:34,467 INFO: 127.0.0.1 - - [08/Oct/2024 20:48:34] "[36mGET /static/search-icon.png HTTP/1.1[0m" 304 -
+2024-10-08 20:48:35,435 INFO: 127.0.0.1 - - [08/Oct/2024 20:48:35] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 20:49:52,101 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:49:52,102 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:49:52,103 DEBUG: /etc/localtime found
+2024-10-08 20:49:52,107 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 20:49:52,108 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 20:49:52,109 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 20:49:52,109 INFO: Scheduler started
+2024-10-08 20:49:52,110 DEBUG: Looking for jobs to run
+2024-10-08 20:49:52,110 DEBUG: Next wakeup is due at 2024-10-08 20:53:52.108391-03:00 (in 239.997686 seconds)
+2024-10-08 20:49:52,112 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
- * Running on http://192.168.1.48:5000
-2024-10-07 22:01:51,372 INFO: [33mPress CTRL+C to quit[0m
-2024-10-07 22:02:04,306 INFO: 127.0.0.1 - - [07/Oct/2024 22:02:04] "GET /conversa/andrew HTTP/1.1" 200 -
-2024-10-07 22:02:04,681 INFO: 127.0.0.1 - - [07/Oct/2024 22:02:04] "[36mGET /favicon.ico HTTP/1.1[0m" 304 -
-2024-10-07 22:02:07,373 INFO: 127.0.0.1 - - [07/Oct/2024 22:02:07] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
-2024-10-07 22:02:20,076 INFO: 127.0.0.1 - - [07/Oct/2024 22:02:20] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
-2024-10-07 22:02:21,743 INFO: 127.0.0.1 - - [07/Oct/2024 22:02:21] "GET /post/13 HTTP/1.1" 200 -
-2024-10-07 22:02:21,841 INFO: 127.0.0.1 - - [07/Oct/2024 22:02:21] "GET /static/script.css HTTP/1.1" 200 -
-2024-10-07 22:02:22,837 INFO: 127.0.0.1 - - [07/Oct/2024 22:02:22] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
-2024-10-07 22:02:50,551 INFO: 127.0.0.1 - - [07/Oct/2024 22:02:50] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
-2024-10-07 22:02:52,143 INFO: 127.0.0.1 - - [07/Oct/2024 22:02:52] "GET /post/768 HTTP/1.1" 200 -
-2024-10-07 22:02:52,233 INFO: 127.0.0.1 - - [07/Oct/2024 22:02:52] "[36mGET /static/script.css HTTP/1.1[0m" 304 -
-2024-10-07 22:02:53,239 INFO: 127.0.0.1 - - [07/Oct/2024 22:02:53] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
-2024-10-07 22:03:47,662 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
- * Running on all addresses (0.0.0.0)
+2024-10-08 20:49:52,112 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 20:49:52,112 INFO:  * Restarting with stat
+2024-10-08 20:50:08,529 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:50:08,529 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 20:50:08,530 DEBUG: /etc/localtime found
+2024-10-08 20:50:08,532 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 20:50:08,533 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 20:50:08,534 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 20:50:08,534 INFO: Scheduler started
+2024-10-08 20:50:08,535 DEBUG: Looking for jobs to run
+2024-10-08 20:50:08,536 DEBUG: Next wakeup is due at 2024-10-08 20:54:08.533151-03:00 (in 239.996564 seconds)
+2024-10-08 20:50:08,537 WARNING:  * Debugger is active!
+2024-10-08 20:50:08,538 INFO:  * Debugger PIN: 698-370-139
+2024-10-08 20:50:08,705 INFO: 127.0.0.1 - - [08/Oct/2024 20:50:08] "GET /socket.io/?EIO=4&transport=polling&t=P9kYWi9 HTTP/1.1" 200 -
+2024-10-08 20:50:08,735 INFO: 127.0.0.1 - - [08/Oct/2024 20:50:08] "POST /socket.io/?EIO=4&transport=polling&t=P9kYaP9&sid=xDqWtjB3scsvKkMTAAAA HTTP/1.1" 200 -
+2024-10-08 20:50:08,738 INFO: 127.0.0.1 - - [08/Oct/2024 20:50:08] "GET /socket.io/?EIO=4&transport=polling&t=P9kYaPD&sid=xDqWtjB3scsvKkMTAAAA HTTP/1.1" 200 -
+2024-10-08 20:52:07,987 INFO: 127.0.0.1 - - [08/Oct/2024 20:52:07] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 20:52:25,072 INFO: 127.0.0.1 - - [08/Oct/2024 20:52:25] "GET /profile/andrew HTTP/1.1" 200 -
+2024-10-08 20:52:25,218 INFO: 127.0.0.1 - - [08/Oct/2024 20:52:25] "[36mGET /static/home-icon.png HTTP/1.1[0m" 304 -
+2024-10-08 20:52:25,224 INFO: 127.0.0.1 - - [08/Oct/2024 20:52:25] "[36mGET /static/notifications-icon.png HTTP/1.1[0m" 304 -
+2024-10-08 20:52:25,245 INFO: 127.0.0.1 - - [08/Oct/2024 20:52:25] "[36mGET /static/post-icon.png HTTP/1.1[0m" 304 -
+2024-10-08 20:52:25,251 INFO: 127.0.0.1 - - [08/Oct/2024 20:52:25] "[36mGET /static/search-icon.png HTTP/1.1[0m" 304 -
+2024-10-08 20:52:26,161 INFO: 127.0.0.1 - - [08/Oct/2024 20:52:26] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 20:53:52,109 DEBUG: Looking for jobs to run
+2024-10-08 20:53:52,110 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 20:53:52 -03)" (scheduled at 2024-10-08 20:53:52.108391-03:00)
+2024-10-08 20:53:52,111 DEBUG: Next wakeup is due at 2024-10-08 20:57:52.108391-03:00 (in 239.997432 seconds)
+2024-10-08 20:54:08,534 DEBUG: Looking for jobs to run
+2024-10-08 20:54:08,535 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 20:54:08 -03)" (scheduled at 2024-10-08 20:54:08.533151-03:00)
+2024-10-08 20:54:08,536 DEBUG: Next wakeup is due at 2024-10-08 20:58:08.533151-03:00 (in 239.996569 seconds)
+2024-10-08 20:54:54,637 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 20:57:52 -03)" executed successfully
+2024-10-08 20:55:52,160 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 20:58:08 -03)" executed successfully
+2024-10-08 20:57:52,114 DEBUG: Looking for jobs to run
+2024-10-08 20:57:52,115 DEBUG: Next wakeup is due at 2024-10-08 21:01:52.108391-03:00 (in 239.992519 seconds)
+2024-10-08 20:57:52,116 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:01:52 -03)" (scheduled at 2024-10-08 20:57:52.108391-03:00)
+2024-10-08 20:58:08,538 DEBUG: Looking for jobs to run
+2024-10-08 20:58:08,539 DEBUG: Next wakeup is due at 2024-10-08 21:02:08.533151-03:00 (in 239.993615 seconds)
+2024-10-08 20:58:08,539 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:02:08 -03)" (scheduled at 2024-10-08 20:58:08.533151-03:00)
+2024-10-08 20:58:50,660 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:01:52 -03)" executed successfully
+2024-10-08 20:59:48,063 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:02:08 -03)" executed successfully
+2024-10-08 21:01:52,109 DEBUG: Looking for jobs to run
+2024-10-08 21:01:52,111 DEBUG: Next wakeup is due at 2024-10-08 21:05:52.108391-03:00 (in 239.997411 seconds)
+2024-10-08 21:01:52,111 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:05:52 -03)" (scheduled at 2024-10-08 21:01:52.108391-03:00)
+2024-10-08 21:02:08,534 DEBUG: Looking for jobs to run
+2024-10-08 21:02:08,535 DEBUG: Next wakeup is due at 2024-10-08 21:06:08.533151-03:00 (in 239.997754 seconds)
+2024-10-08 21:02:08,536 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:06:08 -03)" (scheduled at 2024-10-08 21:02:08.533151-03:00)
+2024-10-08 21:02:50,262 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:05:52 -03)" executed successfully
+2024-10-08 21:03:47,852 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:06:08 -03)" executed successfully
+2024-10-08 21:05:52,109 DEBUG: Looking for jobs to run
+2024-10-08 21:05:52,111 DEBUG: Next wakeup is due at 2024-10-08 21:09:52.108391-03:00 (in 239.997237 seconds)
+2024-10-08 21:05:52,112 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:09:52 -03)" (scheduled at 2024-10-08 21:05:52.108391-03:00)
+2024-10-08 21:06:08,534 DEBUG: Looking for jobs to run
+2024-10-08 21:06:08,535 DEBUG: Next wakeup is due at 2024-10-08 21:10:08.533151-03:00 (in 239.997490 seconds)
+2024-10-08 21:06:08,535 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:10:08 -03)" (scheduled at 2024-10-08 21:06:08.533151-03:00)
+2024-10-08 21:06:50,431 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:09:52 -03)" executed successfully
+2024-10-08 21:07:47,893 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:10:08 -03)" executed successfully
+2024-10-08 21:08:01,292 INFO: 127.0.0.1 - - [08/Oct/2024 21:08:01] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 21:08:30,487 INFO: 127.0.0.1 - - [08/Oct/2024 21:08:30] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2024-10-08 21:08:30,716 INFO: 127.0.0.1 - - [08/Oct/2024 21:08:30] "GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2024-10-08 21:08:30,726 INFO: 127.0.0.1 - - [08/Oct/2024 21:08:30] "GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2024-10-08 21:08:30,766 INFO: 127.0.0.1 - - [08/Oct/2024 21:08:30] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2024-10-08 21:08:30,779 INFO: 127.0.0.1 - - [08/Oct/2024 21:08:30] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2024-10-08 21:08:31,710 INFO: 127.0.0.1 - - [08/Oct/2024 21:08:31] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 21:09:52,109 DEBUG: Looking for jobs to run
+2024-10-08 21:09:52,111 DEBUG: Next wakeup is due at 2024-10-08 21:13:52.108391-03:00 (in 239.997058 seconds)
+2024-10-08 21:09:52,112 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:13:52 -03)" (scheduled at 2024-10-08 21:09:52.108391-03:00)
+2024-10-08 21:10:08,533 DEBUG: Looking for jobs to run
+2024-10-08 21:10:08,535 DEBUG: Next wakeup is due at 2024-10-08 21:14:08.533151-03:00 (in 239.997833 seconds)
+2024-10-08 21:10:08,535 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:14:08 -03)" (scheduled at 2024-10-08 21:10:08.533151-03:00)
+2024-10-08 21:10:50,675 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:13:52 -03)" executed successfully
+2024-10-08 21:11:48,319 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:14:08 -03)" executed successfully
+2024-10-08 21:14:58,446 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:14:58,447 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:14:58,448 DEBUG: /etc/localtime found
+2024-10-08 21:14:58,451 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 21:14:58,453 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 21:14:58,455 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 21:14:58,455 INFO: Scheduler started
+2024-10-08 21:14:58,456 DEBUG: Looking for jobs to run
+2024-10-08 21:14:58,456 DEBUG: Next wakeup is due at 2024-10-08 21:18:58.453370-03:00 (in 239.996968 seconds)
+2024-10-08 21:14:58,458 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5000
- * Running on http://192.168.1.48:5000
-2024-10-07 22:03:47,662 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 21:14:58,459 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 21:14:58,459 INFO:  * Restarting with stat
+2024-10-08 21:15:18,063 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:15:18,063 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:15:18,065 DEBUG: /etc/localtime found
+2024-10-08 21:15:18,068 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 21:15:18,070 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 21:15:18,073 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 21:15:18,073 INFO: Scheduler started
+2024-10-08 21:15:18,074 DEBUG: Looking for jobs to run
+2024-10-08 21:15:18,075 DEBUG: Next wakeup is due at 2024-10-08 21:19:18.070224-03:00 (in 239.995145 seconds)
+2024-10-08 21:15:18,076 WARNING:  * Debugger is active!
+2024-10-08 21:15:18,077 INFO:  * Debugger PIN: 525-116-679
+2024-10-08 21:15:18,332 INFO: 127.0.0.1 - - [08/Oct/2024 21:15:18] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 21:15:18,334 INFO: 127.0.0.1 - - [08/Oct/2024 21:15:18] "GET /socket.io/?EIO=4&transport=polling&t=P9keGsf HTTP/1.1" 200 -
+2024-10-08 21:15:18,403 INFO: 127.0.0.1 - - [08/Oct/2024 21:15:18] "POST /socket.io/?EIO=4&transport=polling&t=P9keKzB&sid=0yDcPfudJiEngvHXAAAA HTTP/1.1" 200 -
+2024-10-08 21:15:18,428 INFO: 127.0.0.1 - - [08/Oct/2024 21:15:18] "GET /socket.io/?EIO=4&transport=polling&t=P9keKzE&sid=0yDcPfudJiEngvHXAAAA HTTP/1.1" 200 -
+2024-10-08 21:16:09,118 INFO: 127.0.0.1 - - [08/Oct/2024 21:16:09] "GET / HTTP/1.1" 200 -
+2024-10-08 21:16:09,292 INFO: 127.0.0.1 - - [08/Oct/2024 21:16:09] "GET /static/home-icon.png HTTP/1.1" 200 -
+2024-10-08 21:16:09,295 INFO: 127.0.0.1 - - [08/Oct/2024 21:16:09] "GET /static/notifications-icon.png HTTP/1.1" 200 -
+2024-10-08 21:16:09,317 INFO: 127.0.0.1 - - [08/Oct/2024 21:16:09] "GET /static/search-icon.png HTTP/1.1" 200 -
+2024-10-08 21:16:09,320 INFO: 127.0.0.1 - - [08/Oct/2024 21:16:09] "GET /static/uploads/default-profile-pic.png HTTP/1.1" 200 -
+2024-10-08 21:16:09,331 INFO: 127.0.0.1 - - [08/Oct/2024 21:16:09] "GET /static/post-icon.png HTTP/1.1" 200 -
+2024-10-08 21:16:10,201 INFO: 127.0.0.1 - - [08/Oct/2024 21:16:10] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 21:16:10,340 INFO: 127.0.0.1 - - [08/Oct/2024 21:16:10] "GET /static/vibe-icon.png HTTP/1.1" 200 -
+2024-10-08 21:16:10,340 INFO: 127.0.0.1 - - [08/Oct/2024 21:16:10] "GET /static/vibe-icon.png HTTP/1.1" 200 -
+2024-10-08 21:18:58,453 DEBUG: Looking for jobs to run
+2024-10-08 21:18:58,455 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:18:58 -03)" (scheduled at 2024-10-08 21:18:58.453370-03:00)
+2024-10-08 21:18:58,461 DEBUG: Next wakeup is due at 2024-10-08 21:22:58.453370-03:00 (in 239.992396 seconds)
+2024-10-08 21:19:18,071 DEBUG: Looking for jobs to run
+2024-10-08 21:19:18,073 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:19:18 -03)" (scheduled at 2024-10-08 21:19:18.070224-03:00)
+2024-10-08 21:19:18,075 DEBUG: Next wakeup is due at 2024-10-08 21:23:18.070224-03:00 (in 239.995264 seconds)
+2024-10-08 21:20:01,075 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:22:58 -03)" executed successfully
+2024-10-08 21:20:58,882 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:23:18 -03)" executed successfully
+2024-10-08 21:22:58,460 DEBUG: Looking for jobs to run
+2024-10-08 21:22:58,462 DEBUG: Next wakeup is due at 2024-10-08 21:26:58.453370-03:00 (in 239.991473 seconds)
+2024-10-08 21:22:58,462 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:26:58 -03)" (scheduled at 2024-10-08 21:22:58.453370-03:00)
+2024-10-08 21:23:18,077 DEBUG: Looking for jobs to run
+2024-10-08 21:23:18,078 DEBUG: Next wakeup is due at 2024-10-08 21:27:18.070224-03:00 (in 239.991756 seconds)
+2024-10-08 21:23:18,079 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:27:18 -03)" (scheduled at 2024-10-08 21:23:18.070224-03:00)
+2024-10-08 21:23:58,037 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:26:58 -03)" executed successfully
+2024-10-08 21:24:55,921 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:27:18 -03)" executed successfully
+2024-10-08 21:26:58,454 DEBUG: Looking for jobs to run
+2024-10-08 21:26:58,456 DEBUG: Next wakeup is due at 2024-10-08 21:30:58.453370-03:00 (in 239.997250 seconds)
+2024-10-08 21:26:58,457 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:30:58 -03)" (scheduled at 2024-10-08 21:26:58.453370-03:00)
+2024-10-08 21:27:18,071 DEBUG: Looking for jobs to run
+2024-10-08 21:27:18,072 DEBUG: Next wakeup is due at 2024-10-08 21:31:18.070224-03:00 (in 239.997926 seconds)
+2024-10-08 21:27:18,072 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:31:18 -03)" (scheduled at 2024-10-08 21:27:18.070224-03:00)
+2024-10-08 21:27:57,723 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:30:58 -03)" executed successfully
+2024-10-08 21:28:53,586 INFO:  * Detected change in '/home/andrew/projectX/app.py', reloading
+2024-10-08 21:28:55,232 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:31:18 -03)" executed successfully
+2024-10-08 21:28:55,773 INFO:  * Restarting with stat
+2024-10-08 21:29:12,933 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:29:12,933 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:29:12,934 DEBUG: /etc/localtime found
+2024-10-08 21:29:12,936 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 21:29:12,937 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 21:29:12,938 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 21:29:12,938 INFO: Scheduler started
+2024-10-08 21:29:12,939 DEBUG: Looking for jobs to run
+2024-10-08 21:29:12,940 DEBUG: Next wakeup is due at 2024-10-08 21:33:12.937493-03:00 (in 239.997168 seconds)
+2024-10-08 21:29:12,941 WARNING:  * Debugger is active!
+2024-10-08 21:29:12,942 INFO:  * Debugger PIN: 691-133-356
+2024-10-08 21:29:13,108 INFO: 127.0.0.1 - - [08/Oct/2024 21:29:13] "GET /socket.io/?EIO=4&transport=polling&t=P9khSz9 HTTP/1.1" 200 -
+2024-10-08 21:29:13,132 INFO: 127.0.0.1 - - [08/Oct/2024 21:29:13] "POST /socket.io/?EIO=4&transport=polling&t=P9khWmU&sid=99C7dxYGL5Zfu8oFAAAA HTTP/1.1" 200 -
+2024-10-08 21:29:13,140 INFO: 127.0.0.1 - - [08/Oct/2024 21:29:13] "GET /socket.io/?EIO=4&transport=polling&t=P9khWmZ&sid=99C7dxYGL5Zfu8oFAAAA HTTP/1.1" 200 -
+2024-10-08 21:29:19,378 INFO:  * Detected change in '/home/andrew/projectX/app.py', reloading
+2024-10-08 21:29:19,908 INFO:  * Restarting with stat
+2024-10-08 21:29:35,994 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:29:35,994 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:29:35,995 DEBUG: /etc/localtime found
+2024-10-08 21:29:35,997 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 21:29:35,998 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 21:29:36,000 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 21:29:36,000 INFO: Scheduler started
+2024-10-08 21:29:36,000 DEBUG: Looking for jobs to run
+2024-10-08 21:29:36,001 DEBUG: Next wakeup is due at 2024-10-08 21:33:35.998297-03:00 (in 239.996999 seconds)
+2024-10-08 21:29:36,002 WARNING:  * Debugger is active!
+2024-10-08 21:29:36,004 INFO:  * Debugger PIN: 144-384-702
+2024-10-08 21:29:36,230 INFO: 127.0.0.1 - - [08/Oct/2024 21:29:36] "GET /socket.io/?EIO=4&transport=polling&t=P9khYq9 HTTP/1.1" 200 -
+2024-10-08 21:29:36,276 INFO: 127.0.0.1 - - [08/Oct/2024 21:29:36] "POST /socket.io/?EIO=4&transport=polling&t=P9khcPl&sid=XC4RVlQuSIZiG2SlAAAA HTTP/1.1" 200 -
+2024-10-08 21:29:36,279 INFO: 127.0.0.1 - - [08/Oct/2024 21:29:36] "GET /socket.io/?EIO=4&transport=polling&t=P9khcPo&sid=XC4RVlQuSIZiG2SlAAAA HTTP/1.1" 200 -
+2024-10-08 21:30:58,454 DEBUG: Looking for jobs to run
+2024-10-08 21:30:58,455 DEBUG: Next wakeup is due at 2024-10-08 21:34:58.453370-03:00 (in 239.998268 seconds)
+2024-10-08 21:30:58,455 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:34:58 -03)" (scheduled at 2024-10-08 21:30:58.453370-03:00)
+2024-10-08 21:32:02,763 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:32:02,764 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:32:02,765 DEBUG: /etc/localtime found
+2024-10-08 21:32:02,769 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 21:32:02,771 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 21:32:02,773 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 21:32:02,773 INFO: Scheduler started
+2024-10-08 21:32:02,774 DEBUG: Looking for jobs to run
+2024-10-08 21:32:02,775 DEBUG: Next wakeup is due at 2024-10-08 21:36:02.771073-03:00 (in 239.995905 seconds)
+2024-10-08 21:32:02,776 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-08 21:32:02,777 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 21:32:02,778 INFO:  * Restarting with stat
+2024-10-08 21:32:36,106 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:32:36,107 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:32:36,107 DEBUG: /etc/localtime found
+2024-10-08 21:32:36,109 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 21:32:36,111 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 21:32:36,112 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 21:32:36,112 INFO: Scheduler started
+2024-10-08 21:32:36,113 DEBUG: Looking for jobs to run
+2024-10-08 21:32:36,114 DEBUG: Next wakeup is due at 2024-10-08 21:36:36.110775-03:00 (in 239.996799 seconds)
+2024-10-08 21:32:36,116 WARNING:  * Debugger is active!
+2024-10-08 21:32:36,119 INFO:  * Debugger PIN: 554-287-484
+2024-10-08 21:32:36,273 INFO: 127.0.0.1 - - [08/Oct/2024 21:32:36] "GET /socket.io/?EIO=4&transport=polling&t=P9kiBL- HTTP/1.1" 200 -
+2024-10-08 21:32:36,302 INFO: 127.0.0.1 - - [08/Oct/2024 21:32:36] "GET /socket.io/?EIO=4&transport=polling&t=P9kiHxn HTTP/1.1" 200 -
+2024-10-08 21:32:36,304 INFO: 127.0.0.1 - - [08/Oct/2024 21:32:36] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 21:32:36,355 INFO: 127.0.0.1 - - [08/Oct/2024 21:32:36] "POST /socket.io/?EIO=4&transport=polling&t=P9kiINi&sid=tEZx5i22HLytVFl8AAAB HTTP/1.1" 200 -
+2024-10-08 21:32:36,364 INFO: 127.0.0.1 - - [08/Oct/2024 21:32:36] "GET /socket.io/?EIO=4&transport=polling&t=P9kiINn&sid=tEZx5i22HLytVFl8AAAB HTTP/1.1" 200 -
+2024-10-08 21:32:36,416 INFO: 127.0.0.1 - - [08/Oct/2024 21:32:36] "GET /socket.io/?EIO=4&transport=polling&t=P9kiIOL&sid=tEZx5i22HLytVFl8AAAB HTTP/1.1" 200 -
+2024-10-08 21:32:54,202 INFO: 127.0.0.1 - - [08/Oct/2024 21:32:54] "GET /profile/andrew HTTP/1.1" 200 -
+2024-10-08 21:32:54,540 INFO: 127.0.0.1 - - [08/Oct/2024 21:32:54] "GET /static/home-icon.png HTTP/1.1" 200 -
+2024-10-08 21:32:54,544 INFO: 127.0.0.1 - - [08/Oct/2024 21:32:54] "GET /static/notifications-icon.png HTTP/1.1" 200 -
+2024-10-08 21:32:54,551 INFO: 127.0.0.1 - - [08/Oct/2024 21:32:54] "GET /static/post-icon.png HTTP/1.1" 200 -
+2024-10-08 21:32:54,574 INFO: 127.0.0.1 - - [08/Oct/2024 21:32:54] "GET /static/search-icon.png HTTP/1.1" 200 -
+2024-10-08 21:32:55,343 INFO: 127.0.0.1 - - [08/Oct/2024 21:32:55] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 21:36:02,771 DEBUG: Looking for jobs to run
+2024-10-08 21:36:02,772 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:36:02 -03)" (scheduled at 2024-10-08 21:36:02.771073-03:00)
+2024-10-08 21:36:02,772 DEBUG: Next wakeup is due at 2024-10-08 21:40:02.771073-03:00 (in 239.998319 seconds)
+2024-10-08 21:36:36,112 DEBUG: Looking for jobs to run
+2024-10-08 21:36:36,114 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:36:36 -03)" (scheduled at 2024-10-08 21:36:36.110775-03:00)
+2024-10-08 21:36:36,115 DEBUG: Next wakeup is due at 2024-10-08 21:40:36.110775-03:00 (in 239.995007 seconds)
+2024-10-08 21:37:04,455 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:40:02 -03)" executed successfully
+2024-10-08 21:38:02,427 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:40:36 -03)" executed successfully
+2024-10-08 21:40:02,776 DEBUG: Looking for jobs to run
+2024-10-08 21:40:02,778 DEBUG: Next wakeup is due at 2024-10-08 21:44:02.771073-03:00 (in 239.992806 seconds)
+2024-10-08 21:40:02,779 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:44:02 -03)" (scheduled at 2024-10-08 21:40:02.771073-03:00)
+2024-10-08 21:40:36,117 DEBUG: Looking for jobs to run
+2024-10-08 21:40:36,119 DEBUG: Next wakeup is due at 2024-10-08 21:44:36.110775-03:00 (in 239.991295 seconds)
+2024-10-08 21:40:36,120 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:44:36 -03)" (scheduled at 2024-10-08 21:40:36.110775-03:00)
+2024-10-08 21:41:02,255 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:44:02 -03)" executed successfully
+2024-10-08 21:42:00,050 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:44:36 -03)" executed successfully
+2024-10-08 21:44:02,772 DEBUG: Looking for jobs to run
+2024-10-08 21:44:02,773 DEBUG: Next wakeup is due at 2024-10-08 21:48:02.771073-03:00 (in 239.997389 seconds)
+2024-10-08 21:44:02,774 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:48:02 -03)" (scheduled at 2024-10-08 21:44:02.771073-03:00)
+2024-10-08 21:44:36,111 DEBUG: Looking for jobs to run
+2024-10-08 21:44:36,113 DEBUG: Next wakeup is due at 2024-10-08 21:48:36.110775-03:00 (in 239.997702 seconds)
+2024-10-08 21:44:36,113 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:48:36 -03)" (scheduled at 2024-10-08 21:44:36.110775-03:00)
+2024-10-08 21:45:01,866 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:48:02 -03)" executed successfully
+2024-10-08 21:46:00,181 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:48:36 -03)" executed successfully
+2024-10-08 21:46:48,350 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:46:48,351 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:46:48,352 DEBUG: /etc/localtime found
+2024-10-08 21:46:48,356 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 21:46:48,358 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 21:46:48,360 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 21:46:48,361 INFO: Scheduler started
+2024-10-08 21:46:48,361 DEBUG: Looking for jobs to run
+2024-10-08 21:46:48,362 DEBUG: Next wakeup is due at 2024-10-08 21:50:48.358604-03:00 (in 239.996539 seconds)
+2024-10-08 21:46:48,367 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-10-08 21:46:48,368 INFO: [33mPress CTRL+C to quit[0m
+2024-10-08 21:46:48,369 INFO:  * Restarting with stat
+2024-10-08 21:47:04,678 DEBUG: /etc/timezone found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:47:04,679 DEBUG: /var/db/zoneinfo found, contents:
+ America/Sao_Paulo
+
+2024-10-08 21:47:04,679 DEBUG: /etc/localtime found
+2024-10-08 21:47:04,681 DEBUG: 3 found:
+ {'/etc/timezone': 'America/Sao_Paulo', '/var/db/zoneinfo': 'America/Sao_Paulo', '/etc/localtime is a symlink to': 'America/Sao_Paulo'}
+2024-10-08 21:47:04,683 INFO: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2024-10-08 21:47:04,684 INFO: Added job "run_algorithm" to job store "default"
+2024-10-08 21:47:04,684 INFO: Scheduler started
+2024-10-08 21:47:04,684 DEBUG: Looking for jobs to run
+2024-10-08 21:47:04,685 DEBUG: Next wakeup is due at 2024-10-08 21:51:04.682881-03:00 (in 239.997474 seconds)
+2024-10-08 21:47:04,688 WARNING:  * Debugger is active!
+2024-10-08 21:47:04,690 INFO:  * Debugger PIN: 360-985-693
+2024-10-08 21:47:04,836 INFO: 127.0.0.1 - - [08/Oct/2024 21:47:04] "GET /socket.io/?EIO=4&transport=polling&t=P9klYwn HTTP/1.1" 200 -
+2024-10-08 21:47:04,862 INFO: 127.0.0.1 - - [08/Oct/2024 21:47:04] "POST /socket.io/?EIO=4&transport=polling&t=P9klcQB&sid=W-3imVPTSjuv5RlZAAAA HTTP/1.1" 200 -
+2024-10-08 21:47:04,867 INFO: 127.0.0.1 - - [08/Oct/2024 21:47:04] "GET /socket.io/?EIO=4&transport=polling&t=P9klcQE&sid=W-3imVPTSjuv5RlZAAAA HTTP/1.1" 200 -
+2024-10-08 21:48:56,210 INFO: 127.0.0.1 - - [08/Oct/2024 21:48:56] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 21:49:45,747 INFO: 127.0.0.1 - - [08/Oct/2024 21:49:45] "GET / HTTP/1.1" 200 -
+2024-10-08 21:49:45,967 INFO: 127.0.0.1 - - [08/Oct/2024 21:49:45] "[36mGET /static/uploads/default-profile-pic.png HTTP/1.1[0m" 304 -
+2024-10-08 21:49:45,992 INFO: 127.0.0.1 - - [08/Oct/2024 21:49:45] "GET /static/home-icon.png HTTP/1.1" 200 -
+2024-10-08 21:49:46,001 INFO: 127.0.0.1 - - [08/Oct/2024 21:49:46] "GET /static/notifications-icon.png HTTP/1.1" 200 -
+2024-10-08 21:49:46,005 INFO: 127.0.0.1 - - [08/Oct/2024 21:49:46] "GET /static/post-icon.png HTTP/1.1" 200 -
+2024-10-08 21:49:46,006 INFO: 127.0.0.1 - - [08/Oct/2024 21:49:46] "GET /static/search-icon.png HTTP/1.1" 200 -
+2024-10-08 21:49:46,907 INFO: 127.0.0.1 - - [08/Oct/2024 21:49:46] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 21:50:48,359 DEBUG: Looking for jobs to run
+2024-10-08 21:50:48,360 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:50:48 -03)" (scheduled at 2024-10-08 21:50:48.358604-03:00)
+2024-10-08 21:50:48,360 DEBUG: Next wakeup is due at 2024-10-08 21:54:48.358604-03:00 (in 239.998005 seconds)
+2024-10-08 21:51:04,683 DEBUG: Looking for jobs to run
+2024-10-08 21:51:04,685 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:51:04 -03)" (scheduled at 2024-10-08 21:51:04.682881-03:00)
+2024-10-08 21:51:04,687 DEBUG: Next wakeup is due at 2024-10-08 21:55:04.682881-03:00 (in 239.995649 seconds)
+2024-10-08 21:51:50,750 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:54:48 -03)" executed successfully
+2024-10-08 21:52:49,046 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:55:04 -03)" executed successfully
+2024-10-08 21:52:54,535 INFO: 127.0.0.1 - - [08/Oct/2024 21:52:54] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 21:53:11,210 INFO: 127.0.0.1 - - [08/Oct/2024 21:53:11] "GET /profile/andrew HTTP/1.1" 200 -
+2024-10-08 21:53:11,711 INFO: 127.0.0.1 - - [08/Oct/2024 21:53:11] "GET /static/home-icon.png HTTP/1.1" 200 -
+2024-10-08 21:53:11,720 INFO: 127.0.0.1 - - [08/Oct/2024 21:53:11] "GET /static/post-icon.png HTTP/1.1" 200 -
+2024-10-08 21:53:11,721 INFO: 127.0.0.1 - - [08/Oct/2024 21:53:11] "GET /static/notifications-icon.png HTTP/1.1" 200 -
+2024-10-08 21:53:11,741 INFO: 127.0.0.1 - - [08/Oct/2024 21:53:11] "GET /static/search-icon.png HTTP/1.1" 200 -
+2024-10-08 21:53:12,455 INFO: 127.0.0.1 - - [08/Oct/2024 21:53:12] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 21:54:48,364 DEBUG: Looking for jobs to run
+2024-10-08 21:54:48,366 DEBUG: Next wakeup is due at 2024-10-08 21:58:48.358604-03:00 (in 239.992454 seconds)
+2024-10-08 21:54:48,367 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:58:48 -03)" (scheduled at 2024-10-08 21:54:48.358604-03:00)
+2024-10-08 21:55:04,683 DEBUG: Looking for jobs to run
+2024-10-08 21:55:04,685 DEBUG: Next wakeup is due at 2024-10-08 21:59:04.682881-03:00 (in 239.997368 seconds)
+2024-10-08 21:55:04,686 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:59:04 -03)" (scheduled at 2024-10-08 21:55:04.682881-03:00)
+2024-10-08 21:55:47,932 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:58:48 -03)" executed successfully
+2024-10-08 21:56:51,770 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 21:59:04 -03)" executed successfully
+2024-10-08 21:58:11,758 INFO: 127.0.0.1 - - [08/Oct/2024 21:58:11] "[36mGET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1[0m" 304 -
+2024-10-08 21:58:13,557 INFO: 127.0.0.1 - - [08/Oct/2024 21:58:13] "GET /post/713 HTTP/1.1" 200 -
+2024-10-08 21:58:13,843 INFO: 127.0.0.1 - - [08/Oct/2024 21:58:13] "[36mGET /static/script.css HTTP/1.1[0m" 304 -
+2024-10-08 21:58:14,680 INFO: 127.0.0.1 - - [08/Oct/2024 21:58:14] "GET /service-worker.js?pusherBeamsWebSDKVersion=1.0.3 HTTP/1.1" 200 -
+2024-10-08 21:58:48,360 DEBUG: Looking for jobs to run
+2024-10-08 21:58:48,361 DEBUG: Next wakeup is due at 2024-10-08 22:02:48.358604-03:00 (in 239.996795 seconds)
+2024-10-08 21:58:48,362 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:02:48 -03)" (scheduled at 2024-10-08 21:58:48.358604-03:00)
+2024-10-08 21:59:04,684 DEBUG: Looking for jobs to run
+2024-10-08 21:59:04,686 DEBUG: Next wakeup is due at 2024-10-08 22:03:04.682881-03:00 (in 239.996699 seconds)
+2024-10-08 21:59:04,686 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:03:04 -03)" (scheduled at 2024-10-08 21:59:04.682881-03:00)
+2024-10-08 21:59:47,702 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:02:48 -03)" executed successfully
+2024-10-08 22:00:46,174 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:03:04 -03)" executed successfully
+2024-10-08 22:02:48,360 DEBUG: Looking for jobs to run
+2024-10-08 22:02:48,361 DEBUG: Next wakeup is due at 2024-10-08 22:06:48.358604-03:00 (in 239.997260 seconds)
+2024-10-08 22:02:48,362 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:06:48 -03)" (scheduled at 2024-10-08 22:02:48.358604-03:00)
+2024-10-08 22:03:04,684 DEBUG: Looking for jobs to run
+2024-10-08 22:03:04,686 DEBUG: Next wakeup is due at 2024-10-08 22:07:04.682881-03:00 (in 239.996966 seconds)
+2024-10-08 22:03:04,686 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:07:04 -03)" (scheduled at 2024-10-08 22:03:04.682881-03:00)
+2024-10-08 22:03:49,138 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:06:48 -03)" executed successfully
+2024-10-08 22:04:48,522 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:07:04 -03)" executed successfully
+2024-10-08 22:06:48,359 DEBUG: Looking for jobs to run
+2024-10-08 22:06:48,360 DEBUG: Next wakeup is due at 2024-10-08 22:10:48.358604-03:00 (in 239.998269 seconds)
+2024-10-08 22:06:48,360 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:10:48 -03)" (scheduled at 2024-10-08 22:06:48.358604-03:00)
+2024-10-08 22:07:04,683 DEBUG: Looking for jobs to run
+2024-10-08 22:07:04,684 DEBUG: Next wakeup is due at 2024-10-08 22:11:04.682881-03:00 (in 239.998568 seconds)
+2024-10-08 22:07:04,684 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:11:04 -03)" (scheduled at 2024-10-08 22:07:04.682881-03:00)
+2024-10-08 22:07:52,564 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:10:48 -03)" executed successfully
+2024-10-08 22:08:54,057 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:11:04 -03)" executed successfully
+2024-10-08 22:10:48,359 DEBUG: Looking for jobs to run
+2024-10-08 22:10:48,361 DEBUG: Next wakeup is due at 2024-10-08 22:14:48.358604-03:00 (in 239.996965 seconds)
+2024-10-08 22:10:48,362 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:14:48 -03)" (scheduled at 2024-10-08 22:10:48.358604-03:00)
+2024-10-08 22:11:04,683 DEBUG: Looking for jobs to run
+2024-10-08 22:11:04,684 DEBUG: Next wakeup is due at 2024-10-08 22:15:04.682881-03:00 (in 239.998906 seconds)
+2024-10-08 22:11:04,684 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:15:04 -03)" (scheduled at 2024-10-08 22:11:04.682881-03:00)
+2024-10-08 22:11:47,383 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:14:48 -03)" executed successfully
+2024-10-08 22:12:45,367 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:15:04 -03)" executed successfully
+2024-10-08 22:14:48,359 DEBUG: Looking for jobs to run
+2024-10-08 22:14:48,360 DEBUG: Next wakeup is due at 2024-10-08 22:18:48.358604-03:00 (in 239.998553 seconds)
+2024-10-08 22:14:48,360 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:18:48 -03)" (scheduled at 2024-10-08 22:14:48.358604-03:00)
+2024-10-08 22:15:04,683 DEBUG: Looking for jobs to run
+2024-10-08 22:15:04,684 DEBUG: Next wakeup is due at 2024-10-08 22:19:04.682881-03:00 (in 239.998722 seconds)
+2024-10-08 22:15:04,684 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:19:04 -03)" (scheduled at 2024-10-08 22:15:04.682881-03:00)
+2024-10-08 22:15:47,693 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:18:48 -03)" executed successfully
+2024-10-08 22:16:47,036 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:19:04 -03)" executed successfully
+2024-10-08 22:18:48,359 DEBUG: Looking for jobs to run
+2024-10-08 22:18:48,359 DEBUG: Next wakeup is due at 2024-10-08 22:22:48.358604-03:00 (in 239.999004 seconds)
+2024-10-08 22:18:48,359 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:22:48 -03)" (scheduled at 2024-10-08 22:18:48.358604-03:00)
+2024-10-08 22:19:04,683 DEBUG: Looking for jobs to run
+2024-10-08 22:19:04,684 DEBUG: Next wakeup is due at 2024-10-08 22:23:04.682881-03:00 (in 239.998271 seconds)
+2024-10-08 22:19:04,685 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:23:04 -03)" (scheduled at 2024-10-08 22:19:04.682881-03:00)
+2024-10-08 22:19:49,497 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:22:48 -03)" executed successfully
+2024-10-08 22:20:47,675 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:23:04 -03)" executed successfully
+2024-10-08 22:22:48,359 DEBUG: Looking for jobs to run
+2024-10-08 22:22:48,360 DEBUG: Next wakeup is due at 2024-10-08 22:26:48.358604-03:00 (in 239.998495 seconds)
+2024-10-08 22:22:48,360 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:26:48 -03)" (scheduled at 2024-10-08 22:22:48.358604-03:00)
+2024-10-08 22:23:04,683 DEBUG: Looking for jobs to run
+2024-10-08 22:23:04,684 DEBUG: Next wakeup is due at 2024-10-08 22:27:04.682881-03:00 (in 239.998036 seconds)
+2024-10-08 22:23:04,685 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:27:04 -03)" (scheduled at 2024-10-08 22:23:04.682881-03:00)
+2024-10-08 22:23:48,055 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:26:48 -03)" executed successfully
+2024-10-08 22:24:49,562 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:27:04 -03)" executed successfully

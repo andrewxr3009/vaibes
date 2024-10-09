@@ -99,20 +99,102 @@ body {
 }
 
 .container {
-    width: 70%;
-    max-width: 800px;
-    margin: 20px auto;
     padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
 }
 
 .post {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eaeaea;
-    padding-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
 }
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.profile-picture {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.follow-button {
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #007BFF; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    border: none;
+    cursor: pointer;
+}
+
+.post-content {
+    margin-top: 10px;
+}
+
+.post-actions {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.like-button,
+.share-button {
+    font-size: 12px;
+    padding: 5px;
+    margin-right: 10px; /* Espaçamento entre botões */
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.comments-section {
+    margin-top: 20px;
+}
+
+.comment-input {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.comment-profile-pic {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.comment-input-text {
+    flex: 1;
+    border-radius: 15px; /* Bordas arredondadas */
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+.submit-comment {
+    font-size: 12px; /* Tamanho menor */
+    padding: 5px 10px; /* Padding menor */
+    border-radius: 5px;
+    background-color: #28a745; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    border: none;
+    cursor: pointer;
+}
+
+.comment {
+    margin-top: 5px;
+}
+
+.comment strong {
+    display: block;
+}
+
 
 .profile-info {
     display: flex;
@@ -127,32 +209,9 @@ body {
     margin-right: 10px;
 }
 
-.post-content {
-    margin-bottom: 15px;
-}
 
-.post-content p {
-    font-size: 1.1em;
-    line-height: 1.5;
-    color: #333;
-}
 
-.post-content img {
-    max-width: 100%;
-    margin-top: 10px;
-    border-radius: 8px;
-}
 
-.like-button, .share-button {
-    background-color: #022247;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    margin-right: 10px;
-}
 
 .btn-sm {
     background-color: #022247;
@@ -169,57 +228,18 @@ body {
     background-color: #022247;
 }
 
-.comments {
-    margin-top: 20px;
-}
-
-.comment {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-}
-
-.comment .profile-picture {
+.profile-picture {
     width: 35px;
     height: 35px;
     margin-right: 10px;
 }
 
-.comment-content {
-    flex: 1;
-}
 
 .comment-author {
     font-weight: bold;
     margin-bottom: 5px;
 }
 
-#comment-form {
-    display: flex;
-    margin-top: 20px;
-}
-
-#comment-content {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-right: 10px;
-    resize: none;
-}
-
-#comment-form button {
-    background-color: #022247;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-}
 
 .bottom-bar {
     display: flex;

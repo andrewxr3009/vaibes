@@ -6,6 +6,7 @@ import spacy
 import psycopg2
 from apscheduler.schedulers.background import BackgroundScheduler
 import time
+import random  # Importando a biblioteca random
 
 # Configuração da conexão com o banco de dados Supabase
 DATABASE_URI = 'postgresql+psycopg2://postgres.txyhqnbmlpcywyapxypm:5edqw3n4lhxCacLm@aws-0-us-west-1.pooler.supabase.com:6543/postgres'
@@ -88,6 +89,9 @@ def calculate_relevance_for_all_users(session):
     print("Iniciando cálculo de relevância...")
     users = session.query(User).all()  # Agora a classe User está definida corretamente
     posts = session.query(Post).all()
+
+    # Embaralha a lista de posts
+    random.shuffle(posts)
 
     for user in users:
         print(f'Calculando relevância para o usuário: {user.username} (ID: {user.id})')

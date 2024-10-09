@@ -78,9 +78,10 @@
             background-color: #022247;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 5px 15px;
             border-radius: 20px;
             cursor: pointer;
+            float: right;
         }
         .edit-button:hover {
             background-color: #0056b3;
@@ -132,13 +133,31 @@
             text-decoration: underline;
         }
         .gif-container {
-            margin-top: 10px;
-            text-align: center;
-        }
-        .gif-item {
-            max-width: 100%;
-            border-radius: 8px;
-        }
+        display: flex;
+        flex-wrap: wrap;                /* Os GIFs ficam em várias linhas, se necessário */
+        gap: 10px;                      /* Espaço entre os GIFs */
+        margin-top: 10px;
+    }
+
+    .gif-item {
+        width: 250px;                   /* Largura padrão para os GIFs */
+        height: auto;                   /* Altura proporcional */
+        border-radius: 10px;            /* Bordas arredondadas nos GIFs */
+        cursor: pointer;                /* Muda o cursor ao passar sobre o GIF */
+        transition: transform 0.2s ease; /* Transição suave de efeito */
+    }
+    .photo-item {
+        width: 250px;                   /* Largura padrão para os GIFs */
+        height: auto;                   /* Altura proporcional */
+        border-radius: 10px;            /* Bordas arredondadas nos GIFs */
+        cursor: pointer;                /* Muda o cursor ao passar sobre o GIF */
+        transition: transform 0.2s ease; /* Transição suave de efeito */
+    }
+
+    .gif-item:hover {
+        transform: scale(1.1);          /* Aumenta o GIF ao passar o mouse */
+    }
+
         .post-footer {
             display: flex;
             justify-content: space-between;
@@ -427,6 +446,11 @@
                             <img src="{{ post.gif_url }}" alt="GIF" class="gif-item">
                         </div>
                     {% endif %}
+                    {% if post.img_url %}
+                    <div class="photo-container">
+                        <img src="{{ post.img_url }}" alt="Foto" class="photo-item">
+                    </div>
+                {% endif %}
                 </div>
 
                 <div class="post-footer">

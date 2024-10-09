@@ -180,29 +180,46 @@
         color: #022247;
         text-decoration: none;
     }
+    .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3); /* Cor de fundo */
+        border-top: 4px solid white; /* Cor do topo */
+        border-radius: 50%;
+        width: 20px; /* Tamanho do spinner */
+        height: 20px; /* Tamanho do spinner */
+        animation: spin 1s linear infinite;
+        margin-top: 10px; /* Espaço acima do spinner */
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
     
     .follow-form {
         margin-left: 5px; /* Para manter o botão próximo ao nome do autor */
-    }
-    
+        }
     .follow-button {
         background-color: #022247;
         color: white;
         border: none;
-        padding: 2px 10px; /* Ajuste para um padding menor */
-        border-radius: 9px;
+        padding: 3px 10px; /* Diminuído */
+        border-radius: 15px; /* Diminuído */
         cursor: pointer;
     }
     
     .follow-button.following {
-        background-color: white;
+        background-color: transparent;
         color: #022247;
-        border: 2px solid #022247; /* Contorno para o botão de seguir quando já segue */
+        border: 1px solid #022247;
     }
     
     .follow-button:hover {
         background-color: #0056b3;
     }
+
+
+
     
     .post-body {
         margin-top: 10px;
@@ -464,19 +481,21 @@
                                 </a>
                                 <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST" class="follow-form">
                                     {% if user.is_following(post.user) %}
-                                        <button type="submit" class="follow-button following">Deixar de Seguir</button>
+                                        <butypetton  class="follow-button following">Deixar de Seguir</button>
                                     {% else %}
-                                        <button type="submit" class="follow-button">Seguir</button>
+                                        <button  class="follow-button">Seguir</button>
                                     {% endif %}
                                 </form>
                             </div>
                         </div>
-    
                         <div class="post-info-right">
-                            <span class="post-date">{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
+                            <span class="post-date" data-timestamp="{{ post.timestamp.isoformat() }}">
+                                {{ post.timestamp.strftime('%d de %B de %Y') }}
+                            </span>
                         </div>
+                        
                     </div>
-    
+        
                     <div class="post-body" onclick="redirectToPost({{ post.id }})">
                         {% set content = post.content %}
                         {% for word in content.split() %}
@@ -497,7 +516,7 @@
                             </div>
                         {% endif %}
                     </div>
-    
+        
                     <div class="post-footer">
                         <div class="like-container">
                             <button class="like-button" id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})">
@@ -511,7 +530,7 @@
                         </div>
                         <div class="post-options" onclick="toggleOptions({{ post.id }})">•••</div>
                     </div>
-    
+        
                     <div class="post-options-menu" id="options-menu-{{ post.id }}">
                         {% if session['user_id'] == post.user.id %}
                             <button onclick="deletePost({{ post.id }})">Excluir</button>
@@ -527,6 +546,7 @@
                 <p>Nenhum post encontrado.</p>
             {% endif %}
         </div>
+        
     
         <div class="bottom-bar">
             <a href="{{ url_for('home') }}" class="bottom-bar-link">
@@ -554,18 +574,19 @@
         <div id="bottom-bar-modal" class="bottom-bar-modal">
             <div class="bottom-bar-modal-content">
                 <button type="button" class="modal-button" onclick="closeModal()">Fechar</button>
-                <form id="postForm" action="{{ url_for('create_post') }}" method="POST" enctype="multipart/form-data">
+                <form id="postForm" action="{{ url_for('create_post') }}" method="POST" enctype="multipart/form-data" onsubmit="showSpinner()">
                     <textarea name="content" placeholder="O que você está pensando?" required></textarea>
                     <input type="text" id="gif-search" placeholder="Buscar GIFs" oninput="searchGifs()">
                     <div id="gif-results" class="gif-container"></div>
                     <input type="hidden" id="gif-url" name="gif_url">
-                    <input type="file" name="image" id="photo-upload" accept="image/*">
+                    <input type="file" name="image" id="photo-upload" accept="image/*" style="display: none;">
                     <label for="photo-upload" class="modal-button">Selecionar Foto</label>
                     <button type="submit" class="modal-button">Postar</button>
+                    <div id="spinner" class="spinner" style="display: none;"></div>
                 </form>
             </div>
         </div>
-    </div>
+        
     
 
     <script>
@@ -649,6 +670,13 @@ function setPostFilter(filterType) {
             document.getElementById('gif-url').value = gifUrl;
             closeModal();
         }
+
+
+    function showSpinner() {
+    document.getElementById('spinner').style.display = 'block'; // Exibe o spinner
+}
+
+
 
 
     document.getElementById('postForm').addEventListener('submit', function(event) {
@@ -760,6 +788,35 @@ function setPostFilter(filterType) {
             });
         }
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+    const postDates = document.querySelectorAll('.post-date');
+    
+    postDates.forEach(postDate => {
+        const timestamp = new Date(postDate.dataset.timestamp);
+        const now = new Date();
+        const timeDiff = now - timestamp; // diferença em milissegundos
+
+        // Converte a diferença em segundos
+        const seconds = Math.floor(timeDiff / 1000);
+        let displayTime;
+
+        if (seconds < 60) {
+            displayTime = `${seconds} segundo${seconds !== 1 ? 's' : ''} atrás`;
+        } else if (seconds < 3600) {
+            const minutes = Math.floor(seconds / 60);
+            displayTime = `${minutes} minuto${minutes !== 1 ? 's' : ''} atrás`;
+        } else if (seconds < 86400) {
+            const hours = Math.floor(seconds / 3600);
+            displayTime = `${hours} hora${hours !== 1 ? 's' : ''} atrás`;
+        } else {
+            displayTime = postDate.textContent; // Exibe a data original se tiver mais de um dia
+        }
+
+        postDate.textContent = displayTime; // Atualiza o conteúdo do elemento
+    });
+});
+
     
     </script>
 </body>

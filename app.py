@@ -20,6 +20,11 @@ import logging
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.backends import default_backend
+from flask_socketio import SocketIO, emit, join_room, leave_room
+import pytz
+
+# Definindo o fuso horário de Brasília
+brt = pytz.timezone('America/Sao_Paulo')
 
 
 # Inicializar o Firebase Admin SDK
@@ -38,6 +43,7 @@ app = Flask(__name__)
 app.secret_key = 'a3n0d0r4e0w9'  # Substitua por uma chave secreta adequada
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres.txyhqnbmlpcywyapxypm:5edqw3n4lhxCacLm@aws-0-us-west-1.pooler.supabase.com:6543/postgres'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 # Configuração de upload de arquivos
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')  # Caminho correto para a pasta uploads
@@ -598,7 +604,7 @@ def create_post():
                 gif_url=gif_url, 
                 img_url=img_url,  
                 user_id=user.id, 
-                timestamp=datetime.utcnow()
+                timestamp=datetime.now(brt)
             )
             db.session.add(new_post)
             db.session.commit()
@@ -1266,23 +1272,17 @@ def admin_panel():
     
     return render_template('admin.html', posts=all_posts, users=all_users)
 
+
 @app.route('/dm')
 def dm():
-    # Verifica se o usuário está logado
     if 'user_id' not in session:
         flash("Você precisa estar logado para acessar as conversas.", "danger")
         return redirect(url_for('login'))
 
-    # Captura o user_id diretamente da sessão
     user_id = session['user_id']
-
-    # Busca todas as conversas (seguindo os IDs que o usuário logado está seguindo)
     conversas = db.session.query(Follower).filter(Follower.follower_id == user_id).all()
-
-    # Pega os usuários que o usuário atual está seguindo
     conversas_usuarios = [User.query.get(conversa.follower_id) for conversa in conversas]
 
-    # Renderiza o template 'dm.html' passando as conversas
     return render_template('dm.html', conversas=conversas_usuarios)
 
 
@@ -1290,43 +1290,56 @@ def dm():
 def nova_conversa():
     return render_template('nova_conversa.html')
 
-@app.route('/enviar_mensagem/<int:user_id>', methods=['POST'])
-def enviar_mensagem(user_id):
-    # Obter o conteúdo da mensagem do formulário
-    content = request.form['content']
 
-        # Recuperar o destinatário com base no user_id
-    recipient = User.query.get(user_id)
+socketio = SocketIO(app)
+
+@socketio.on('send_message')
+def handle_send_message(data):
+    recipient_id = data['recipient_id']
+    content = data['message']
+    recipient = User.query.get(recipient_id)
 
     if recipient is None:
-        # Caso o destinatário não seja encontrado
-        flash('Usuário não encontrado.', 'error')
-        return redirect(url_for('index'))  # Ou outra página de erro
+        emit('error', {'message': 'Usuário não encontrado.'}, room=session['user_id'])
+        return
 
-    recipient_username = recipient.username 
-
-    # Criar um novo objeto Message e salvar no banco de dados
-    message = Message(content=content, sender_id=session['user_id'], receiver_id=user_id)
+    message = Message(content=content, sender_id=session['user_id'], user_id=recipient_id)
     db.session.add(message)
     db.session.commit()
 
-    # Redirecionar para a conversa ou exibir uma mensagem de sucesso
-    return redirect(url_for('conversa', username=recipient_username))
+    emit('receive_message', {
+        'message': message.content,
+        'sender_id': session['user_id'],
+        'sender_username': session.get('username'),  # Presumindo que o username esteja na sessão
+        'timestamp': message.timestamp.strftime('%H:%M %d/%m/%Y')
+    }, to=recipient_id)
+
+    emit('receive_message', {
+        'message': message.content,
+        'sender_id': session['user_id'],
+        'sender_username': session.get('username'),
+        'timestamp': message.timestamp.strftime('%H:%M %d/%m/%Y')
+    }, to=session['user_id'])
+
 
 @app.route('/conversa/<username>')
 def conversa(username):
+    if 'user_id' not in session:
+        flash('Você precisa estar logado para acessar esta página.', 'error')
+        return redirect(url_for('login'))
+
     recipient = User.query.filter_by(username=username).first()
     if not recipient:
         flash('Usuário não encontrado.')
         return redirect(url_for('home'))
 
     messages = Message.query.filter(
-        (Message.sender_id == session['user_id']) & (Message.receiver_id == recipient.id) |
-        (Message.sender_id == recipient.id) & (Message.receiver_id == session['user_id'])
+        ((Message.sender_id == session['user_id']) & (Message.receiver_id == recipient.id)) |
+        ((Message.sender_id == recipient.id) & (Message.receiver_id == session['user_id']))
     ).order_by(Message.timestamp.asc()).all()
 
     return render_template('conversa.html', recipient=recipient, messages=messages)
 
 # Inicialização da aplicação
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)

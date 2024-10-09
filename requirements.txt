@@ -23,3 +23,5 @@ pt_core_news_sm @ https://github.com/explosion/spacy-models/releases/download/pt
 spacy_langdetect
 apscheduler
 logging
+flask-socketio
+pytz

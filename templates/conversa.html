@@ -1,15 +1,68 @@
-<h1>Conversa com {{ recipient.username }}</h1>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
 
-<div class="messages">
-    {% for message in messages %}
-        <div class="message {{ 'sent' if message.sender_id == session.user_id else 'received' }}">
-            {{ message.content }}
-            <span class="timestamp">{{ message.timestamp.strftime('%H:%M %d/%m/%Y') }}</span>
-        </div>
-    {% endfor %}
+<div id="chat-container">
+    <h2>Conversa com {{ recipient.username }}</h2>
+    <div id="messages">
+        {% for message in messages %}
+            <div class="message">
+                <span class="sender">{{ message.sender.username }}:</span>
+                <span class="content">{{ message.content }}</span>
+                <span class="timestamp">{{ message.timestamp.strftime('%H:%M %d/%m/%Y') }}</span>
+            </div>
+        {% endfor %}
+    </div>
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Digite sua mensagem..." required>
+        <button type="submit" id="send-button">Enviar</button>
+    </form>
 </div>
 
-<form method="POST" action="{{ url_for('enviar_mensagem', user_id=recipient.id) }}">
-    <textarea name="content" placeholder="Digite sua mensagem"></textarea>
-    <button type="submit">Enviar</button>
-</form>
+<script>
+    const socket = io();
+    socket.on('connect', () => {
+    console.log('Conectado ao servidor Socket.IO');
+
+
+});
+ // Enviar mensagem ao servidor
+socket.emit('mensagem', { text: 'Olá, servidor!' });
+
+// Escutar a resposta do servidor
+socket.on('resposta', (data) => {
+    console.log('Resposta do servidor:', data);
+});
+
+
+
+    document.getElementById('message-form').onsubmit = function(e) {
+        e.preventDefault();
+        const messageInput = document.getElementById('message-input');
+        const recipientId = "{{ recipient.id }}";
+
+        socket.emit('send_message', {
+            recipient_id: recipientId,
+            message: messageInput.value
+        });
+        messageInput.value = '';
+    };
+
+    socket.on('receive_message', function(data) {
+        const messagesDiv = document.getElementById('messages');
+        const newMessage = document.createElement('div');
+        newMessage.className = 'message';
+        newMessage.innerHTML = `<span class="sender">${data.sender_username}:</span> <span class="content">${data.message}</span> <span class="timestamp">${data.timestamp}</span>`;
+        messagesDiv.appendChild(newMessage);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+
+    socket.on('error', function(data) {
+        alert(data.message);
+    });
+</script>
