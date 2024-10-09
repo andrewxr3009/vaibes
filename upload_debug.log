@@ -972,3 +972,10 @@
 2024-10-08 22:23:04,685 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:27:04 -03)" (scheduled at 2024-10-08 22:23:04.682881-03:00)
 2024-10-08 22:23:48,055 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:26:48 -03)" executed successfully
 2024-10-08 22:24:49,562 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:27:04 -03)" executed successfully
+2024-10-08 22:26:48,359 DEBUG: Looking for jobs to run
+2024-10-08 22:26:48,360 DEBUG: Next wakeup is due at 2024-10-08 22:30:48.358604-03:00 (in 239.998593 seconds)
+2024-10-08 22:26:48,360 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:30:48 -03)" (scheduled at 2024-10-08 22:26:48.358604-03:00)
+2024-10-08 22:27:04,683 DEBUG: Looking for jobs to run
+2024-10-08 22:27:04,685 DEBUG: Next wakeup is due at 2024-10-08 22:31:04.682881-03:00 (in 239.997890 seconds)
+2024-10-08 22:27:04,685 INFO: Running job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:31:04 -03)" (scheduled at 2024-10-08 22:27:04.682881-03:00)
+2024-10-08 22:27:47,946 INFO: Job "run_algorithm (trigger: interval[0:04:00], next run at: 2024-10-08 22:30:48 -03)" executed successfully
