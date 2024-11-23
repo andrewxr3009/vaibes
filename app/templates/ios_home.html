@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vaibes - Home</title>
-    
+
     <!-- Meta tags para web app -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -31,472 +31,832 @@
         gtag('js', new Date());
         gtag('config', 'G-X2PT21PM9Y');
     </script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
-
 
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3814244836764328" crossorigin="anonymous"></script>
+
+    <style>
+        /* Estilos rápidos para responsividade */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            padding-bottom: 60px; /* Espaço para a barra inferior */
+        }
+
+        .app-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .filter-bar {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 15px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-button {
+            font-weight: bold;
+            font-size: 14px;
+            padding: 10px;
+            cursor: pointer;
+            color: #888;
+            border: none;
+            background: none;
+        }
+
+        .filter-button.active {
+            color: #022247;
+        }
+
+        .filter-separator {
+            margin: 0 10px;
+            color: #888;
+        }
+
+        .post {
+            background-color: #fff;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .post-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-info strong {
+            font-size: 14px;
+        }
+
+        .post-date {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .post-body {
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+
+        /* Barra inferior atualizada */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+            height: 60px;
+            z-index: 999;
+            padding-bottom: 5px;
+        }
+
+        .create-post-button {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 20px;
+            background-color: #022247;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .create-post-button img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .create-post-button span {
+            position: absolute;
+            bottom: -25px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .bottom-bar-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: black;
+        }
+
+        .bottom-bar-link img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .bottom-bar-link span {
+            font-size: 12px;
+            color: #333;
+            margin-top: 4px;
+        }
+
+        /* Modal atualizado */
+        .bottom-bar-modal {
+            display: none;
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            background-color: #fff;
+            transition: bottom 0.3s ease-in-out;
+            z-index: 1000;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .bottom-bar-modal.active {
+            bottom: 0;
+        }
+
+        .bottom-bar-modal-content {
+            padding: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .post-textarea {
+            width: 100%;
+            height: 120px;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            margin-bottom: 20px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .action-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+            background-color: #f5f5f5;
+        }
+
+        .post-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: #022247;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .post-submit:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Demais estilos permanecem os mesmos */
+        .dm-button {
+            background-color: #022247;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .modal-button {
+            padding: 10px;
+            background-color: #022247;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .post {
+            transition: transform 0.2s ease;
+        }
+
+        .post:hover {
+            transform: translateY(-2px);
+        }
+
+        .like-button, .comment-button {
+            transition: transform 0.2s ease;
+        }
+
+        .like-button:hover, .comment-button:hover {
+            transform: scale(1.1);
+        }
+
+        .loading {
+            position: relative;
+            opacity: 0.7;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #022247;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* Estilos para o formulário de seguir/deixar de seguir */
+.follow-form {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.follow-button {
+    background-color: #022247;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.follow-button.following {
+    background-color: transparent;
+    color: #0095f6;
+    border: 1px solid #022247;
+}
+
+.follow-button:hover {
+    background-color: #0077b6;
+}
+
+.follow-button.following:hover {
+    background-color: #f0f0f0;
+}
+/* Estilo geral do botão de like */
+.like-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border-radius: 8px; /* Arredondamento dos cantos */
+    font-size: 14px; /* Tamanho da fonte do texto */
+    color: #022247; /* Cor do texto */
+}
+
+/* Efeito de hover para o botão de like */
+.like-button:hover {
+    background-color: #f1f1f1; /* Cor de fundo suave ao passar o mouse */
+    transform: scale(1.05); /* Leve aumento de tamanho ao passar o mouse */
+}
+
+/* Estilo do ícone dentro do botão de like */
+.like-button img {
+    width: 20px; /* Tamanho do ícone */
+    height: 20px; /* Tamanho do ícone */
+    margin-right: 8px; /* Espaçamento entre o ícone e o texto */
+}
+
+.share-button img {
+    width: 20px; /* Tamanho do ícone */
+    height: 20px; /* Tamanho do ícone */
+    margin-right: 8px; /* Espaçamento entre o ícone e o texto */
+}
+
+.share-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border-radius: 8px; /* Arredondamento dos cantos */
+    font-size: 14px; /* Tamanho da fonte do texto */
+    color: #022247; /* Cor do texto */
+}
+
+/* Tamanho do texto */
+.like-button span {
+    font-size: 14px; /* Tamanho do texto de "Curtir" */
+    font-weight: bold;
+}
+
+/* Quando o post é curtido, o ícone de like muda */
+.like-button.liked {
+    color: #3e8e41; /* Cor verde para mostrar que o post foi curtido */
+}
+
+/* Exemplo de como o ícone pode mudar ao ser curtido */
+.like-button.liked img {
+    content: url('/static/like-on-icon.png'); /* Troca o ícone para 'like-on' quando o post é curtido */
+}
+
+/* Exemplo de quando o botão de like não está curtiu (padrão) */
+.like-button img {
+    content: url('/static/like-off-icon.png'); /* Exibe o ícone 'like-off' por padrão */
+}
+
+
+    </style>
 </head>
+
 <body>
-    <div class="app-container">
-        <!-- Filtro para ordenação dos posts -->
-        <div class="filter-bar">
-            <button class="filter-button active" id="for-you" onclick="setPostFilter('relevance')">For You</button>
-            <button class="filter-button" id="legacy" onclick="setPostFilter('chronological')">Legacy</button>
+    <!-- Botão de DM -->
+    <div class="dm-commentbutton" onclick="openModal()">
+        DM
+    </div>
+
+    <!-- Modal de DM -->
+    <div id="dmModal" class="modal">
+        <div class="modal-content">
+            <h2>Direct Messages</h2>
+            <p>Em breve você poderá enviar mensagens diretas para outros usuários!</p>
+            <button class="modal-button" onclick="closeModal()">Fechar</button>
         </div>
-    
+    </div>
+
+    <div class="app-container">
+        <!-- Barra de filtros -->
+        <div class="filter-bar">
+            <button id="for-you" class="filter-button" onclick="setPostFilter('relevance')">Para Você</button>
+            <span class="filter-separator">|</span>
+            <button id="new" class="filter-button active" onclick="setPostFilter('chronological')">Novo</button>
+        </div>
+
+        <!-- Área dos posts -->
+        <!-- Container de posts -->
         <div class="posts-container">
             {% if posts %}
                 {% for post in posts %}
-                <div class="post" id="post-{{ post.id }}">
-                    <div class="post-header">
-                        <div class="post-info-left">
-                            <img src="{{ post.user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                    <div class="post">
+                        <div class="post-header">
+                            <img src="{{ post['user']['profile_picture'] }}" alt="Foto de perfil" class="profile-pic">
                             <div class="post-info">
-                                <a href="{{ url_for('profile', username=post.user.username) }}">
-                                    <strong>{{ post.user.username }}</strong>
-                                </a>
-                                <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST" class="follow-form">
-                                    {% if user.is_following(post.user) %}
-                                        <butypetton  class="follow-button following">Deixar de Seguir</button>
-                                    {% else %}
-                                        <button  class="follow-button">Seguir</button>
-                                    {% endif %}
-                                </form>
+                                <strong>{{ post['user']['username'] }}</strong>
+                                <span class="post-date">{{ post['timestamp'] }}</span>
                             </div>
+                            <form id="follow-form-{{ post.user.id }}" action="{{ url_for('users.toggle_follow', username=post.user.username) }}" method="POST" class="follow-form">
+                                {% if user.is_following(post['user']['id']) %}
+                                <button type="submit" class="follow-button following">Deixar de Seguir</button>
+                                {% else %}
+                                    <button type="submit" class="follow-button">Seguir</button>
+                                {% endif %}
+                            </form>
                         </div>
-                        <div class="post-info-right">
-                            <span class="post-date" data-timestamp="{{ post.timestamp.isoformat() }}">
-                                {{ post.timestamp.strftime('%d de %B de %Y') }}
-                            </span>
+                        <div class="post-body" onclick="redirectToPost({{ post.id }})">
+                            {% set content = post.content %}
+                            {% for word in content.split() %}
+                                {% if word.startswith('#') %}
+                                    <a href="/hashtag/{{ word[1:] }}">{{ word }}</a>
+                                {% else %}
+                                    {{ word }}
+                                {% endif %}
+
+                            {% endfor %}
+                                {% if post['img_url'] %}
+                                    <img src="{{ post['img_url'] }}" alt="Imagem do post" style="width: 100%; margin-top: 10px; border-radius: 8px;">
+                                {% endif %}
+                        </div>
+                        <div class="post-footer">
+                            <div class="post-footer">
+                                <button class="like-button {% if post.liked %}liked{% endif %}" id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})">
+                                    <img src="{{ url_for('static', filename=post.liked and 'like-on-icon.png' or 'like-off-icon.png') }}" id="like-icon-{{ post.id }}" alt="Curtir">
+                                    <span id="like-count-{{ post.id }}">{{ post['likes'] }}</span>
+                                </button>
+                                <button class="share-button" id="share-button-{{ post.id }}" onclick="sharePost({{ post.id }})">
+                                    <img src="{{ url_for('static', filename='share-icon.png') }}" id="like-icon-{{ post.id }}" alt="Curtir">
+                                </button>
+                            </div>                            
                         </div>
                         
+                        
                     </div>
-        
-                    <div class="post-body" onclick="redirectToPost({{ post.id }})">
-                        {% set content = post.content %}
-                        {% for word in content.split() %}
-                            {% if word.startswith('#') %}
-                                <a href="/hashtag/{{ word[1:] }}">{{ word }}</a>
-                            {% else %}
-                                {{ word }}
-                            {% endif %}
-                        {% endfor %}
-                        {% if post.gif_url %}
-                            <div class="gif-container">
-                                <img src="{{ post.gif_url }}" alt="GIF" class="gif-item">
-                            </div>
-                        {% endif %}
-                        {% if post.img_url %}
-                            <div class="photo-container">
-                                <img src="{{ post.img_url }}" alt="Foto" class="photo-item">
-                            </div>
-                        {% endif %}
-                    </div>
-        
-                    <div class="post-footer">
-                        <div class="like-container">
-                            <button class="like-button" id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})">
-                                Curtir <span id="like-count-{{ post.id }}">{{ post.likes|length }}</span>
-                            </button>
-                        </div>
-                        <div class="share-container">
-                            <button class="share-button" id="share-button-{{ post.id }}" onclick="sharePost({{ post.id }})">
-                                Compartilhar
-                            </button>
-                        </div>
-                        <div class="post-options" onclick="toggleOptions({{ post.id }})">•••</div>
-                    </div>
-        
-                    <div class="post-options-menu" id="options-menu-{{ post.id }}">
-                        {% if session['user_id'] == post.user.id %}
-                            <button onclick="deletePost({{ post.id }})">Excluir</button>
-                            <button onclick="viewInsights({{ post.id }})">Ver Insights</button>
-                        {% else %}
-                            <button>Denunciar</button>
-                            <button>Silenciar</button>
-                        {% endif %}
-                    </div>
-                </div>
                 {% endfor %}
             {% else %}
-                <p>Nenhum post encontrado.</p>
+                <p style="text-align: center; color: #888;">Nenhum post encontrado.</p>
             {% endif %}
         </div>
-        <script>
-            // Função para registrar a impressão do post
-            function registerImpression(postId) {
-                fetch(`/register_impression/${postId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log('Impressão registrada para o post ' + postId);
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao registrar impressão:', error);
-                });
-            }
         
-            // Configuração do Intersection Observer
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const postId = entry.target.getAttribute('data-post-id');
-                        registerImpression(postId);
-                        observer.unobserve(entry.target);  // Para evitar contar múltiplas impressões
-                    }
-                });
-            }, {
-                threshold: 0.5 // O post precisa estar 50% visível para ser considerado
-            });
-        
-            // Observando cada post
-            document.querySelectorAll('.post').forEach(post => {
-                observer.observe(post);
-            });
-        </script>
-        
+
     
-        <div class="bottom-bar">
-            <a href="{{ url_for('home') }}" class="bottom-bar-link">
-                <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
-                <span>Início</span>
-            </a>
-            <a href="{{ url_for('notifications') }}" class="bottom-bar-link">
-                <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
-                <span>Notificações</span>
-            </a>
-            <div class="create-post-button" onclick="openModal()">
-                <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar Post">
-                <span>Criar</span>
-            </div>
-            <a href="{{ url_for('profile', username=user.username) }}" class="bottom-bar-link">
-                <img src="{{ user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
-                <span>Perfil</span>
-            </a>
-            <a href="{{ url_for('search') }}" class="bottom-bar-link">
-                <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
-                <span>Buscar</span>
-            </a>
+    </div>
+
+    <!-- Barra de navegação inferior -->
+    <div class="bottom-bar">
+        <a href="{{ url_for('main.home') }}" class="bottom-bar-link">
+            <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+            <span>Home</span>
+        </a>
+        <a href="{{ url_for('main.search') }}" class="bottom-bar-link">
+            <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Buscar">
+            <span>Buscar</span>
+        </a>
+        <div class="create-post-button" onclick="openPostModal()">
+            <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar">
+            <span>Criar</span>
         </div>
-    
-        <div id="bottom-bar-modal" class="bottom-bar-modal">
-            <div class="bottom-bar-modal-content">
-                <button type="button" class="modal-button" onclick="closeModal()">Fechar</button>
-                <form id="postForm" action="{{ url_for('create_post') }}" method="POST" enctype="multipart/form-data" onsubmit="showSpinner()">
-                    <textarea name="content" placeholder="O que você está pensando?" required></textarea>
-                    <input type="text" id="gif-search" placeholder="Buscar GIFs" oninput="searchGifs()">
-                    <div id="gif-results" class="gif-container"></div>
-                    <input type="hidden" id="gif-url" name="gif_url">
-                    <input type="file" name="image" id="photo-upload" accept="image/*" style="display: none;">
-                    <label for="photo-upload" class="modal-button">Selecionar Foto</label>
-                    <button type="submit" class="modal-button">Postar</button>
-                    <div id="spinner" class="spinner" style="display: none;"></div>
-                </form>
+        <a href="{{ url_for('notifications.notifications') }}" class="bottom-bar-link">
+            <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+            <span>Notificações</span>
+        </a>
+        <a href="{{ url_for('users.profile', username=user.username) }}" class="bottom-bar-link">
+            <img src="{{ user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+            <span>Perfil</span>
+        </a>
+    </div>
+
+    <!-- Modal de criação de post atualizado -->
+    <div id="bottom-bar-modal" class="bottom-bar-modal">
+        <div class="bottom-bar-modal-content">
+            <div class="modal-header">
+                <h3>Criar post</h3>
+                <button class="modal-close" onclick="closePostModal()">×</button>
             </div>
+            
+            <textarea class="post-textarea" placeholder="O que você está pensando?"></textarea>
+            
+            <div class="post-actions">
+                <button class="action-button">
+                    <img src="{{ url_for('static', filename='image-icon.png') }}" alt="Imagem" width="20">
+                    Foto
+                </button>
+                <button class="action-button">
+                    <img src="{{ url_for('static', filename='gif-icon.png') }}" alt="GIF" width="20">
+                    GIF
+                </button>
+            </div>
+            
+            <button class="post-submit">Publicar</button>
         </div>
-        
-    
+    </div>
 
     <script>
-        // Função para alternar o menu de opções do post
-        function toggleOptions(postId) {
-        document.getElementById(`options-menu-${postId}`).classList.toggle('active');
-    }
 
+function likePost(postId) {
+    function likePost(postId) {
+    fetch(`/like_post/${postId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const likeButton = document.getElementById(`like-button-${postId}`);
+        const likeCountElement = document.getElementById(`like-count-${postId}`);
+        const likeIcon = document.getElementById(`like-icon-${postId}`);
+
+        // Atualiza a contagem de curtidas
+        likeCountElement.textContent = data.likes;
+
+        // Alterna o ícone e a classe 'liked' do botão
+        if (data.liked) {
+            likeButton.classList.add('liked');
+            likeIcon.src = '/static/like-on-icon.png';  // Ícone de "like" quando o post é curtido
+        } else {
+            likeButton.classList.remove('liked');
+            likeIcon.src = '/static/like-off-icon.png'; // Ícone de "like" quando o post não é curtido
+        }
+    })
+    .catch(error => {
+        console.error('Erro ao curtir o post:', error);
+    });
+}
+}
 function setPostFilter(filterType) {
     // Remove a classe 'active' de ambos os botões
+    document.getElementById('new').classList.remove('active');
     document.getElementById('for-you').classList.remove('active');
-    document.getElementById('legacy').classList.remove('active');
-    
+
     // Adiciona a classe 'active' ao botão correspondente
     if (filterType === 'relevance') {
         document.getElementById('for-you').classList.add('active');
     } else if (filterType === 'chronological') {
-        document.getElementById('legacy').classList.add('active');
+        document.getElementById('new').classList.add('active');
     }
-    
+
     // Redireciona a página com o filtro aplicado
     window.location.href = `/?filter=${filterType}`;
 }
 
 
+        class PostManager {
+            constructor() {
+                this.posts = [];
+                this.currentFilter = 'new';
+                this.initializeSamplePosts();
+            }
+            
+            initializeSamplePosts() {
+                this.posts = [
+                    {
+                        name: "João Silva",
+                        time: "2h atrás",
+                        content: "Acabei de descobrir uma música incrível! 🎵",
+                        likes: 15,
+                        comments: 3
+                    },
+                    {
+                        name: "Maria Oliveira",
+                        time: "4h atrás",
+                        content: "Dia produtivo hoje! 💪",
+                        likes: 24,
+                        comments: 5
+                    }
+                ];
+                this.renderPosts();
+            }
+            
+            addPost(post) {
+                this.posts.unshift(post);
+                this.renderPosts();
+            }
+            
+            renderPosts() {
+                const container = document.getElementById('posts-container');
+                container.innerHTML = '';
+                
+                this.posts
+                    .filter(post => this.filterPost(post))
+                    .forEach(post => {
+                        const postElement = document.createElement('div');
+                        postElement.className = 'post';
+                        postElement.innerHTML = `
+                            <div class="post-header">
+                                <img src="{{ url_for('static', filename='profile-placeholder.png') }}" alt="Profile" class="profile-pic">
+                                <div class="post-info">
+                                    <strong>${post.name}</strong>
+                                    <span class="post-date">${post.time}</span>
+                                </div>
+                            </div>
+                            <div class="post-body">
+                                ${post.content}
+                            </div>
+                            <div class="post-footer">
+                                <button class="like-button" onclick="handleLike(this, ${post.likes})">❤️ ${post.likes}</button>
+                                <button class="comment-button">💬 ${post.comments}</button>
+                            </div>
+                        `;
+                        container.appendChild(postElement);
+                    });
+            }
+            
+            filterPost(post) {
+                if (this.currentFilter === 'new') {
+                    return true;
+                }
+                return post.likes > 10; // Lógica para trending
+            }
 
-        function likePost(postId) {
-            fetch(`/like_post/${postId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    document.getElementById(`like-count-${postId}`).innerText = data.like_count;
-                    const likeButton = document.getElementById(`like-button-${postId}`);
-                    likeButton.classList.toggle('liked');
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                alert('Erro ao curtir o post: ' + error);
-            });
+            setFilter(filter) {
+                this.currentFilter = filter;
+                this.renderPosts();
+            }
         }
 
+        // Instância global do gerenciador de posts
+        const postManager = new PostManager();
+
+        // Função para definir filtro ativo
+        function setActiveFilter(button) {
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+            
+            // Atualiza o filtro no PostManager
+            const filterType = button.textContent.toLowerCase();
+            postManager.setFilter(filterType);
+        }
+
+        // Funções do modal de DM
         function openModal() {
-            document.getElementById('bottom-bar-modal').style.display = 'flex';
+            document.getElementById('dmModal').classList.add('show');
         }
 
         function closeModal() {
-            document.getElementById('bottom-bar-modal').style.display = 'none';
+            document.getElementById('dmModal').classList.remove('show');
         }
 
-        
+        // Funções do modal de criação de post
+        function openPostModal() {
+            const modal = document.getElementById('bottom-bar-modal');
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 10);
+        }
 
-        function searchGifs() {
-            const query = document.getElementById('gif-search').value;
-            const gifResults = document.getElementById('gif-results');
-            gifResults.innerHTML = '';
+        function closePostModal() {
+            const modal = document.getElementById('bottom-bar-modal');
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
 
-            if (query.length > 0) {
-                fetch(`https://api.giphy.com/v1/gifs/search?api_key=URqPC2QH6fsA2xCx7ySJTbholry57xjy&q=${query}&limit=5`)
-                    .then(response => response.json())
-                    .then(data => {
-                        data.data.forEach(gif => {
-                            const img = document.createElement('img');
-                            img.src = gif.images.fixed_height_small.url;
-                            img.classList.add('gif-item');
-                            img.onclick = () => selectGif(gif.images.fixed_height_small.url);
-                            gifResults.appendChild(img);
-                        });
-                    })
-                    .catch(error => console.error('Erro ao buscar GIFs:', error));
+        // Tratamento de erros
+        function handleError(error, context) {
+            console.error(`Erro no ${context}:`, error);
+            
+            const errorMessages = {
+                'network': 'Erro de conexão. Verifique sua internet.',
+                'auth': 'Você precisa estar logado para realizar esta ação.',
+                'default': 'Ocorreu um erro. Tente novamente mais tarde.'
+            };
+            
+            alert(errorMessages[error.type] || errorMessages.default);
+        }
+
+        // Função para lidar com likes
+        async function handleLike(button, currentLikes) {
+            try {
+                button.classList.add('loading');
+                // Simulando uma chamada de API
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                const newLikes = currentLikes + 1;
+                button.innerHTML = `❤️ ${newLikes}`;
+            } catch (error) {
+                handleError(error, 'like do post');
+            } finally {
+                button.classList.remove('loading');
             }
         }
 
-        function selectGif(gifUrl) {
-            document.getElementById('gif-url').value = gifUrl;
-            closeModal();
-        }
+        // Configuração do textarea e botão de submit
+        document.addEventListener('DOMContentLoaded', function() {
+            const postTextarea = document.querySelector('.post-textarea');
+            const postSubmitButton = document.querySelector('.post-submit');
 
+            postTextarea.addEventListener('input', function() {
+                postSubmitButton.disabled = !this.value.trim();
+            });
 
-    function showSpinner() {
-    document.getElementById('spinner').style.display = 'block'; // Exibe o spinner
-}
-
-
-
-
-    document.getElementById('postForm').addEventListener('submit', function(event) {
-            const content = document.querySelector('textarea[name="content"]').value;
-            const hashtags = content.match(/#\w+/g) || []; // Captura hashtags ou um array vazio
-            document.getElementById('hashtag-input').value = hashtags.join(','); // Armazena hashtags no campo oculto
+            postSubmitButton.addEventListener('click', async function() {
+                if (this.disabled) return;
+                
+                this.disabled = true;
+                try {
+                    const newPost = {
+                        name: "Usuário",
+                        time: "Agora",
+                        content: postTextarea.value,
+                        likes: 0,
+                        comments: 0
+                    };
+                    
+                    postManager.addPost(newPost);
+                    closePostModal();
+                    postTextarea.value = '';
+                } catch (error) {
+                    handleError(error, 'criação de post');
+                } finally {
+                    this.disabled = false;
+                }
+            });
         });
 
-    function viewInsights(postId) {
-            window.location.href = `/insights/${postId}`;
-        }
-    
-    function deletePost(postId) {
-        if (confirm('Tem certeza que deseja excluir este post?')) {
-            fetch(`/delete_post/${postId}`, { method: 'DELETE' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById(`post-${postId}`).remove();
-                        alert('Post excluído com sucesso!');
-                    } else {
-                        alert('Erro ao excluir o post.');
-                    }
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
                 });
-        }
-    }
-    function toggleFollow(username) {
-    fetch(`/follow_user/${username}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-              // Se estiver usando CSRF
-        },
-        credentials: 'same-origin'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.following) {
-            document.getElementById('follow-btn').innerText = 'Seguindo';
-            document.getElementById('follow-btn').style.backgroundColor = 'transparent';
-            document.getElementById('follow-btn').style.borderColor = '#022247';
-        } else {
-            document.getElementById('follow-btn').innerText = 'Seguir';
-            document.getElementById('follow-btn').style.backgroundColor = '#022247';
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
-
-            // Função para seguir/deixar de seguir
-            document.querySelectorAll('form[id^="follow-form-"]').forEach(form => {
-                form.onsubmit = function(event) {
-                    event.preventDefault(); // Impede o envio do formulário
-                    const form = this;
-                    fetch(form.action, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    }).then(response => response.json()).then(data => {
-                        const button = form.querySelector('button');
-                        if (data.following) {
-                            button.classList.remove('btn-primary');
-                            button.classList.add('btn-danger');
-                            button.textContent = 'Deixar de Seguir';
-                        } else {
-                            button.classList.remove('btn-danger');
-                            button.classList.add('btn-primary');
-                            button.textContent = 'Seguir';
-                        }
-                        alert(data.message);
-                    }).catch(error => {
-                        alert('Erro ao seguir/deixar de seguir: ' + error);
-                    });
-                };
             });
-        
-            // Função para redirecionar para a página de detalhes do post
-            function redirectToPost(postId) {
-                window.location.href = `/post/${postId}`;
+        }
+
+        // Fechar modal quando clicar fora
+        window.onclick = function(event) {
+            const dmModal = document.getElementById('dmModal');
+            if (event.target === dmModal) {
+                closeModal();
             }
-        
-
-    // Função para compartilhar o post
-    function sharePost(postId) {
-        // Gere a URL do post. Certifique-se de que essa URL corresponda à sua estrutura de URL.
-        const postUrl = `http://vaibes.onrender.com/post/${postId}`; // Altere a URL conforme necessário
-        const message = `Confira este post: ${postUrl}`;
-
-        // Verifica se a API de compartilhamento está disponível
-    if (navigator.share) {
-            navigator.share({
-                title: 'Post do Vaibes',
-                text: message,
-                url: postUrl
-            })
-            .then(() => {
-                alert('Post compartilhado com sucesso!');
-            })
-            .catch(err => {
-                alert('Falha ao compartilhar o post: ' + err);
-            })
-        } else {
-            // Se a API de compartilhamento não estiver disponível, usa o método de copiar para a área de transferência
-            navigator.clipboard.writeText(message).then(() => {
-                alert("Link do post copiado para a área de transferência! Agora você pode compartilhar.");
-            }).catch(err => {
-                alert("Falha ao copiar o link: " + err);
-            });
         }
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-    const postDates = document.querySelectorAll('.post-date');
-    
-    postDates.forEach(postDate => {
-        const timestamp = new Date(postDate.dataset.timestamp);
-        const now = new Date();
-        const timeDiff = now - timestamp; // diferença em milissegundos
-
-        // Converte a diferença em segundos
-        const seconds = Math.floor(timeDiff / 1000);
-        let displayTime;
-
-        if (seconds < 60) {
-            displayTime = `${seconds} segundo${seconds !== 1 ? 's' : ''} atrás`;
-        } else if (seconds < 3600) {
-            const minutes = Math.floor(seconds / 60);
-            displayTime = `${minutes} minuto${minutes !== 1 ? 's' : ''} atrás`;
-        } else if (seconds < 86400) {
-            const hours = Math.floor(seconds / 3600);
-            displayTime = `${hours} hora${hours !== 1 ? 's' : ''} atrás`;
-        } else {
-            displayTime = postDate.textContent; // Exibe a data original se tiver mais de um dia
-        }
-
-        postDate.textContent = displayTime; // Atualiza o conteúdo do elemento
-    });
-});
-
-let currentPage = 1; // Página atual
-let hasMorePosts = true; // Controle para verificar se há mais posts
-let isLoading = false; // Evitar requisições simultâneas
-
-function loadMorePosts() {
-    if (!hasMorePosts || isLoading) return;
-
-    isLoading = true;
-
-    fetch(`/?page=${currentPage}&filter=relevance`, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest' // Indica requisição assíncrona
-        }
-    })
-        .then(response => response.json())
-        .then(data => {
-            const postsContainer = document.querySelector('.posts-container');
-
-            data.posts.forEach(post => {
-                // Crie os elementos HTML para cada post
-                const postElement = document.createElement('div');
-                postElement.classList.add('post');
-                postElement.innerHTML = `
-                    <div class="post-header">
-                        <img src="${post.profile_picture}" alt="Foto de perfil" class="profile-pic">
-                        <strong>${post.username}</strong>
-                        <span class="post-date">${new Date(post.timestamp).toLocaleDateString()}</span>
-                    </div>
-                    <div class="post-body">${post.content}</div>
-                    <div class="post-footer">
-                        <button onclick="likePost(${post.id})">Curtir <span>${post.likes}</span></button>
-                    </div>
-                `;
-                postsContainer.appendChild(postElement);
-            });
-
-            // Atualize o estado da página e controle
-            hasMorePosts = data.has_more;
-            if (hasMorePosts) {
-                currentPage++;
-            }
-
-            isLoading = false;
-        })
-        .catch(error => {
-            console.error('Erro ao carregar mais posts:', error);
-            isLoading = false;
-        });
-}
-
-// Configuração do Intersection Observer
-const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-        loadMorePosts();
-    }
-}, {
-    root: null,
-    rootMargin: '0px',
-    threshold: 1.0
-});
-
-// Monitorar o rodapé ou um elemento vazio no final da página
-observer.observe(document.querySelector('.bottom-bar'));
-
-
-    
     </script>
 </body>
 </html>
