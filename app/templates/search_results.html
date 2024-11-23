@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de Pesquisa - Vaibes</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-container {
+            width: 90%;
+            max-width: 400px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"]::placeholder {
+            color: #999;
+        }
+
+        input:focus {
+            border-color: #0A2844;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            background-color: #0A2844;
+            color: white;
+        }
+
+        .results {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #ececec;
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .posts-container {
+            margin-top: 20px;
+        }
+
+        .post {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .post-info {
+            flex-grow: 1;
+        }
+
+        .post-options {
+            cursor: pointer;
+        }
+
+        .post-options-menu {
+            display: none;
+            position: absolute;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        .post-options-menu.active {
+            display: block;
+        }
+
+        .post-body {
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .like-button {
+            background-color: transparent;
+            border: none;
+            color: #0A2844;
+            cursor: pointer;
+        }
+
+        .action-icon {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        .bottom-bar {
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 60px; /* Definindo uma altura fixa */
+        }
+
+        .bottom-bar img {
+            width: 40px;
+            height: 40px;
+        }
+    </style>
+    <script>
+        function showTab(tabName) {
+            const results = document.querySelectorAll('.results');
+            const tabs = document.querySelectorAll('.tab');
+
+            results.forEach(result => {
+                result.classList.remove('active');
+            });
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+        }
+
+        // Função para curtir o post
+        function likePost(postId) {
+            fetch(`/like_post/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById(`like-count-${postId}`).innerText = data.like_count;
+                    const likeButton = document.getElementById(`like-button-${postId}`);
+                    likeButton.classList.toggle('liked');
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                alert('Erro ao curtir o post: ' + error);
+            });
+        }
+
+        // Função para seguir/deixar de seguir
+        document.querySelectorAll('form[id^="follow-form-"]').forEach(form => {
+            form.onsubmit = function(event) {
+                event.preventDefault(); // Impede o envio do formulário
+                const form = this;
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => response.json()).then(data => {
+                    const button = form.querySelector('button');
+                    if (data.following) {
+                        button.classList.remove('btn-primary');
+                        button.classList.add('btn-danger');
+                        button.textContent = 'Deixar de Seguir';
+                    } else {
+                        button.classList.remove('btn-danger');
+                        button.classList.add('btn-primary');
+                        button.textContent = 'Seguir';
+                    }
+                    alert(data.message);
+                }).catch(error => {
+                    alert('Erro ao seguir/deixar de seguir: ' + error);
+                });
+            };
+        });
+
+        // Função para redirecionar para a página de detalhes do post
+        function redirectToPost(postId) {
+            window.location.href = `/post/${postId}`;
+        }
+
+        // Função para compartilhar o post
+        function sharePost(postId) {
+            alert("Post compartilhado! (Lógica de compartilhamento será implementada)");
+        }
+
+        // Função para alternar o menu de opções do post
+        function toggleOptions(postId) {
+            document.getElementById(`options-menu-${postId}`).classList.toggle('active');
+        }
+    </script>
+</head>
+<body>
+    <!-- Container de busca -->
+    <div class="search-container">
+        <input type="text" placeholder="Pesquisar..." />
+    </div>
+
+    <!-- Abas de resultados -->
+    <div class="tabs">
+        <div class="tab active" data-tab="users" onclick="showTab('users')">Usuários</div>
+        <div class="tab" data-tab="posts" onclick="showTab('posts')">Posts</div>
+        <div class="tab" data-tab="hashtags" onclick="showTab('hashtags')">Hashtags</div>
+    </div>
+
+    <!-- Exibir resultados de usuários -->
+    <div class="results active" id="users">
+        {% if users %}
+            <h3>Usuários encontrados:</h3>
+            <ul>
+                {% for user in users %}
+                    <li>{{ user.username }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhum usuário encontrado.</p>
+        {% endif %}
+    </div>
+
+    <!-- Exibir resultados de posts -->
+    <div class="results" id="posts">
+        <div class="posts-container">
+            {% if posts %}
+                {% for post in posts %}
+                <div class="post" id="post-{{ post.id }}">
+                    <div class="post-header">
+                        <img src="{{ post.user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                        <div class="post-info">
+                            <a href="{{ url_for('profile', username=post.user.username) }}">
+                                <strong>{{ post.user.username }}</strong>
+                            </a>
+                            <span>{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
+                        </div>
+                        <div class="post-options" onclick="toggleOptions({{ post.id }})">•••</div>
+                        <div class="post-options-menu" id="options-menu-{{ post.id }}">
+                            {% if session['user_id'] == post.user.id %}
+                                <button onclick="deletePost({{ post.id }})">Excluir</button>
+                                <button onclick="viewInsights({{ post.id }})">Ver Insights</button>
+                            {% else %}
+                                <button>Denunciar</button>
+                                <button>Silenciar</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="post-body" onclick="redirectToPost({{ post.id }})">
+                        <p>{{ post.content }}</p>
+                    </div>
+                    <div class="post-actions">
+                        <button class="like-button" id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})">
+                            ❤️
+                        </button>
+                        <span id="like-count-{{ post.id }}">{{ post.like_count }}</span>
+                        <div>
+                            <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST">
+                                {% if current_user.is_following(post.user) %}
+                                    <button type="submit" class="btn btn-danger">Deixar de Seguir</button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-primary">Seguir</button>
+                                {% endif %}
+                            </form>
+                        </div>                        
+                        <button onclick="sharePost({{ post.id }})">Compartilhar</button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>Nenhum post encontrado.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Exibir resultados de hashtags -->
+    <div class="results" id="hashtags">
+        {% if hashtags %}
+            <h3>Hashtags encontradas:</h3>
+            <ul>
+                {% for hashtag in hashtags %}
+                <li><a href="{{ url_for('view_hashtag_posts', hashtag_name=hashtag.name) }}">#{{ hashtag.name }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhuma hashtag encontrada.</p>
+        {% endif %}
+    </div>
+
+    <!-- Barra inferior -->
+    <div class="bottom-bar">
+        <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='icons/home.png') }}" alt="Home"></a>
+        <a href="{{ url_for('search') }}"><img src="{{ url_for('static', filename='icons/search.png') }}" alt="Buscar"></a>
+        <a href="{{ url_for('profile', username=session['username']) }}"><img src="{{ url_for('static', filename='icons/profile.png') }}" alt="Perfil"></a>
+    </div>
+</body>
+</html>

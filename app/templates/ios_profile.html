@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaibes - Home</title>
+    
+    <!-- Meta tags para web app -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Ícones para iOS -->
+    <link rel="apple-touch-icon" sizes="180x180" href="static/vibe-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/vibe-icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/vibe-icon.png">
+
+    <!-- Manifest do Web App -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Meta tags para Android -->
+    <meta name="theme-color" content="#022247">
+    <link rel="icon" sizes="192x192" href="/static/vibe-icon.png">
+    <link rel="icon" sizes="512x512" href="/static/vibe-icon.png">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X2PT21PM9Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-X2PT21PM9Y');
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3814244836764328" crossorigin="anonymous"></script>
+
+    <style>
+body { 
+    font-family: Arial, sans-serif; 
+    background-color: #bfbfbf; 
+    margin: 0; 
+    padding: 0; 
+    overflow-x: hidden;
+}
+
+.app-container { 
+    display: flex; 
+    flex-direction: column; 
+    height: 100vh; 
+}
+
+.posts-container { 
+    flex: 1; 
+    overflow-y: auto; 
+    padding: 10px; 
+    display: flex; 
+    flex-direction: column; 
+}
+
+.post { 
+    background: #fff; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    margin-bottom: 10px; 
+    padding: 10px; 
+    cursor: pointer; 
+    position: relative; 
+}
+
+.profile-pic { 
+    border-radius: 50%; 
+    width: 36px; 
+    height: 36px; 
+    margin-right: 8px; 
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.post-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.post-info strong {
+    margin-bottom: 5px;
+}
+
+.follow-button {
+    background-color: #022247;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.post-options {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.post-options-menu {
+    display: none;
+    position: absolute;
+    right: 10px;
+    bottom: 50px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 100;
+}
+
+.post-options-menu button {
+    background-color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+}
+
+.post-options-menu button:hover {
+    background-color: #f0f0f0;
+}
+
+.post-body {
+    margin-top: 10px;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+
+.like-button {
+    background-color: #022247;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+span {
+    color: #777;
+    font-size: 12px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+body { 
+    font-family: Arial, sans-serif; 
+    background-color: #bfbfbf; 
+    margin: 0; 
+    padding: 0; 
+    overflow-x: hidden;
+}
+
+.app-container { 
+    display: flex; 
+    flex-direction: column; 
+    height: 100vh; 
+}
+
+.posts-container { 
+    flex: 1; 
+    overflow-y: auto; 
+    padding: 10px; 
+    display: flex; 
+    flex-direction: column; 
+}
+
+.post { 
+    background: #fff; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    margin-bottom: 10px; 
+    padding: 10px; 
+    cursor: pointer; 
+    position: relative; 
+}
+
+.profile-pic { 
+    border-radius: 50%; 
+    width: 36px; 
+    height: 36px; 
+    margin-right: 8px; 
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.post-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.follow-button {
+    background-color: #022247;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.post-options {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.post-options-menu {
+    display: none;
+    position: absolute;
+    right: 10px;
+    bottom: 50px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 100;
+}
+
+.post-options-menu.active {
+    display: block;
+}
+
+.post-options-menu button {
+    background-color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+}
+
+.post-options-menu button:hover {
+    background-color: #f0f0f0;
+}
+
+.post-body {
+    margin-top: 10px;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+
+.like-button {
+    background-color: #022247;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+span {
+    color: #777;
+    font-size: 12px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    height: 50px; /* Altura ajustada */
+}
+
+.bottom-bar img {
+    width: 24px; /* Tamanho dos ícones ajustado */
+    height: 24px;
+}
+.filter-button.active {
+            background-color: #0056b3;
+        }
+
+        .filter-button {
+            background-color: #022247;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .filter-bar { 
+            display: flex; 
+            justify-content: center; 
+            background-color: #fff; 
+            padding: 10px 0; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+        }
+
+        .bottom-bar-modal {
+            display: none; /* Inicialmente oculto */
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro com transparência */
+            justify-content: center; /* Centraliza o conteúdo do modal */
+            align-items: center; /* Centraliza o conteúdo do modal */
+            z-index: 1000; /* Coloca o modal acima de outros elementos */
+        }
+
+        .bottom-bar-modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px; /* Largura máxima do modal */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        .bottom-bar-modal { 
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0; 
+    bottom: 0; 
+    width: 100%; 
+    height: 70%; 
+    background-color: rgba(0, 0, 0, 0.4); 
+}
+
+.bottom-bar-modal.active { 
+    display: block; 
+}
+
+.bottom-bar-modal-content { 
+    background-color: #fefefe; 
+    height: 100%; 
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    border-radius: 8px 8px 0 0;
+}
+
+.bottom-bar-modal-content textarea { 
+    width: 100%; 
+    height: 60px; 
+    margin-bottom: 10px; 
+    border: 1px solid #ddd; 
+    padding: 10px; 
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.bottom-bar-modal-content . {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.bottom-bar-modal-content button { 
+    background-color: #022247; 
+    color: white; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    font-size: 14px;
+}
+
+.bottom-bar-modal-content button:hover { 
+    background-color: #0056b3; 
+}
+
+/* Botão de fechar */
+.bottom-bar-modal-content .close-button {
+    background-color: #ff4d4d;
+}
+
+
+
+
+
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Filtro para ordenação dos posts -->
+        <div class="filter-bar">
+            <button class="filter-button active" id="for-you" onclick="setPostFilter('relevance')">For You</button>
+            <button class="filter-button" id="legacy" onclick="setPostFilter('chronological')">Legacy</button>
+        </div>
+        <div class="posts-container">
+            {% if posts %}
+                {% for post in posts %}
+                <div class="post" id="post-{{ post.id }}">
+                    <div class="post-header">
+                        <div class="post-info-left">
+                            <img src="{{ post.user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                            <div class="post-info">
+                                <a href="{{ url_for('profile', username=post.user.username) }}">
+                                    <strong>{{ post.user.username }}</strong>
+                                </a>
+                                <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST" style="display: inline;">
+                                    {% if user.is_following(post.user) %}
+                                        <button type="submit" class="follow-button">Deixar de Seguir</button>
+                                    {% else %}
+                                        <button type="submit" class="follow-button">Seguir</button>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                        <div class="post-info-right">
+                            <span class="post-date">{{ post.timestamp.strftime('%d de %B de %Y') }}</span>
+                        </div>
+                    </div>
+                    <div class="post-body" onclick="redirectToPost({{ post.id }})">
+                        {% set content = post.content %}
+                        {% for word in content.split() %}
+                            {% if word.startswith('#') %}
+                                <a href="/hashtag/{{ word[1:] }}">{{ word }}</a>
+                            {% else %}
+                                {{ word }}
+                            {% endif %}
+                        {% endfor %}
+                        {% if post.gif_url %}
+                            <div class="gif-container">
+                                <img src="{{ post.gif_url }}" alt="GIF" class="gif-item">
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="post-footer">
+                        <div class="like-container">
+                            <button class="like-button" id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})">
+                                Curtir (<span id="like-count-{{ post.id }}">{{ post.likes|length }}</span>)
+                            </button>
+                        </div>
+                        <div class="post-options" onclick="toggleOptions({{ post.id }})">•••</div>
+                    </div>
+                    <div class="post-options-menu" id="options-menu-{{ post.id }}">
+                        {% if session['user_id'] == post.user.id %}
+                            <button onclick="deletePost({{ post.id }})">Excluir</button>
+                            <button onclick="viewInsights({{ post.id }})">Ver Insights</button>
+                        {% else %}
+                            <button>Denunciar</button>
+                            <button>Silenciar</button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>Nenhum post encontrado.</p>
+            {% endif %}
+        </div>
+        
+
+        </div>
+
+        <div class="bottom-bar">
+            <a href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+                <span>Início</span>
+            </a>
+            <a href="{{ url_for('notifications') }}">
+                <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+                <span>Notificações</span>
+            </a>
+            <div class="create-post-button" onclick="openModal()">
+                <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar Post">
+                <span>Criar</span>
+            </div>
+            <a href="{{ url_for('profile', username=user.username) }}">
+                <img src="{{ user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                <span>Perfil</span>
+            </a>
+            <a href="{{ url_for('search') }}">
+                <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
+                <span>Buscar</span>
+            </a>
+        </div>
+
+        <div id="bottom-bar-modal" class="bottom-bar-modal">
+            <div class="bottom-bar-modal-content">
+                <button type="button" class="close-button" onclick="closeModal()">Fechar</button>
+                <form id="postForm" action="{{ url_for('create_post') }}" method="POST">
+                    <textarea name="content" placeholder="O que você está pensando?" required></textarea>
+                    <input type="text" id="gif-search" placeholder="Buscar GIFs" oninput="searchGifs()">
+                    <div id="gif-results" class="gif-container"></div>
+                    <input type="hidden" id="gif-url" name="gif_url">
+                    <button type="submit">Postar</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Função para alternar o menu de opções do post
+        function toggleOptions(postId) {
+        document.getElementById(`options-menu-${postId}`).classList.toggle('active');
+    }
+
+function setPostFilter(filterType) {
+    // Remove a classe 'active' de ambos os botões
+    document.getElementById('for-you').classList.remove('active');
+    document.getElementById('legacy').classList.remove('active');
+    
+    // Adiciona a classe 'active' ao botão correspondente
+    if (filterType === 'relevance') {
+        document.getElementById('for-you').classList.add('active');
+    } else if (filterType === 'chronological') {
+        document.getElementById('legacy').classList.add('active');
+    }
+    
+    // Redireciona a página com o filtro aplicado
+    window.location.href = `/?filter=${filterType}`;
+}
+
+
+
+        function likePost(postId) {
+            fetch(`/like_post/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById(`like-count-${postId}`).innerText = data.like_count;
+                    const likeButton = document.getElementById(`like-button-${postId}`);
+                    likeButton.classList.toggle('liked');
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                alert('Erro ao curtir o post: ' + error);
+            });
+        }
+
+        function openModal() {
+            document.getElementById('bottom-bar-modal').style.display = 'flex'; // Muda para 'flex' para exibir o modal
+        }
+
+        function closeModal(event) {
+            if (!event || !event.target.classList.contains('bottom-bar-modal')) {
+                return; // Não fecha se clicar dentro do conteúdo do modal
+            }
+            document.getElementById('bottom-bar-modal').style.display = 'none'; // Oculta o modal
+        }
+
+        function searchGifs() {
+            const query = document.getElementById('gif-search').value;
+            const gifResults = document.getElementById('gif-results');
+            gifResults.innerHTML = '';
+
+            if (query.length > 0) {
+                fetch(`https://api.giphy.com/v1/gifs/search?api_key=URqPC2QH6fsA2xCx7ySJTbholry57xjy&q=${query}&limit=5`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.data.forEach(gif => {
+                            const img = document.createElement('img');
+                            img.src = gif.images.fixed_height_small.url;
+                            img.classList.add('gif-item');
+                            img.onclick = () => selectGif(gif.images.fixed_height_small.url);
+                            gifResults.appendChild(img);
+                        });
+                    })
+                    .catch(error => console.error('Erro ao buscar GIFs:', error));
+            }
+        }
+
+        function selectGif(gifUrl) {
+            document.getElementById('gif-url').value = gifUrl;
+            closeModal();
+        }
+
+
+    document.getElementById('postForm').addEventListener('submit', function(event) {
+            const content = document.querySelector('textarea[name="content"]').value;
+            const hashtags = content.match(/#\w+/g) || []; // Captura hashtags ou um array vazio
+            document.getElementById('hashtag-input').value = hashtags.join(','); // Armazena hashtags no campo oculto
+        });
+
+    function viewInsights(postId) {
+            window.location.href = `/insights/${postId}`;
+        }
+    
+    function deletePost(postId) {
+        if (confirm('Tem certeza que deseja excluir este post?')) {
+            fetch(`/delete_post/${postId}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(`post-${postId}`).remove();
+                        alert('Post excluído com sucesso!');
+                    } else {
+                        alert('Erro ao excluir o post.');
+                    }
+                });
+        }
+    }
+    function toggleFollow(username) {
+    fetch(`/follow_user/${username}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+              // Se estiver usando CSRF
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.following) {
+            document.getElementById('follow-btn').innerText = 'Seguindo';
+            document.getElementById('follow-btn').style.backgroundColor = 'transparent';
+            document.getElementById('follow-btn').style.borderColor = '#022247';
+        } else {
+            document.getElementById('follow-btn').innerText = 'Seguir';
+            document.getElementById('follow-btn').style.backgroundColor = '#022247';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+            // Função para seguir/deixar de seguir
+            document.querySelectorAll('form[id^="follow-form-"]').forEach(form => {
+                form.onsubmit = function(event) {
+                    event.preventDefault(); // Impede o envio do formulário
+                    const form = this;
+                    fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response => response.json()).then(data => {
+                        const button = form.querySelector('button');
+                        if (data.following) {
+                            button.classList.remove('btn-primary');
+                            button.classList.add('btn-danger');
+                            button.textContent = 'Deixar de Seguir';
+                        } else {
+                            button.classList.remove('btn-danger');
+                            button.classList.add('btn-primary');
+                            button.textContent = 'Seguir';
+                        }
+                        alert(data.message);
+                    }).catch(error => {
+                        alert('Erro ao seguir/deixar de seguir: ' + error);
+                    });
+                };
+            });
+        
+            // Função para redirecionar para a página de detalhes do post
+            function redirectToPost(postId) {
+                window.location.href = `/post/${postId}`;
+            }
+        
+            // Função para compartilhar o post
+            function sharePost(postId) {
+                alert("Post compartilhado! (Lógica de compartilhamento será implementada)");
+            }
+
+
+
+    
+    </script>
+</body>
+</html>

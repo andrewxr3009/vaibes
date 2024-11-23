@@ -1,0 +1,111 @@
+<!-- interest.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleção de Interesses</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4; /* Cor de fundo suave */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Ocupa toda a altura da tela */
+        }
+
+        .container {
+            text-align: center; /* Centraliza o texto dentro da div */
+        }
+
+        h1 {
+            color: #022247; /* Cor do título */
+            margin-bottom: 20px; /* Margem abaixo do título */
+        }
+
+        form {
+            background-color: #fff; /* Fundo do formulário */
+            border-radius: 15px; /* Bordas arredondadas */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            padding: 20px;
+            width: 300px; /* Largura do formulário */
+            margin: 0 auto; /* Centraliza o formulário horizontalmente */
+        }
+
+        label {
+            display: flex; /* Usar flexbox para alinhar checkbox e texto */
+            align-items: center; /* Centraliza verticalmente */
+            margin: 10px 0; /* Margem entre os labels */
+            font-size: 16px; /* Tamanho da fonte dos labels */
+            padding: 10px; /* Espaçamento interno */
+            border: 2px solid transparent; /* Borda transparente inicialmente */
+            border-radius: 25px; /* Bordas arredondadas */
+            transition: background-color 0.3s, border-color 0.3s; /* Transições suaves */
+            cursor: pointer; /* Cursor de ponteiro ao passar sobre o label */
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px; /* Espaçamento entre checkbox e texto */
+            appearance: none; /* Remove estilo padrão do checkbox */
+            -webkit-appearance: none; /* Remove estilo padrão do checkbox no Safari */
+            width: 20px; /* Tamanho do checkbox */
+            height: 20px; /* Tamanho do checkbox */
+            border: 2px solid #022247; /* Borda padrão */
+            border-radius: 4px; /* Bordas arredondadas para o checkbox */
+            outline: none; /* Remove contorno padrão */
+            cursor: pointer; /* Cursor de ponteiro ao passar sobre o checkbox */
+            transition: background-color 0.3s; /* Transição suave para o fundo */
+        }
+
+        input[type="checkbox"]:checked {
+            background-color: #022247; /* Cor de fundo quando marcado */
+            border: 2px solid #022247; /* Mantém a borda azul */
+        }
+
+        input[type="checkbox"]:checked + label {
+            background-color: #0056b3; /* Cor do fundo do label quando checkbox é selecionado */
+            border-color: #0056b3; /* Borda azul quando selecionado */
+            color: white; /* Cor do texto do label */
+        }
+
+        button {
+            background-color: #022247; /* Cor do botão */
+            color: white; /* Cor do texto do botão */
+            border: none; /* Sem borda */
+            border-radius: 10px; /* Bordas arredondadas */
+            padding: 10px 15px; /* Espaçamento interno do botão */
+            font-size: 16px; /* Tamanho da fonte do botão */
+            cursor: pointer; /* Cursor de ponteiro ao passar sobre o botão */
+            transition: background-color 0.3s; /* Transição suave para a cor de fundo */
+            margin-top: 15px; /* Margem acima do botão */
+            width: 100%; /* O botão ocupa toda a largura do formulário */
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Cor de fundo ao passar o mouse */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Selecione seus interesses</h1>
+        <form method="POST">
+            <label><input type="checkbox" name="interests" value="esportes"> Esportes</label>
+            <label><input type="checkbox" name="interests" value="noticias"> Notícias</label>
+            <label><input type="checkbox" name="interests" value="música"> Música</label>
+            <label><input type="checkbox" name="interests" value="entretenimento"> Entretenimento</label>
+            <label><input type="checkbox" name="interests" value="tecnologia"> Tecnologia</label>
+            <label><input type="checkbox" name="interests" value="filmes"> Filmes</label>
+            <label><input type="checkbox" name="interests" value="séries"> Séries</label>
+            <label><input type="checkbox" name="interests" value="geek"> Geek</label>
+            <label><input type="checkbox" name="interests" value="cultura"> Cultura</label>
+
+            <!-- Adicione outras opções de interesse aqui -->
+            <button type="submit">Salvar Interesses</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Post</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCx3huLfApzRJPETN8JwINUnVBoM1Krdvc",
+            authDomain: "app-vaibes.firebaseapp.com",
+            projectId: "app-vaibes",
+            storageBucket: "app-vaibes.appspot.com",
+            messagingSenderId: "842665045470",
+            appId: "1:842665045470:web:edbe6c0cf3db4ac71c014f",
+            measurementId: "G-3WTKSP88V9"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .post {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 5px;
+        }
+
+        .like-button {
+            background-color: #022247;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-right: 5px; /* Espaço entre os botões */
+        }
+        
+        .share-button {
+            background-color: #022247;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .follow-form {
+            margin-left: 5px; /* Para manter o botão próximo ao nome do autor */
+        }
+        
+        .follow-button {
+            background-color: #022247;
+            color: white;
+            border: none;
+            padding: 3px 10px; /* Diminuído */
+            border-radius: 15px; /* Diminuído */
+            cursor: pointer;
+        }
+        
+        .follow-button.following {
+            background-color: transparent;
+            color: #022247;
+            border: 1px solid #022247;
+        }
+        
+        .follow-button:hover {
+            background-color: #0056b3;
+        }
+
+        .post-content {
+            margin-top: 10px;
+        }
+
+        .comments-section {
+            margin-top: 20px;
+        }
+
+        #comment-text {
+            width: calc(100% - 90px);
+            border-radius: 15px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            margin-right: 5px;
+        }
+
+        .comment {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .comment img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .comment button {
+            padding: 3px 8px;
+            font-size: 12px;
+        }
+
+        .photo-item {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="post">
+            <div class="profile-info">
+                <img src="{{ post.user.profile_picture if post.user.profile_picture else url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil" class="profile-picture">
+                <h2>{{ post.user.username }}</h2>
+                <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST" class="follow-form" style="display:inline;">
+                    {% if user.is_following(post.user) %}
+                        <button type="submit" class="follow-button following">Deixar de Seguir</button>
+                    {% else %}
+                        <button type="submit" class="follow-button">Seguir</button>
+                    {% endif %}
+                </form>
+            </div>
+            <div class="post-content">
+                <p>{{ post.content }}</p>
+                {% if post.gif_url %}
+                    <img src="{{ post.gif_url }}" alt="GIF" class="photo-item">
+                {% endif %}
+                {% if post.img_url %}
+                    <img src="{{ post.img_url }}" alt="Foto" class="photo-item">
+                {% endif %}
+                <div>
+                    <button class="like-button" id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})">
+                        Curtir (<span id="like-count-{{ post.id }}">{{ post.likes|length }}</span>)
+                    </button>
+                    <button class="share-button" onclick="sharePost({{ post.id }})">Compartilhar</button>
+                </div>
+            </div>
+            <div class="comments-section">
+                <h3>Comentários</h3>
+                <form id="comment-form" onsubmit="addComment(event, {{ post.id }})">
+                    <input type="text" id="comment-text" placeholder="Adicione um comentário" required>
+                    <button type="submit" class="btn">Comentar</button>
+                </form>
+                <div id="comments-list">
+                    {% for comment in comments %}
+                        <div class="comment">
+                            <img src="{{ comment.user.profile_picture if comment.user.profile_picture else url_for('static', filename='default-profile-pic.png') }}" alt="Foto de perfil">
+                            <strong>{{ comment.user.username }}</strong>
+                            <p>{{ comment.content }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <a href="{{ url_for('home') }}" style="text-align: center; display: block; color: #022247;">Voltar para a Home</a>
+    </div>
+
+    <script>
+        function likePost(postId) {
+            fetch(`/like_post/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById(`like-count-${postId}`).innerText = data.like_count;
+                    const likeButton = document.getElementById(`like-button-${postId}`);
+                    likeButton.classList.toggle('liked');
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                alert('Erro ao curtir o post: ' + error);
+            });
+        }
+
+        function addComment(event, postId) {
+            event.preventDefault();
+            const commentText = document.getElementById('comment-text').value.trim();
+
+            if (!commentText) {
+                alert('O comentário não pode estar vazio!');
+                return;
+            }
+
+            fetch(`/add_comment/${postId}`, {
+                method: 'POST',
+                body: JSON.stringify({ content: commentText }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const commentList = document.getElementById('comments-list');
+                    const newComment = document.createElement('div');
+                    newComment.classList.add('comment');
+                    newComment.innerHTML = `<img src="${data.comment.author.profile_picture || '{{ url_for('static', filename='default-profile-pic.png') }}'}" alt="Foto de perfil"><strong>${data.comment.author.username}</strong><p>${data.comment.content}</p>`;
+                    commentList.appendChild(newComment);
+                    document.getElementById('comment-text').value = '';
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                alert('Erro ao adicionar o comentário: ' + error);
+            });
+        }
+
+        function sharePost(postId) {
+            alert("Post compartilhado! (Lógica de compartilhamento será implementada)");
+        }
+
+        document.getElementById('follow-form').onsubmit = function(event) {
+            event.preventDefault(); 
+            const form = this;
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => response.json()).then(data => {
+                if (data.status === 'success') {
+                    const button = form.querySelector('.follow-button');
+                    if (button.classList.contains('following')) {
+                        button.classList.remove('following');
+                        button.textContent = 'Seguir';
+                    } else {
+                        button.classList.add('following');
+                        button.textContent = 'Deixar de Seguir';
+                    }
+                } else {
+                    alert(data.message);
+                }
+            }).catch(error => {
+                alert(error.message);
+            });
+        };
+    </script>
+</body>
+</html>

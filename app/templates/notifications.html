@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaibes - Notificações</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-title" content="Vaibes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <meta name="theme-color" content="#022247">
+    <link rel="icon" sizes="192x192" href="/static/icon-192x192.png">
+    <link rel="icon" sizes="512x512" href="/static/icon-512x512.png">
+
+    <style>
+        /* Estilos mantidos do seu código original */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #bfbfbf;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 10px;
+        }
+
+        .notification {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .notification-header {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .notification-profile-pic {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .no-notifications {
+            text-align: center;
+            font-size: 18px;
+            color: #888;
+            margin-top: 50px;
+        }
+
+        .bottom-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: #fff;
+    padding: 5px 0;  /* Reduzindo o padding */
+    height: 50px;    /* Definindo uma altura fixa */
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.bottom-bar-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bottom-bar-icon img {
+    width: 24px;   /* Tamanho do ícone */
+    height: 24px;  /* Tamanho do ícone */
+    margin-bottom: 3px; /* Margem inferior para espaço entre ícone e texto */
+}
+
+.bottom-bar-icon span {
+    font-size: 12px; /* Tamanho do texto menor */
+}
+
+    </style>
+</head>
+
+<body>
+    <h1>Notificações</h1>
+    <div class="posts-container">
+        {% if notifications %}
+            {% for notification in notifications %}
+                <div class="notification">
+
+                    <div class="notification-body">
+                        <a href="{{ url_for('post_detail', post_id=notification.post_id) }}">
+                            {{ notification.message }} - {{ notification.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-notifications">Nenhuma notificação.</div>
+        {% endif %}
+    </div>
+
+    <div class="bottom-bar">
+        <div class="bottom-bar-icon">
+            <a href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+                <span>Início</span>
+            </a>
+        </div>
+        <div class="bottom-bar-icon">
+            <a href="{{ url_for('notifications') }}">
+                <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+                <span>Notificações</span>
+            </a>
+        </div>
+        <div class="bottom-bar-icon create-post-button" onclick="openModal()">
+            <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar Post">
+            <span>Criar</span>
+        </div>
+        <div class="bottom-bar-icon">
+            <a href="{{ url_for('profile', username=user.username) }}">
+                <img src="{{ user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                <span>Perfil</span>
+            </a>
+        </div>
+        <div class="bottom-bar-icon">
+            <a href="{{ url_for('search') }}">
+                <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
+                <span>Buscar</span>
+            </a>
+        </div>
+    </div>
+    
+</body>
+</html>

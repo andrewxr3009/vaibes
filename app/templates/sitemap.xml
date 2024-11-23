@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap-image/1.1">
+    {% for url in urls %}
+    <url>
+        <loc>{{ url[0] }}</loc>
+        {% if url[1] %}
+            {% if url[1].get('lastmod') %}
+                <lastmod>{{ url[1].get('lastmod') }}</lastmod>
+            {% endif %}
+            {% if url[1].get('image_url') %}
+                <image:image>
+                    <image:loc>{{ url[1].get('image_url') }}</image:loc>
+                </image:image>
+            {% endif %}
+        {% endif %}
+    </url>
+    {% endfor %}
+</urlset>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaibes - Home</title>
+    
+    <!-- Meta tags para web app -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Ícones para iOS -->
+    <link rel="apple-touch-icon" sizes="180x180" href="static/vibe-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/vibe-icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/vibe-icon.png">
+
+    <!-- Manifest do Web App -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Meta tags para Android -->
+    <meta name="theme-color" content="#022247">
+    <link rel="icon" sizes="192x192" href="/static/vibe-icon.png">
+    <link rel="icon" sizes="512x512" href="/static/vibe-icon.png">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X2PT21PM9Y"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-X2PT21PM9Y');
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3814244836764328" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Filtro para ordenação dos posts -->
+        <div class="filter-bar">
+            <button class="filter-button active" id="for-you" onclick="setPostFilter('relevance')">For You</button>
+            <button class="filter-button" id="legacy" onclick="setPostFilter('chronological')">Legacy</button>
+        </div>
+    
+        <div class="posts-container">
+            {% if posts %}
+                {% for post in posts %}
+                <div class="post" id="post-{{ post.id }}">
+                    <div class="post-header">
+                        <div class="post-info-left">
+                            <img src="{{ post.user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                            <div class="post-info">
+                                <a href="{{ url_for('profile', username=post.user.username) }}">
+                                    <strong>{{ post.user.username }}</strong>
+                                </a>
+                                <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST" class="follow-form">
+                                    {% if user.is_following(post.user) %}
+                                        <butypetton  class="follow-button following">Deixar de Seguir</button>
+                                    {% else %}
+                                        <button  class="follow-button">Seguir</button>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                        <div class="post-info-right">
+                            <span class="post-date" data-timestamp="{{ post.timestamp.isoformat() }}">
+                                {{ post.timestamp.strftime('%d de %B de %Y') }}
+                            </span>
+                        </div>
+                        
+                    </div>
+        
+                    <div class="post-body" onclick="redirectToPost({{ post.id }})">
+                        {% set content = post.content %}
+                        {% for word in content.split() %}
+                            {% if word.startswith('#') %}
+                                <a href="/hashtag/{{ word[1:] }}">{{ word }}</a>
+                            {% else %}
+                                {{ word }}
+                            {% endif %}
+                        {% endfor %}
+                        {% if post.gif_url %}
+                            <div class="gif-container">
+                                <img src="{{ post.gif_url }}" alt="GIF" class="gif-item">
+                            </div>
+                        {% endif %}
+                        {% if post.img_url %}
+                            <div class="photo-container">
+                                <img src="{{ post.img_url }}" alt="Foto" class="photo-item">
+                            </div>
+                        {% endif %}
+                    </div>
+        
+                    <div class="post-footer">
+                        <div class="like-container">
+                            <button class="like-button" id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})">
+                                Curtir <span id="like-count-{{ post.id }}">{{ post.likes|length }}</span>
+                            </button>
+                        </div>
+                        <div class="share-container">
+                            <button class="share-button" id="share-button-{{ post.id }}" onclick="sharePost({{ post.id }})">
+                                Compartilhar
+                            </button>
+                        </div>
+                        <div class="post-options" onclick="toggleOptions({{ post.id }})">•••</div>
+                    </div>
+        
+                    <div class="post-options-menu" id="options-menu-{{ post.id }}">
+                        {% if session['user_id'] == post.user.id %}
+                            <button onclick="deletePost({{ post.id }})">Excluir</button>
+                            <button onclick="viewInsights({{ post.id }})">Ver Insights</button>
+                        {% else %}
+                            <button>Denunciar</button>
+                            <button>Silenciar</button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>Nenhum post encontrado.</p>
+            {% endif %}
+        </div>
+        <script>
+            // Função para registrar a impressão do post
+            function registerImpression(postId) {
+                fetch(`/register_impression/${postId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Impressão registrada para o post ' + postId);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao registrar impressão:', error);
+                });
+            }
+        
+            // Configuração do Intersection Observer
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const postId = entry.target.getAttribute('data-post-id');
+                        registerImpression(postId);
+                        observer.unobserve(entry.target);  // Para evitar contar múltiplas impressões
+                    }
+                });
+            }, {
+                threshold: 0.5 // O post precisa estar 50% visível para ser considerado
+            });
+        
+            // Observando cada post
+            document.querySelectorAll('.post').forEach(post => {
+                observer.observe(post);
+            });
+        </script>
+        
+    
+        <div class="bottom-bar">
+            <a href="{{ url_for('home') }}" class="bottom-bar-link">
+                <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+                <span>Início</span>
+            </a>
+            <a href="{{ url_for('notifications') }}" class="bottom-bar-link">
+                <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+                <span>Notificações</span>
+            </a>
+            <div class="create-post-button" onclick="openModal()">
+                <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar Post">
+                <span>Criar</span>
+            </div>
+            <a href="{{ url_for('profile', username=user.username) }}" class="bottom-bar-link">
+                <img src="{{ user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+                <span>Perfil</span>
+            </a>
+            <a href="{{ url_for('search') }}" class="bottom-bar-link">
+                <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
+                <span>Buscar</span>
+            </a>
+        </div>
+    
+        <div id="bottom-bar-modal" class="bottom-bar-modal">
+            <div class="bottom-bar-modal-content">
+                <button type="button" class="modal-button" onclick="closeModal()">Fechar</button>
+                <form id="postForm" action="{{ url_for('create_post') }}" method="POST" enctype="multipart/form-data" onsubmit="showSpinner()">
+                    <textarea name="content" placeholder="O que você está pensando?" required></textarea>
+                    <input type="text" id="gif-search" placeholder="Buscar GIFs" oninput="searchGifs()">
+                    <div id="gif-results" class="gif-container"></div>
+                    <input type="hidden" id="gif-url" name="gif_url">
+                    <input type="file" name="image" id="photo-upload" accept="image/*" style="display: none;">
+                    <label for="photo-upload" class="modal-button">Selecionar Foto</label>
+                    <button type="submit" class="modal-button">Postar</button>
+                    <div id="spinner" class="spinner" style="display: none;"></div>
+                </form>
+            </div>
+        </div>
+        
+    
+
+    <script>
+        // Função para alternar o menu de opções do post
+        function toggleOptions(postId) {
+        document.getElementById(`options-menu-${postId}`).classList.toggle('active');
+    }
+
+function setPostFilter(filterType) {
+    // Remove a classe 'active' de ambos os botões
+    document.getElementById('for-you').classList.remove('active');
+    document.getElementById('legacy').classList.remove('active');
+    
+    // Adiciona a classe 'active' ao botão correspondente
+    if (filterType === 'relevance') {
+        document.getElementById('for-you').classList.add('active');
+    } else if (filterType === 'chronological') {
+        document.getElementById('legacy').classList.add('active');
+    }
+    
+    // Redireciona a página com o filtro aplicado
+    window.location.href = `/?filter=${filterType}`;
+}
+
+
+
+        function likePost(postId) {
+            fetch(`/like_post/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById(`like-count-${postId}`).innerText = data.like_count;
+                    const likeButton = document.getElementById(`like-button-${postId}`);
+                    likeButton.classList.toggle('liked');
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                alert('Erro ao curtir o post: ' + error);
+            });
+        }
+
+        function openModal() {
+            document.getElementById('bottom-bar-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('bottom-bar-modal').style.display = 'none';
+        }
+
+        
+
+        function searchGifs() {
+            const query = document.getElementById('gif-search').value;
+            const gifResults = document.getElementById('gif-results');
+            gifResults.innerHTML = '';
+
+            if (query.length > 0) {
+                fetch(`https://api.giphy.com/v1/gifs/search?api_key=URqPC2QH6fsA2xCx7ySJTbholry57xjy&q=${query}&limit=5`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.data.forEach(gif => {
+                            const img = document.createElement('img');
+                            img.src = gif.images.fixed_height_small.url;
+                            img.classList.add('gif-item');
+                            img.onclick = () => selectGif(gif.images.fixed_height_small.url);
+                            gifResults.appendChild(img);
+                        });
+                    })
+                    .catch(error => console.error('Erro ao buscar GIFs:', error));
+            }
+        }
+
+        function selectGif(gifUrl) {
+            document.getElementById('gif-url').value = gifUrl;
+            closeModal();
+        }
+
+
+    function showSpinner() {
+    document.getElementById('spinner').style.display = 'block'; // Exibe o spinner
+}
+
+
+
+
+    document.getElementById('postForm').addEventListener('submit', function(event) {
+            const content = document.querySelector('textarea[name="content"]').value;
+            const hashtags = content.match(/#\w+/g) || []; // Captura hashtags ou um array vazio
+            document.getElementById('hashtag-input').value = hashtags.join(','); // Armazena hashtags no campo oculto
+        });
+
+    function viewInsights(postId) {
+            window.location.href = `/insights/${postId}`;
+        }
+    
+    function deletePost(postId) {
+        if (confirm('Tem certeza que deseja excluir este post?')) {
+            fetch(`/delete_post/${postId}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(`post-${postId}`).remove();
+                        alert('Post excluído com sucesso!');
+                    } else {
+                        alert('Erro ao excluir o post.');
+                    }
+                });
+        }
+    }
+    function toggleFollow(username) {
+    fetch(`/follow_user/${username}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+              // Se estiver usando CSRF
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.following) {
+            document.getElementById('follow-btn').innerText = 'Seguindo';
+            document.getElementById('follow-btn').style.backgroundColor = 'transparent';
+            document.getElementById('follow-btn').style.borderColor = '#022247';
+        } else {
+            document.getElementById('follow-btn').innerText = 'Seguir';
+            document.getElementById('follow-btn').style.backgroundColor = '#022247';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+            // Função para seguir/deixar de seguir
+            document.querySelectorAll('form[id^="follow-form-"]').forEach(form => {
+                form.onsubmit = function(event) {
+                    event.preventDefault(); // Impede o envio do formulário
+                    const form = this;
+                    fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(response => response.json()).then(data => {
+                        const button = form.querySelector('button');
+                        if (data.following) {
+                            button.classList.remove('btn-primary');
+                            button.classList.add('btn-danger');
+                            button.textContent = 'Deixar de Seguir';
+                        } else {
+                            button.classList.remove('btn-danger');
+                            button.classList.add('btn-primary');
+                            button.textContent = 'Seguir';
+                        }
+                        alert(data.message);
+                    }).catch(error => {
+                        alert('Erro ao seguir/deixar de seguir: ' + error);
+                    });
+                };
+            });
+        
+            // Função para redirecionar para a página de detalhes do post
+            function redirectToPost(postId) {
+                window.location.href = `/post/${postId}`;
+            }
+        
+
+    // Função para compartilhar o post
+    function sharePost(postId) {
+        // Gere a URL do post. Certifique-se de que essa URL corresponda à sua estrutura de URL.
+        const postUrl = `http://vaibes.onrender.com/post/${postId}`; // Altere a URL conforme necessário
+        const message = `Confira este post: ${postUrl}`;
+
+        // Verifica se a API de compartilhamento está disponível
+    if (navigator.share) {
+            navigator.share({
+                title: 'Post do Vaibes',
+                text: message,
+                url: postUrl
+            })
+            .then(() => {
+                alert('Post compartilhado com sucesso!');
+            })
+            .catch(err => {
+                alert('Falha ao compartilhar o post: ' + err);
+            })
+        } else {
+            // Se a API de compartilhamento não estiver disponível, usa o método de copiar para a área de transferência
+            navigator.clipboard.writeText(message).then(() => {
+                alert("Link do post copiado para a área de transferência! Agora você pode compartilhar.");
+            }).catch(err => {
+                alert("Falha ao copiar o link: " + err);
+            });
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+    const postDates = document.querySelectorAll('.post-date');
+    
+    postDates.forEach(postDate => {
+        const timestamp = new Date(postDate.dataset.timestamp);
+        const now = new Date();
+        const timeDiff = now - timestamp; // diferença em milissegundos
+
+        // Converte a diferença em segundos
+        const seconds = Math.floor(timeDiff / 1000);
+        let displayTime;
+
+        if (seconds < 60) {
+            displayTime = `${seconds} segundo${seconds !== 1 ? 's' : ''} atrás`;
+        } else if (seconds < 3600) {
+            const minutes = Math.floor(seconds / 60);
+            displayTime = `${minutes} minuto${minutes !== 1 ? 's' : ''} atrás`;
+        } else if (seconds < 86400) {
+            const hours = Math.floor(seconds / 3600);
+            displayTime = `${hours} hora${hours !== 1 ? 's' : ''} atrás`;
+        } else {
+            displayTime = postDate.textContent; // Exibe a data original se tiver mais de um dia
+        }
+
+        postDate.textContent = displayTime; // Atualiza o conteúdo do elemento
+    });
+});
+
+let currentPage = 1; // Página atual
+let hasMorePosts = true; // Controle para verificar se há mais posts
+let isLoading = false; // Evitar requisições simultâneas
+
+function loadMorePosts() {
+    if (!hasMorePosts || isLoading) return;
+
+    isLoading = true;
+
+    fetch(`/?page=${currentPage}&filter=relevance`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest' // Indica requisição assíncrona
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            const postsContainer = document.querySelector('.posts-container');
+
+            data.posts.forEach(post => {
+                // Crie os elementos HTML para cada post
+                const postElement = document.createElement('div');
+                postElement.classList.add('post');
+                postElement.innerHTML = `
+                    <div class="post-header">
+                        <img src="${post.profile_picture}" alt="Foto de perfil" class="profile-pic">
+                        <strong>${post.username}</strong>
+                        <span class="post-date">${new Date(post.timestamp).toLocaleDateString()}</span>
+                    </div>
+                    <div class="post-body">${post.content}</div>
+                    <div class="post-footer">
+                        <button onclick="likePost(${post.id})">Curtir <span>${post.likes}</span></button>
+                    </div>
+                `;
+                postsContainer.appendChild(postElement);
+            });
+
+            // Atualize o estado da página e controle
+            hasMorePosts = data.has_more;
+            if (hasMorePosts) {
+                currentPage++;
+            }
+
+            isLoading = false;
+        })
+        .catch(error => {
+            console.error('Erro ao carregar mais posts:', error);
+            isLoading = false;
+        });
+}
+
+// Configuração do Intersection Observer
+const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+        loadMorePosts();
+    }
+}, {
+    root: null,
+    rootMargin: '0px',
+    threshold: 1.0
+});
+
+// Monitorar o rodapé ou um elemento vazio no final da página
+observer.observe(document.querySelector('.bottom-bar'));
+
+
+    
+    </script>
+</body>
+</html>
