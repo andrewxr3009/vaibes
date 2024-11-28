@@ -3,15 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Vaibes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='script.css') }}">
+    
+    <!-- SEO Specific Meta Tags -->
+    <title>Login | Vaibes - Sua Plataforma de Posts Curtos</title>
+    <meta name="description" content="Faça login no Vaibes, a plataforma de posts curtos com até 300 caracteres. Compartilhe ideias de forma rápida e direta.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://vaibes.onrender.com/auth/login">
+    <meta property="og:title" content="Login | Vaibes">
+    <meta property="og:description" content="Faça login no Vaibes, a plataforma de posts curtos com até 300 caracteres. Compartilhe ideias de forma rápida e direta.">
+    <meta property="og:image" content="https://vaibes.onrender.com/static/vaibes-logo-social.webp">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://vaibes.onrender.com/auth/login">
+    <meta name="twitter:title" content="Login | Vaibes">
+    <meta name="twitter:description" content="Faça login no Vaibes, a plataforma de posts curtos com até 300 caracteres. Compartilhe ideias de forma rápida e direta.">
+    <meta name="twitter:image" content="https://vaibes.onrender.com/static/vaibes-logo-social.webp">
+    
+    <!-- Canonical URL to prevent duplicate content -->
+    <link rel="canonical" href="https://vaibes.onrender.com/auth/login">
+    
+    <!-- Robots Meta Tag -->
+    <meta name="robots" content="index, follow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/webp" href="{{ url_for('static', filename='vaibes-logo.webp') }}">
+    
+    <!-- Additional SEO Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Login | Vaibes",
+        "description": "Faça login no Vaibes, a plataforma de posts curtos com até 300 caracteres. Compartilhe ideias de forma rápida e direta.",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Vaibes",
+            "logo": "https://vaibes.onrender.com/static/vaibes-logo.webp"
+        }
+    }
+    </script>
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='script.css') }}">
     <!-- Pusher Beams -->
     <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
-
+    
     <style>
-        /* Estilo para o spinner de carregamento */
+        /* Existing styles remain the same */
         .spinner {
             display: none;
             width: 50px;
@@ -22,59 +63,47 @@
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        /* Oculta o formulário quando o carregamento é exibido */
         .loading-active form {
             display: none;
         }
     </style>
-
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const beamsClient = new PusherPushNotifications.Client({
                 instanceId: 'f2a1468e-40d9-4beb-a382-52525b38948b'
             });
-
-            // Função para obter o token do dispositivo e inscrever-se no interesse
+            
             async function requestDeviceToken() {
                 try {
                     const currentToken = await beamsClient.start();
                     console.log("Token de dispositivo encontrado:", currentToken);
                     document.getElementById('device-token').value = currentToken;
-
-                    // Inscreve-se em um interesse específico
                     await beamsClient.addDeviceInterest('hello');
                     console.log('Dispositivo inscrito com sucesso!');
                 } catch (err) {
                     console.error("Erro ao obter token de dispositivo:", err);
                 }
             }
-
-            // Ação ao clicar no botão de login
+            
             document.getElementById('login-button').addEventListener('click', async (e) => {
-                e.preventDefault(); // Impede envio do formulário imediatamente
-
-                // Mostra o spinner e oculta o formulário
+                e.preventDefault();
                 document.body.classList.add('loading-active');
                 document.querySelector('.spinner').style.display = 'block';
-
-                await requestDeviceToken(); // Aguarda obter o token do dispositivo
-                document.querySelector('form').submit(); // Submete o formulário após obter o token
+                await requestDeviceToken();
+                document.querySelector('form').submit();
             });
         });
     </script>
 </head>
-
 <body>
     <div class="container">
         <img src="{{ url_for('static', filename='vaibes-logo.webp') }}" alt="Vaibes Logo" class="logo">
         <h1>Login</h1>
-
         <form method="POST" action="{{ url_for('auth.login') }}">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -88,10 +117,8 @@
             <input type="hidden" name="device_token" id="device-token">
             <button type="submit" id="login-button">Login</button>
         </form>
-
         <!-- Elemento de carregamento -->
         <div class="spinner"></div>
-
         <p>Ainda não tem uma conta? <a href="{{ url_for('auth.signup') }}">Clique aqui para criar uma!</a></p>
     </div>
 </body>
