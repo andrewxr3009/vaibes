@@ -1,4 +1,4 @@
-from flask import Blueprint, session, redirect, url_for, request, render_template, flash, jsonify
+from flask import Blueprint, session, redirect, url_for, request, render_template, flash, jsonify, send_from_directory
 from app.models.models import User, Post, Comment, Hashtag
 from app.services.post_service import get_paginated_posts
 from app.routes.post_routes import user_likes_post
@@ -135,4 +135,9 @@ def admin_panel():
     users = User.query.all()
     posts = Post.query.all()
     return render_template('admin.html', users=users, posts=posts)
+
+@app.route('/google6242ed33947064b2.html')
+def serve_verification_file():
+    return send_from_directory('static', 'google6242ed33947064b2.html')
+
 
