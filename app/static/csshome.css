@@ -1,0 +1,443 @@
+
+/* Estilos rápidos para responsividade */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    padding-bottom: 60px; /* Espaço para a barra inferior */
+}
+
+.app-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.filter-bar {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 15px;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-button {
+    font-weight: bold;
+    font-size: 14px;
+    padding: 10px;
+    cursor: pointer;
+    color: #888;
+    border: none;
+    background: none;
+}
+
+.filter-button.active {
+    color: #022247;
+}
+
+.filter-separator {
+    margin: 0 10px;
+    color: #888;
+}
+
+.post {
+    background-color: #fff;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.post-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.post-info strong {
+    font-size: 14px;
+}
+
+.post-date {
+    font-size: 12px;
+    color: #888;
+}
+
+.post-body {
+    margin: 10px 0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+/* Barra inferior atualizada */
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    height: 60px;
+    z-index: 999;
+    padding-bottom: 5px;
+}
+
+.create-post-button {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 20px;
+    background-color: #022247;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.create-post-button img {
+    width: 100%;
+    height: 100%;
+}
+
+.create-post-button span {
+    position: absolute;
+    bottom: -25px;
+    font-size: 12px;
+    color: #333;
+}
+
+.bottom-bar-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: black;
+}
+
+.bottom-bar-link img {
+    width: 24px;
+    height: 24px;
+}
+
+.bottom-bar-link span {
+    font-size: 12px;
+    color: #333;
+    margin-top: 4px;
+}
+
+/* Modal atualizado */
+.bottom-bar-modal {
+    display: none;
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    transition: bottom 0.3s ease-in-out;
+    z-index: 1000;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.bottom-bar-modal.active {
+    bottom: 0;
+}
+
+.bottom-bar-modal-content {
+    padding: 20px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+}
+
+.post-textarea {
+    width: 100%;
+    height: 120px;
+    border: none;
+    resize: none;
+    font-size: 16px;
+    margin-bottom: 20px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.post-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    background-color: #f5f5f5;
+}
+
+.post-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: #022247;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.post-submit:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Demais estilos permanecem os mesmos */
+.dm-button {
+    background-color: #022247;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+}
+
+.modal-button {
+    padding: 10px;
+    background-color: #022247;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+.post {
+    transition: transform 0.2s ease;
+}
+
+.post:hover {
+    transform: translateY(-2px);
+}
+
+.like-button, .comment-button {
+    transition: transform 0.2s ease;
+}
+
+.like-button:hover, .comment-button:hover {
+    transform: scale(1.1);
+}
+
+.loading {
+    position: relative;
+    opacity: 0.7;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #022247;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+/* Estilos para o formulário de seguir/deixar de seguir */
+.follow-form {
+display: flex;
+align-items: center;
+margin-left: auto;
+}
+
+.follow-button {
+background-color: #022247;
+color: white;
+border: none;
+border-radius: 25px;
+padding: 6px 12px;
+font-size: 14px;
+cursor: pointer;
+}
+
+.follow-button.following {
+background-color: transparent;
+color: #0095f6;
+border: 1px solid #022247;
+}
+
+.follow-button:hover {
+background-color: #0077b6;
+}
+
+.follow-button.following:hover {
+background-color: #f0f0f0;
+}
+/* Estilo geral do botão de like */
+.like-button {
+display: flex;
+align-items: center;
+justify-content: center;
+background-color: transparent;
+border: none;
+padding: 10px 15px;
+cursor: pointer;
+transition: background-color 0.3s ease, transform 0.2s ease;
+border-radius: 8px; /* Arredondamento dos cantos */
+font-size: 14px; /* Tamanho da fonte do texto */
+color: #022247; /* Cor do texto */
+}
+
+/* Efeito de hover para o botão de like */
+.like-button:hover {
+background-color: #f1f1f1; /* Cor de fundo suave ao passar o mouse */
+transform: scale(1.05); /* Leve aumento de tamanho ao passar o mouse */
+}
+
+/* Estilo do ícone dentro do botão de like */
+.like-button img {
+width: 20px; /* Tamanho do ícone */
+height: 20px; /* Tamanho do ícone */
+margin-right: 8px; /* Espaçamento entre o ícone e o texto */
+}
+
+.share-button img {
+width: 20px; /* Tamanho do ícone */
+height: 20px; /* Tamanho do ícone */
+margin-right: 8px; /* Espaçamento entre o ícone e o texto */
+}
+
+.share-button {
+display: flex;
+align-items: center;
+justify-content: center;
+background-color: transparent;
+border: none;
+padding: 10px 15px;
+cursor: pointer;
+transition: background-color 0.3s ease, transform 0.2s ease;
+border-radius: 8px; /* Arredondamento dos cantos */
+font-size: 14px; /* Tamanho da fonte do texto */
+color: #022247; /* Cor do texto */
+}
+
+/* Tamanho do texto */
+.like-button span {
+font-size: 14px; /* Tamanho do texto de "Curtir" */
+font-weight: bold;
+}
+
+/* Quando o post é curtido, o ícone de like muda */
+.like-button.liked {
+color: #3e8e41; /* Cor verde para mostrar que o post foi curtido */
+}
+
+/* Exemplo de como o ícone pode mudar ao ser curtido */
+.like-button.liked img {
+content: url('/static/like-on-icon.png'); /* Troca o ícone para 'like-on' quando o post é curtido */
+}
+
+/* Exemplo de quando o botão de like não está curtiu (padrão) */
+.like-button img {
+content: url('/static/like-off-icon.png'); /* Exibe o ícone 'like-off' por padrão */
+}

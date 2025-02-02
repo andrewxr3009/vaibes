@@ -399,11 +399,7 @@
                     {{ follower_count }} seguidores
                 </div>
                 
-                <!-- Verificação de usuário logado -->
-                {% if user.id == profile.id %}
-                    <a href="{{ url_for('profile_settings') }}" class="edit-button">Editar</a>
-                {% endif %}
-            </div>
+       
         </div>
         
 
@@ -414,16 +410,15 @@
                     <div class="user.ppost-info-left">
                         <img src="{{ post.user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="p-profile-pic">
                         <div class="post-info">
-                            <a href="{{ url_for('profile', username=post.user.username) }}">
                                 <strong>{{ post.user.username }}</strong>
-                            </a>
-                            <form id="follow-form-{{ post.user.id }}" action="{{ url_for('toggle_follow', username=post.user.username) }}" method="POST" class="follow-form">
-                                {% if user.is_following(post.user) %}
-                                    <button type="s" class="follow-button following">Deixar de Seguir</button>
-                                {% else %}
-                                    <button type="s" class="follow-button">Seguir</button>
-                                {% endif %}
-                            </form>
+                            
+                                <form id="follow-form-{{ post['user']['id'] }}" action="{{ url_for('users.toggle_follow', username=post['user']['username']) }}" method="POST" class="follow-form">
+                                    {% if user.is_following(post['user']['id']) %}
+                                        <button type="submit" class="follow-button following">Deixar de Seguir</button>
+                                    {% else %}
+                                        <button type="submit" class="follow-button">Seguir</button>
+                                    {% endif %}
+                                </form>
                         </div>
                     </div>
 
@@ -482,38 +477,55 @@
     </div>
 
     <div class="bottom-bar">
-        <a href="{{ url_for('home') }}">
+        <a href="{{ url_for('main.home') }}" class="bottom-bar-link">
             <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
-            <span>Início</span>
+            <span>Home</span>
         </a>
-        <a href="{{ url_for('notifications') }}">
+        <a href="{{ url_for('main.search') }}" class="bottom-bar-link">
+            <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Buscar">
+            <span>Buscar</span>
+        </a>
+        <div class="create-post-button" onclick="openPostModal()">
+            <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar">
+            <span>Criar</span>
+        </div>
+        <a href="{{ url_for('notifications.notifications') }}" class="bottom-bar-link">
             <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
             <span>Notificações</span>
         </a>
-        <div class="create-post-button">
-            <a href="#" onclick="openModal()">
-                <img src="{{ url_for('static', filename='post-icon.png') }}" alt="Criar Post">
-            </a>
-            <span>Criar</span>
-        </div>
-        <a href="{{ url_for('profile', username=user.username) }}" alt="Perfil">
+        <a href="{{ url_for('users.profile', username=user.username) }}" class="bottom-bar-link">
             <img src="{{ user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
             <span>Perfil</span>
         </a>
-        <a href="{{ url_for('search') }}">
-            <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Pesquisar">
-            <span>Buscar</span>
-        </a>
     </div>
 
+    <!-- Modal de criação de post atualizado -->
     <div id="bottom-bar-modal" class="bottom-bar-modal">
         <div class="bottom-bar-modal-content">
-            <button type="button" onclick="closeModal()">Fechar</button>
-            <form id="postForm" action="{{ url_for('create_post') }}" method="POST">
-                <textarea name="content" placeholder="O que você está pensando?" required></textarea>
-                <input type="text" id="gif-url" name="gif_url" placeholder="Cole o link do GIF (opcional)">
-                <input type="hidden" id="hashtag-input" name="hashtags">
-                <button type="submit">Postar</button>
+            <div class="modal-header">
+                <h3>Criar post</h3>
+                <button class="modal-close" onclick="closePostModal()">×</button>
+            </div>
+            
+            <!-- Formulário para criação do post -->
+            <form id="postForm" method="POST" enctype="multipart/form-data">
+                <textarea name="content" class="post-textarea" placeholder="O que você está pensando?"></textarea>
+                
+                <!-- Exemplo: input para imagem (opcional) -->
+                <div class="post-actions">
+                    <label class="action-button">
+                        <img src="{{ url_for('static', filename='image-icon.png') }}" alt="Imagem" width="20">
+                        Foto
+                        <input type="file" name="image" accept="image/*" style="display: none;">
+                    </label>
+                    <!-- Se desejar incluir GIF, adicione um input similar -->
+                    <!-- <button class="action-button">
+                        <img src="{{ url_for('static', filename='gif-icon.png') }}" alt="GIF" width="20">
+                        GIF
+                    </button> -->
+                </div>
+                
+                <button type="submit" class="post-submit">Publicar</button>
             </form>
         </div>
     </div>

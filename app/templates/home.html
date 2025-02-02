@@ -34,459 +34,16 @@
 
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3814244836764328" crossorigin="anonymous"></script>
 
-    <style>
-        /* Estilos rápidos para responsividade */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
-            padding-bottom: 60px; /* Espaço para a barra inferior */
-        }
-
-        .app-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .filter-bar {
-            display: flex;
-            justify-content: flex-start;
-            margin-bottom: 15px;
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .filter-button {
-            font-weight: bold;
-            font-size: 14px;
-            padding: 10px;
-            cursor: pointer;
-            color: #888;
-            border: none;
-            background: none;
-        }
-
-        .filter-button.active {
-            color: #022247;
-        }
-
-        .filter-separator {
-            margin: 0 10px;
-            color: #888;
-        }
-
-        .post {
-            background-color: #fff;
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            opacity: 0;
-            animation: fadeIn 0.5s forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .post-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .profile-pic {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        .post-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .post-info strong {
-            font-size: 14px;
-        }
-
-        .post-date {
-            font-size: 12px;
-            color: #888;
-        }
-
-        .post-body {
-            margin: 10px 0;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .post-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    <link rel="stylesheet" href="{{ url_for('static', filename='csshome.css') }}">
 
 
-
-        /* Barra inferior atualizada */
-        .bottom-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background-color: #fff;
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-end;
-            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-            height: 60px;
-            z-index: 999;
-            padding-bottom: 5px;
-        }
-
-        .create-post-button {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 20px;
-            background-color: #022247;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .create-post-button img {
-            width: 100%;
-            height: 100%;
-        }
-
-        .create-post-button span {
-            position: absolute;
-            bottom: -25px;
-            font-size: 12px;
-            color: #333;
-        }
-
-        .bottom-bar-link {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: black;
-        }
-
-        .bottom-bar-link img {
-            width: 24px;
-            height: 24px;
-        }
-
-        .bottom-bar-link span {
-            font-size: 12px;
-            color: #333;
-            margin-top: 4px;
-        }
-
-        /* Modal atualizado */
-        .bottom-bar-modal {
-            display: none;
-            position: fixed;
-            bottom: -100%;
-            left: 0;
-            width: 100%;
-            background-color: #fff;
-            transition: bottom 0.3s ease-in-out;
-            z-index: 1000;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .bottom-bar-modal.active {
-            bottom: 0;
-        }
-
-        .bottom-bar-modal-content {
-            padding: 20px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #666;
-            cursor: pointer;
-        }
-
-        .post-textarea {
-            width: 100%;
-            height: 120px;
-            border: none;
-            resize: none;
-            font-size: 16px;
-            margin-bottom: 20px;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .post-actions {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .action-button {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 8px 15px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            background: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .action-button:hover {
-            background-color: #f5f5f5;
-        }
-
-        .post-submit {
-            width: 100%;
-            padding: 12px;
-            background-color: #022247;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .post-submit:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        /* Demais estilos permanecem os mesmos */
-        .dm-button {
-            background-color: #022247;
-            color: white;
-            padding: 10px;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 600px;
-        }
-
-        .modal-button {
-            padding: 10px;
-            background-color: #022247;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        .post {
-            transition: transform 0.2s ease;
-        }
-
-        .post:hover {
-            transform: translateY(-2px);
-        }
-
-        .like-button, .comment-button {
-            transition: transform 0.2s ease;
-        }
-
-        .like-button:hover, .comment-button:hover {
-            transform: scale(1.1);
-        }
-
-        .loading {
-            position: relative;
-            opacity: 0.7;
-        }
-
-        .loading::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #022247;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        /* Estilos para o formulário de seguir/deixar de seguir */
-.follow-form {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-}
-
-.follow-button {
-    background-color: #022247;
-    color: white;
-    border: none;
-    border-radius: 25px;
-    padding: 6px 12px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.follow-button.following {
-    background-color: transparent;
-    color: #0095f6;
-    border: 1px solid #022247;
-}
-
-.follow-button:hover {
-    background-color: #0077b6;
-}
-
-.follow-button.following:hover {
-    background-color: #f0f0f0;
-}
-/* Estilo geral do botão de like */
-.like-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: transparent;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    border-radius: 8px; /* Arredondamento dos cantos */
-    font-size: 14px; /* Tamanho da fonte do texto */
-    color: #022247; /* Cor do texto */
-}
-
-/* Efeito de hover para o botão de like */
-.like-button:hover {
-    background-color: #f1f1f1; /* Cor de fundo suave ao passar o mouse */
-    transform: scale(1.05); /* Leve aumento de tamanho ao passar o mouse */
-}
-
-/* Estilo do ícone dentro do botão de like */
-.like-button img {
-    width: 20px; /* Tamanho do ícone */
-    height: 20px; /* Tamanho do ícone */
-    margin-right: 8px; /* Espaçamento entre o ícone e o texto */
-}
-
-.share-button img {
-    width: 20px; /* Tamanho do ícone */
-    height: 20px; /* Tamanho do ícone */
-    margin-right: 8px; /* Espaçamento entre o ícone e o texto */
-}
-
-.share-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: transparent;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    border-radius: 8px; /* Arredondamento dos cantos */
-    font-size: 14px; /* Tamanho da fonte do texto */
-    color: #022247; /* Cor do texto */
-}
-
-/* Tamanho do texto */
-.like-button span {
-    font-size: 14px; /* Tamanho do texto de "Curtir" */
-    font-weight: bold;
-}
-
-/* Quando o post é curtido, o ícone de like muda */
-.like-button.liked {
-    color: #3e8e41; /* Cor verde para mostrar que o post foi curtido */
-}
-
-/* Exemplo de como o ícone pode mudar ao ser curtido */
-.like-button.liked img {
-    content: url('/static/like-on-icon.png'); /* Troca o ícone para 'like-on' quando o post é curtido */
-}
-
-/* Exemplo de quando o botão de like não está curtiu (padrão) */
-.like-button img {
-    content: url('/static/like-off-icon.png'); /* Exibe o ícone 'like-off' por padrão */
-}
-
-
-    </style>
 </head>
 
 <body>
     <!-- Botão de DM -->
-    <div class="dm-commentbutton" onclick="openModal()">
+    <button class="dm-commentbutton" onclick="openModal()">
         DM
-    </div>
+    </button>
 
     <!-- Modal de DM -->
     <div id="dmModal" class="modal">
@@ -517,47 +74,43 @@
                                 <strong>{{ post['user']['username'] }}</strong>
                                 <span class="post-date">{{ post['timestamp'] }}</span>
                             </div>
-                            <form id="follow-form-{{ post.user.id }}" action="{{ url_for('users.toggle_follow', username=post.user.username) }}" method="POST" class="follow-form">
+                            <form id="follow-form-{{ post['user']['id'] }}" action="{{ url_for('users.toggle_follow', username=post['user']['username']) }}" method="POST" class="follow-form">
                                 {% if user.is_following(post['user']['id']) %}
-                                <button type="submit" class="follow-button following">Deixar de Seguir</button>
+                                    <button type="submit" class="follow-button following">Deixar de Seguir</button>
                                 {% else %}
                                     <button type="submit" class="follow-button">Seguir</button>
                                 {% endif %}
                             </form>
                         </div>
-                        <div class="post-body" onclick="redirectToPost({{ post.id }})">
-                            {% set content = post.content %}
+                        <div class="post-body" onclick="redirectToPost({{ post['id'] }})">
+                            {% set content = post['content'] %}
                             {% for word in content.split() %}
                                 {% if word.startswith('#') %}
                                     <a href="/hashtag/{{ word[1:] }}">{{ word }}</a>
                                 {% else %}
                                     {{ word }}
                                 {% endif %}
-
                             {% endfor %}
-                                {% if post['img_url'] %}
-                                    <img src="{{ post['img_url'] }}" alt="Imagem do post" style="width: 100%; margin-top: 10px; border-radius: 8px;">
-                                {% endif %}
+                            {% if post['img_url'] %}
+                                <img src="{{ post['img_url'] }}" alt="Imagem do post" style="width: 100%; margin-top: 10px; border-radius: 8px;">
+                            {% endif %}
                         </div>
                         <div class="post-footer">
-                            <div class="post-footer">
-                                <button class="like-button {% if post.liked %}liked{% endif %}" id="like-button-{{ post.id }}" onclick="likePost({{ post.id }})">
-                                    <img src="{{ url_for('static', filename=post.liked and 'like-on-icon.png' or 'like-off-icon.png') }}" id="like-icon-{{ post.id }}" alt="Curtir">
-                                    <span id="like-count-{{ post.id }}">{{ post['likes'] }}</span>
-                                </button>
-                                <button class="share-button" id="share-button-{{ post.id }}" onclick="sharePost({{ post.id }})">
-                                    <img src="{{ url_for('static', filename='share-icon.png') }}" id="like-icon-{{ post.id }}" alt="Curtir">
-                                </button>
-                            </div>                            
-                        </div>
-                        
-                        
+                            <button class="like-button {% if post['liked'] %}liked{% endif %}" id="like-button-{{ post['id'] }}" onclick="likePost({{ post['id'] }})">
+                                <img src="{{ url_for('static', filename=post['liked'] and 'like-on-icon.png' or 'like-off-icon.png') }}" id="like-icon-{{ post['id'] }}" alt="Curtir">
+                                <span id="like-count-{{ post['id'] }}">{{ post['likes'] }}</span>
+                            </button>
+                            <button class="share-button" id="share-button-{{ post['id'] }}" onclick="sharePost({{ post['id'] }})">
+                                <img src="{{ url_for('static', filename='share-icon.png') }}" id="share-icon-{{ post['id'] }}" alt="Compartilhar">
+                            </button>
+                        </div>                            
                     </div>
                 {% endfor %}
             {% else %}
                 <p style="text-align: center; color: #888;">Nenhum post encontrado.</p>
             {% endif %}
         </div>
+        
         
 
     
@@ -588,31 +141,141 @@
     </div>
 
     <!-- Modal de criação de post atualizado -->
-    <div id="bottom-bar-modal" class="bottom-bar-modal">
-        <div class="bottom-bar-modal-content">
-            <div class="modal-header">
-                <h3>Criar post</h3>
-                <button class="modal-close" onclick="closePostModal()">×</button>
-            </div>
+<div id="bottom-bar-modal" class="bottom-bar-modal">
+    <div class="bottom-bar-modal-content">
+        <div class="modal-header">
+            <h3>Criar post</h3>
+            <button class="modal-close" onclick="closePostModal()">×</button>
+        </div>
+        
+        <!-- Formulário para criação do post -->
+        <form id="postForm" method="POST" enctype="multipart/form-data">
+            <textarea name="content" class="post-textarea" placeholder="O que você está pensando?"></textarea>
             
-            <textarea class="post-textarea" placeholder="O que você está pensando?"></textarea>
-            
+            <!-- Exemplo: input para imagem (opcional) -->
             <div class="post-actions">
-                <button class="action-button">
+                <label class="action-button">
                     <img src="{{ url_for('static', filename='image-icon.png') }}" alt="Imagem" width="20">
                     Foto
-                </button>
-                <button class="action-button">
+                    <input type="file" name="image" accept="image/*" style="display: none;">
+                </label>
+                <!-- Se desejar incluir GIF, adicione um input similar -->
+                <!-- <button class="action-button">
                     <img src="{{ url_for('static', filename='gif-icon.png') }}" alt="GIF" width="20">
                     GIF
-                </button>
+                </button> -->
             </div>
             
-            <button class="post-submit">Publicar</button>
-        </div>
+            <button type="submit" class="post-submit">Publicar</button>
+        </form>
     </div>
+</div>
+
 
     <script>
+
+    let page = 1;  // Página inicial
+    let loading = false;  // Impede múltiplas requisições simultâneas
+
+    async function loadMorePosts() {
+        if (loading) return;
+        loading = true;
+
+        const response = await fetch(`/load_posts?page=${page}`);
+        const data = await response.json();
+
+        if (data.posts.length > 0) {
+            const container = document.querySelector('.posts-container');
+
+            data.posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.classList.add('post');
+                postElement.innerHTML = `
+                    <div class="post-header">
+                        <img src="${post.user.profile_picture}" alt="Foto de perfil" class="profile-pic">
+                        <div class="post-info">
+                            <strong>${post.user.username}</strong>
+                            <span class="post-date">${post.timestamp}</span>
+                        </div>
+                        <form id="follow-form-${post.user.id}" action="/toggle_follow/${post.user.username}" method="POST" class="follow-form">
+                            <button type="submit" class="follow-button">${post.is_following ? "Deixar de Seguir" : "Seguir"}</button>
+                        </form>
+                    </div>
+                    <div class="post-body" onclick="redirectToPost(${post.id})">
+                        ${post.content.replace(/#(\w+)/g, '<a href="/hashtag/$1">#$1</a>')}
+                        ${post.img_url ? `<img src="${post.img_url}" alt="Imagem do post" style="width: 100%; margin-top: 10px; border-radius: 8px;">` : ''}
+                    </div>
+                    <div class="post-footer">
+                        <button class="like-button ${post.liked ? 'liked' : ''}" id="like-button-${post.id}" onclick="likePost(${post.id})">
+                            <img src="/static/${post.liked ? 'like-on-icon.png' : 'like-off-icon.png'}" id="like-icon-${post.id}" alt="Curtir">
+                            <span id="like-count-${post.id}">${post.likes}</span>
+                        </button>
+                        <button class="share-button" id="share-button-${post.id}" onclick="sharePost(${post.id})">
+                            <img src="/static/share-icon.png" id="share-icon-${post.id}" alt="Compartilhar">
+                        </button>
+                    </div>
+                `;
+                container.appendChild(postElement);
+            });
+
+            page++;  // Próxima página
+        }
+
+        loading = false;
+    }
+
+    window.addEventListener('scroll', () => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+            loadMorePosts();
+        }
+    });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const postForm = document.getElementById('postForm');
+    const postTextarea = document.querySelector('.post-textarea');
+    const postSubmitButton = document.querySelector('.post-submit');
+
+    // Habilita ou desabilita o botão com base no conteúdo do textarea
+    postTextarea.addEventListener('input', function() {
+        postSubmitButton.disabled = !this.value.trim();
+    });
+
+    postForm.addEventListener('submit', async function(event) {
+        event.preventDefault();  // Impede o envio tradicional do formulário
+
+        // Cria um objeto FormData com os dados do formulário
+        const formData = new FormData(postForm);
+
+        // Opcional: se você quiser enviar também uma URL para GIF (caso exista um input para isso)
+        // formData.append('gif_url', document.getElementById('gifInput').value);
+
+        postSubmitButton.disabled = true;
+        try {
+            const response = await fetch('/posts/create', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert(data.message || 'Post criado com sucesso!');
+                // Opcional: atualizar a área de posts dinamicamente ou redirecionar
+                closePostModal();
+                postForm.reset();
+            } else {
+                const errorData = await response.json();
+                alert(errorData.error || 'Erro ao criar o post.');
+            }
+        } catch (error) {
+            console.error('Erro na requisição:', error);
+            alert('Erro ao conectar com o servidor.');
+        } finally {
+            postSubmitButton.disabled = false;
+        }
+    });
+});
+
 
 function likePost(postId) {
     function likePost(postId) {

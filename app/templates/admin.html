@@ -1,149 +1,238 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administração - Vaibes</title>
+    <title>Vaibes - Administração</title>
+
+    <!-- Meta tags para web app -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Ícones para iOS -->
+    <link rel="apple-touch-icon" sizes="180x180" href="static/vibe-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/vibe-icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/vibe-icon.png">
+
+    <!-- Manifest do Web App -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Meta tags para Android -->
+    <meta name="theme-color" content="#022247">
+    <link rel="icon" sizes="192x192" href="/static/vibe-icon.png">
+    <link rel="icon" sizes="512x512" href="/static/vibe-icon.png">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='csshome.css') }}">
     <style>
-        /* Estilo Geral */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #bfbfbf;
-            margin: 0;
+        .admin-container {
             padding: 20px;
+            margin-bottom: 60px;
         }
 
-        header {
-            background-color: #022247;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        h1, h2 {
-            color: #022247;
-        }
-
-        /* Seções de administração */
         .admin-section {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
             margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* Estilo da Tabela */
-        table {
+        .admin-section h2 {
+            color: #022247;
+            margin-bottom: 15px;
+        }
+
+        .admin-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
-            padding: 10px;
+        .admin-table th {
+            background-color: #022247;
+            color: white;
+            padding: 12px;
             text-align: left;
         }
 
-        th {
-            background-color: #022247;
-            color: white;
+        .admin-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
         }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        /* Estilo dos Botões */
-        .btn {
+        .admin-button {
             background-color: #022247;
             color: white;
             border: none;
             padding: 8px 12px;
-            border-radius: 5px;
+            border-radius: 20px;
             cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
+            font-size: 14px;
+            margin: 2px;
         }
 
-        .btn:hover {
-            background-color: #0056b3;
+        .admin-button.danger {
+            background-color: #ff4444;
         }
 
-        .btn-danger {
-            background-color: #d9534f;
-        }
-
-        .btn-danger:hover {
-            background-color: #c9302c;
+        .filter-bar {
+            margin-bottom: 20px;
         }
     </style>
 </head>
+
 <body>
-    <header>
-        <h1>Painel de Administração - Vaibes</h1>
-    </header>
+    <div class="app-container">
+        <!-- Barra de filtros -->
+        <div class="filter-bar">
+            <button id="users-tab" class="filter-button active" onclick="showSection('users')">Usuários</button>
+            <span class="filter-separator">|</span>
+            <button id="posts-tab" class="filter-button" onclick="showSection('posts')">Posts</button>
+        </div>
 
-    <section class="admin-section">
-        <h2>Gerenciar Usuários</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome de Usuário</th>
-                    <th>Email</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>
-                        <a href="/admin/edit_user/{{ user.id }}" class="btn">Editar</a>
-                        <a href="/admin/delete_user/{{ user.id }}" class="btn btn-danger">Excluir</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
+        <div class="admin-container">
+            <div id="users-section" class="admin-section">
+                <h2>Gerenciar Usuários</h2>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome de Usuário</th>
+                                <th>Email</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <button class="admin-button" onclick="editUser({{ user.id }})">Editar</button>
+                                    <button class="admin-button danger" onclick="deleteUser({{ user.id }})">Excluir</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-    <section class="admin-section">
-        <h2>Gerenciar Posts</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Conteúdo</th>
-                    <th>Autor</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for post in posts %}
-                <tr>
-                    <td>{{ post.id }}</td>
-                    <td>{{ post.content }}</td>
-                    <td>{{ post.user.username }}</td>
-                    <td>
-                        <form method="POST" action="/admin" style="display: inline-block;">
-                            <input type="hidden" name="post_id" value="{{ post.id }}">
-                            <button type="submit" class="btn btn-danger">Excluir</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
+            <div id="posts-section" class="admin-section" style="display: none;">
+                <h2>Gerenciar Posts</h2>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Conteúdo</th>
+                                <th>Autor</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for post in posts %}
+                            <tr>
+                                <td>{{ post.id }}</td>
+                                <td>{{ post.content }}</td>
+                                <td>{{ post.user.username }}</td>
+                                <td>
+                                    <button class="admin-button danger" onclick="deletePost({{ post.id }})">Excluir</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de navegação inferior -->
+    <!-- Modified bottom bar -->
+    <div class="bottom-bar">
+        <a href="{{ url_for('main.home') }}" class="bottom-bar-link">
+            <img src="{{ url_for('static', filename='home-icon.png') }}" alt="Home">
+            <span>Home</span>
+        </a>
+        <a href="{{ url_for('main.search') }}" class="bottom-bar-link">
+            <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Buscar">
+            <span>Buscar</span>
+        </a>
+        <a href="{{ url_for('main.home') }}" class="bottom-bar-link">
+            <img src="{{ url_for('static', filename='admin-icon.png') }}" alt="Admin">
+            <span>Admin</span>
+        </a>
+        <a href="{{ url_for('notifications.notifications') }}" class="bottom-bar-link">
+            <img src="{{ url_for('static', filename='notifications-icon.png') }}" alt="Notificações">
+            <span>Notificações</span>
+        </a>
+        {% if current_user %}
+        <a href="{{ url_for('users.profile', username=current_user.username) }}" class="bottom-bar-link">
+            <img src="{{ current_user.profile_picture or url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Foto de perfil" class="profile-pic">
+            <span>Perfil</span>
+        </a>
+        {% else %}
+        <a href="{{ url_for('auth.login') }}" class="bottom-bar-link">
+            <img src="{{ url_for('static', filename='uploads/default-profile-pic.png') }}" alt="Login" class="profile-pic">
+            <span>Login</span>
+        </a>
+        {% endif %}
+    </div>
+
+    <script>
+        function showSection(section) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Hide all sections
+            document.getElementById('users-section').style.display = 'none';
+            document.getElementById('posts-section').style.display = 'none';
+
+            // Show selected section and activate button
+            if (section === 'users') {
+                document.getElementById('users-section').style.display = 'block';
+                document.getElementById('users-tab').classList.add('active');
+            } else {
+                document.getElementById('posts-section').style.display = 'block';
+                document.getElementById('posts-tab').classList.add('active');
+            }
+        }
+
+        function editUser(userId) {
+            // Implementar lógica de edição
+            window.location.href = `/admin/edit_user/${userId}`;
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Tem certeza que deseja excluir este usuário?')) {
+                // Implementar lógica de exclusão
+                window.location.href = `/admin/delete_user/${userId}`;
+            }
+        }
+
+        function deletePost(postId) {
+            if (confirm('Tem certeza que deseja excluir este post?')) {
+                // Implementar lógica de exclusão
+                fetch('/admin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ post_id: postId })
+                }).then(() => {
+                    window.location.reload();
+                });
+            }
+        }
+    </script>
 </body>
 </html>

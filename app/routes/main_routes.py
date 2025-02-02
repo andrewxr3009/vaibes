@@ -1,5 +1,5 @@
 from flask import Blueprint, session, redirect, url_for, request, render_template, flash, jsonify, send_from_directory
-from app.models.models import User, Post, Comment, Hashtag
+from app.models.models import User, Post, Comment, Hashtag, Relevance
 from app.services.post_service import get_paginated_posts
 from app.routes.post_routes import user_likes_post
 from app.utils.error_handler import handle_error
@@ -39,39 +39,41 @@ def home():
 
 @main_bp.route('/load_posts', methods=['GET'])
 def load_posts():
+    user_id = session.get('user_id')  # Use 'user_id' para pegar o ID do usuário da sessão
     page = request.args.get('page', 1, type=int)
-    filter_type = request.args.get('filter', 'relevance')
+    filter_type = request.args.get('filter', 'relevance')  # Padrão: relevância
     posts_per_page = 10
 
-    # Lógica de filtro para 'relevance' ou 'chronological'
+    # Filtro por relevância ou ordem cronológica
     if filter_type == 'relevance':
-        posts = Post.query.order_by(Post.relevance_score.desc()).paginate(page=page, per_page=posts_per_page)
+        posts = Post.query.join(Relevance, Post.id == Relevance.post_id).filter(Relevance.user_id == user_id).order_by(Relevance.relevance_score.desc()).paginate(page=page, per_page=posts_per_page, error_out=False)
     else:
-        posts = Post.query.order_by(Post.timestamp.desc()).paginate(page=page, per_page=posts_per_page)
+        posts = Post.query.order_by(Post.timestamp.desc()).paginate(page=page, per_page=posts_per_page, error_out=False)
 
-    # Converter posts em uma lista com os dados necessários
+    # Converter posts para JSON
     posts_with_users = [
         {
             "id": post.id,
             "content": post.content,
             "timestamp": post.timestamp.isoformat(),
-            "likes": len(post.likes),
+            "likes": post.likes if isinstance(post.likes, int) else len(post.likes),  # Evita erro caso likes não seja int
             "gif_url": post.gif_url,
             "img_url": post.img_url,
             "user": {
-                "id": post.user_id.id,
-                "username": post.user_id.username,
-                "profile_picture": post.user_id.profile_picture
+                "id": post.user.id,  # Corrigido: acessar diretamente o usuário
+                "username": post.user.username,
+                "profile_picture": post.user.profile_picture
             }
         }
-        for post in posts.items
+        for post in posts.items  # Mudança aqui: posts.items para acessar a lista de posts paginados
     ]
 
-    # Retornar dados em formato JSON
-    return print(posts_with_users), jsonify({
+    # Retornar JSON válido
+    return jsonify({
         'posts': posts_with_users,
-        'has_more': posts.has_next
+        'has_more': posts.has_next  # Funciona agora, pois 'posts' é um objeto paginado
     })
+
 
     
 @main_bp.route('/search', methods=['GET'])
@@ -132,11 +134,16 @@ def admin_panel():
             db.session.commit()
             flash(f"Post {post_id} excluído com sucesso!", "success")
 
+
     users = User.query.all()
     posts = Post.query.all()
-    return render_template('admin.html', users=users, posts=posts)
+    return render_template('admin.html', 
+                         users=users, 
+                         posts=posts,
+                         current_user=session['user_id'])
 
-@app.route('/google6242ed33947064b2.html')
+
+@main_bp.route('/google6242ed33947064b2.html')
 def serve_verification_file():
     return send_from_directory('static', 'google6242ed33947064b2.html')
 

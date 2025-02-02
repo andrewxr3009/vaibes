@@ -13,7 +13,7 @@ def profile(username):
         flash('Usuário não encontrado.')
         return redirect(url_for('main.home'))
     posts = Post.query.filter_by(user_id=user.id).all()
-    return render_template('profile.html', user=user, posts=posts)
+    return render_template('profile.html', profile=user, user=user, posts=posts)
 
 @user_bp.route('/follow_user/<username>', methods=['POST'])
 def toggle_follow(username):

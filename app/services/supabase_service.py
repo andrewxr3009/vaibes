@@ -1,25 +1,48 @@
 from app.extensions import supabase_client, firebase_bucket
 import uuid
 from datetime import datetime
+from pytz import timezone
 
-def create_post_service(user_id, content, image_url=None):
+def horario_atual_brasilia():
+    fuso_brasilia = timezone('America/Sao_Paulo')
+    return datetime.now(fuso_brasilia)
+
+def create_post_service(user_id, content, image_url=None, gif_url=None):
     """
-    Cria um post no Supabase.
+    Cria um post no Supabase usando ID incremental.
     """
-    post_id = str(uuid.uuid4())
+    # Consulta o último ID na tabela 'post'
+    last_response = supabase_client.table('post')\
+                        .select('id')\
+                        .order('id', desc=True)\
+                        .limit(1)\
+                        .execute()
+
+    if last_response.data and len(last_response.data) > 0:
+        try:
+            last_id = int(last_response.data[0]['id'])
+        except (ValueError, TypeError):
+            last_id = 0
+    else:
+        last_id = 0
+
+    # Incrementa o último ID em 1
+    new_id = last_id + 1
+
     post_data = {
-        "id": post_id,
+        "id": new_id,
         "user_id": user_id,
         "content": content,
-        "image_url": image_url,
-        "timestamp": datetime.utcnow().isoformat(),
-        "likes": 0,
+        "img_url": image_url,
+        "gif_url": gif_url,  # Pode ser None se não informado
+        "timestamp": horario_atual_brasilia().isoformat(),
     }
 
-    response = supabase_client.table('posts').insert(post_data).execute()
-    if response.error:
-        raise ValueError(f"Erro ao criar post: {response.error}")
-    return post_id
+    response = supabase_client.table('post').insert(post_data).execute()
+    response_dict = response.dict()  # Converte a resposta para dicionário
+    if response_dict.get("error"):
+        raise ValueError(f"Erro ao criar post: {response_dict.get('error')}")
+    return new_id
 
 def upload_image_to_firebase(image):
     """

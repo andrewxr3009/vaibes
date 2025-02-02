@@ -1,8 +1,8 @@
 from app.extensions import db
 from datetime import datetime
-import spacy
-from spacy_langdetect import LanguageDetector
-from spacy.language import Language
+# import spacy
+# from spacy_langdetect import LanguageDetector
+# from spacy.language import Language
 
 class User(db.Model):
     __tablename__ = 'user'  
@@ -82,45 +82,48 @@ class Post(db.Model):
     gif_url = db.Column(db.String, nullable=True)  
     hashtags = db.relationship('PostHashtag', backref='post', lazy=True)  
     views = db.Column(db.Integer, default=0)
+    
     def generate_tags(self):
         # Detect language
-        doc = nlp_en(self.content)
-        lang = doc._.language['language']
+        # doc = nlp_en(self.content)
+        # lang = doc._.language['language']
         
-        if lang == 'pt':
-            doc = nlp_pt(self.content)
+        # if lang == 'pt':
+        #     doc = nlp_pt(self.content)
 
         # Generate tags from the post content
-        tags = [token.lemma_.lower() for token in doc if token.is_alpha and not token.is_stop]
-        return tags
+        # tags = [token.lemma_.lower() for token in doc if token.is_alpha and not token.is_stop]
+        # return tags
+        pass
     
     def determine_assunto(self, tags):
         # Carregar palavras-chave dos tópicos em documentos NLP
-        topic_docs = {topic: nlp_en(' '.join(keywords)) for topic, keywords in TOPIC_TAGS.items()}
-        post_doc = nlp_en(' '.join(tags))
+        # topic_docs = {topic: nlp_en(' '.join(keywords)) for topic, keywords in TOPIC_TAGS.items()}
+        # post_doc = nlp_en(' '.join(tags))
 
         best_topic = 'outros'
         best_similarity = 0.0
 
         # Comparar a similaridade entre as tags e os tópicos
-        for topic, doc in topic_docs.items():
-            similarity = post_doc.similarity(doc)
-            if similarity > best_similarity:
-                best_similarity = similarity
-                best_topic = topic
+        # for topic, doc in topic_docs.items():
+        #     similarity = post_doc.similarity(doc)
+        #     if similarity > best_similarity:
+        #         best_similarity = similarity
+        #         best_topic = topic
 
         return best_topic
-@Language.factory('language_detector')
-def create_language_detector(nlp, name):
-    return LanguageDetector()
+
+# @Language.factory('language_detector')
+# def create_language_detector(nlp, name):
+#     return LanguageDetector()
 
 # Carregar o modelo NLP para inglês e português
-nlp_en = spacy.load("en_core_web_sm")
-nlp_pt = spacy.load("pt_core_news_sm")
+# nlp_en = spacy.load("en_core_web_sm")
+# nlp_pt = spacy.load("pt_core_news_sm")
 
 # Adicionar o detector de idioma ao pipeline de NLP
-nlp_en.add_pipe('language_detector', last=True)
-nlp_pt.add_pipe('language_detector', last=True)
+# nlp_en.add_pipe('language_detector', last=True)
+# nlp_pt.add_pipe('language_detector', last=True)
 
 class Comment(db.Model):
     __tablename__ = 'comment'  
